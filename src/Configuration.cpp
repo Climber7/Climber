@@ -1,4 +1,4 @@
-//
+﻿//
 // Created by Climber on 2020/6/4.
 //
 
@@ -19,10 +19,11 @@ const char *Configuration::s_supportedLanguages[] = {
         "zh_TW",
 };
 
-const char *Configuration::s_supportedLanguageNames[] = {
-        "English (US)",
-        "中文 (简体)",
-        "中文 (中國台灣)",
+wxString Configuration::s_supportedLanguageNames[] = {
+        wxT("English (US)"),
+        wxT("中文 (简体)"),
+        wxT("中文 (中國台灣)"),
+
 };
 
 void Configuration::Init() {
@@ -37,7 +38,7 @@ Configuration &Configuration::GetInstance() {
 
 wxArrayString Configuration::GetSupportedLanguageNames() {
     wxArrayString arr;
-    for (const auto *l : s_supportedLanguageNames) {
+    for (auto &l : s_supportedLanguageNames) {
         arr.Add(l);
     }
     return arr;
@@ -139,7 +140,7 @@ void Configuration::SetPacPort(int port) {
     Save();
 }
 
-bool Configuration::PortAlreadyInUse(int port) {
+bool Configuration::PortAlreadyInUse(int port) const {
     return m_socksPort == port
            || m_httpPort == port
            || m_pacPort == port;
@@ -176,7 +177,7 @@ void Configuration::InitPaths() {
 }
 
 void Configuration::Load() {
-    std::ifstream in(m_configurationFile, std::ios::in);
+    std::ifstream in(m_configurationFile.ToStdString(), std::ios::in);
     if (!in.is_open()) {
         return;
     }
@@ -236,7 +237,7 @@ void Configuration::Save() {
     obj["socks_port"] = m_socksPort;
     obj["http_port"] = m_httpPort;
     obj["pac_port"] = m_pacPort;
-    std::ofstream out(m_configurationFile, std::ios::out);
+    std::ofstream out(m_configurationFile.ToStdString(), std::ios::out);
     if (!out.is_open()) {
         printf("Open \"%s\" failed, %s\n", m_configurationFile.c_str().AsChar(), strerror(errno));
         return;

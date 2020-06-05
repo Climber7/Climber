@@ -1,4 +1,4 @@
-//
+﻿//
 // Created by Climber on 2020/6/4.
 //
 
@@ -59,7 +59,7 @@ public:
 
     void SetPacPort(int port);
 
-    bool PortAlreadyInUse(int port);
+    bool PortAlreadyInUse(int port) const;
 
 private:
     void InitPaths();
@@ -91,7 +91,7 @@ private:
 private:
     static Configuration *s_instance;
     static const char *s_supportedLanguages[];
-    static const char *s_supportedLanguageNames[];
+    static wxString s_supportedLanguageNames[];
 
 };
 

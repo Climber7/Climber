@@ -1,4 +1,4 @@
-//
+﻿//
 // Created by Climber on 2020/6/3.
 //
 
@@ -25,6 +25,7 @@ SystemTray::SystemTray() {
     auto &paths = wxStandardPaths::Get();
     wxFileName iconFile;
     iconFile.AssignDir(paths.GetResourcesDir());
+    iconFile.AppendDir("assets");
     iconFile.SetFullName("icon.png");
     icon.LoadFile(iconFile.GetFullPath(), wxBITMAP_TYPE_ANY);
     wxTaskBarIcon::SetIcon(icon);

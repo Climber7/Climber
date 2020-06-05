@@ -1,4 +1,4 @@
-//
+﻿//
 // Created by Climber on 2020/6/4.
 //
 
@@ -34,10 +34,10 @@ private:
     void OnTabChanging(wxBookCtrlEvent &event);
 
 private:
-    wxNotebook *m_mainTab;
-    GeneralSettingsPage *m_generalSettingsPage;
-    ProxySettingsPage *m_proxySettingsPage;
-    ServersSettingsPage *m_serversSettingsPage;
+    wxNotebook *m_mainTab = nullptr;
+    GeneralSettingsPage *m_generalSettingsPage = nullptr;
+    ProxySettingsPage *m_proxySettingsPage = nullptr;
+    ServersSettingsPage *m_serversSettingsPage = nullptr;
 
 DECLARE_EVENT_TABLE()
 

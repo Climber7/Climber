@@ -1,8 +1,10 @@
-//
+﻿//
 // Created by Climber on 2020/6/3.
 //
 
 #include <wx/wx.h>
+#include <wx/stdpaths.h>
+#include <wx/filename.h>
 #include "SystemTray.h"
 #include "Configuration.h"
 
@@ -22,6 +24,12 @@ public:
     }
 
     static void InitLanguageSupport() {
+#ifdef _WIN32
+        wxFileName prefix;
+        prefix.AssignDir(wxStandardPaths::Get().GetResourcesDir());
+        prefix.AppendDir("locale");
+        wxLocale::AddCatalogLookupPathPrefix(prefix.GetFullPath());
+#endif
         wxLocale *locale;
         int language = CONFIGURATION.GetLanguageCode();
         if (wxLocale::IsAvailable(language)) {

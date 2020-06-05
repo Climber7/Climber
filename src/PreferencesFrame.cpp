@@ -1,11 +1,10 @@
-//
+﻿//
 // Created by Climber on 2020/6/4.
 //
 
 #include <wx/dialog.h>
 #include "defs.h"
 #include "PreferencesFrame.h"
-#include "Configuration.h"
 
 
 #ifdef __APPLE__
@@ -17,7 +16,8 @@
 PreferencesFrame::PreferencesFrame(wxWindow *parent, wxWindowID winid)
         : wxFrame(parent, winid, PREFERENCES_FRAME_TITLE, wxDefaultPosition, wxSize(600, 400),
                   wxSYSTEM_MENU | wxCLOSE_BOX | wxCAPTION | wxSTAY_ON_TOP) {
-    wxBoxSizer *sizer = new wxBoxSizer(wxVERTICAL);
+    this->SetBackgroundColour(*wxWHITE);
+    auto *sizer = new wxBoxSizer(wxVERTICAL);
     m_mainTab = new wxNotebook(this, ID_PREFERENCES_MAIN_TAB);
     sizer->Add(m_mainTab, 1, wxEXPAND | wxALL, 5);
 
