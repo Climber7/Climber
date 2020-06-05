@@ -1,0 +1,189 @@
+# from wxWidgets
+
+msgid "&OK"
+msgstr "确认(&O)"
+
+msgid "OK"
+msgstr "确认"
+
+msgid "&Yes"
+msgstr "是(&Y)"
+
+msgid "Yes"
+msgstr "是"
+
+msgid "&No"
+msgstr "否(&N)"
+
+msgid "No"
+msgstr "否"
+
+msgid "&Cancel"
+msgstr "取消(&C)"
+
+msgid "Cancel"
+msgstr "取消"
+
+msgid "&New"
+msgstr "新建(&N)"
+
+msgid "&Edit"
+msgstr "编辑(&E)"
+
+msgid "&Delete"
+msgstr "删除(&D)"
+
+msgid "&Up"
+msgstr "向上(&U)"
+
+msgid "&Down"
+msgstr "向下(&D)"
+
+# climber
+
+msgid "About"
+msgstr "关于"
+
+msgid "Climber: Off"
+msgstr "Climber：关闭"
+
+msgid "Start Climber"
+msgstr "开启 Climber"
+
+msgid "Proxy Mode"
+msgstr "代理模式"
+
+msgid "Direct Mode"
+msgstr "直连模式"
+
+msgid "PAC Mode"
+msgstr "PAC 模式"
+
+msgid "Global Mode"
+msgstr "全局模式"
+
+msgid "Scan QR Code on Screen"
+msgstr "扫描屏幕上的二维码"
+
+msgid "Import from Url"
+msgstr "从链接导入"
+
+msgid "Share Current Server"
+msgstr "共享当前服务器配置"
+
+msgid "Servers Settings..."
+msgstr "服务器设置..."
+
+msgid "Servers"
+msgstr "服务器"
+
+msgid "Preferences..."
+msgstr "偏好设置..."
+
+msgid "Settings..."
+msgstr "设置..."
+
+msgid "Copy Terminal Proxy Command"
+msgstr "复制终端代理命令"
+
+msgid "For Shell"
+msgstr "For Shell"
+
+msgid "For Bash"
+msgstr "For Bash"
+
+msgid "For CMD"
+msgstr "For CMD"
+
+msgid "Show Log"
+msgstr "显示日志"
+
+msgid "Show Climber Log"
+msgstr "显示 Climber 日志"
+
+msgid "Show Shadowsocks Log"
+msgstr "显示 Shadowsocks 日志"
+
+msgid "Show ShadowsocksR Log"
+msgstr "显示 ShadowsocksR 日志"
+
+msgid "Show VMess Log"
+msgstr "显示 VMess 日志"
+
+msgid "Show Trojan Log"
+msgstr "显示 Trojan 日志"
+
+msgid "Check for Updates..."
+msgstr "检查更新..."
+
+msgid "Quit"
+msgstr "退出"
+
+msgid "Preferences"
+msgstr "偏好设置"
+
+msgid "Settings"
+msgstr "设置"
+
+msgid "General"
+msgstr "常规设置"
+
+msgid "Proxy"
+msgstr "代理设置"
+
+msgid "Language"
+msgstr "语言"
+
+msgid "Launch on Startup"
+msgstr "开机自启动"
+
+msgid "Your change will take effect after next start."
+msgstr "更改将会在下次重启 Climber 后生效。"
+
+msgid "Share on Lan"
+msgstr "局域网共享"
+
+msgid "Socks Port"
+msgstr "Socks 端口"
+
+msgid "Http Port"
+msgstr "Http 端口"
+
+msgid "PAC Port"
+msgstr "PAC 端口"
+
+msgid "Port %d already in use!"
+msgstr "端口 %d 已被使用！"
+
+msgid "Apply"
+msgstr "应用"
+
+msgid "No changes!"
+msgstr "没有任何更改！"
+
+msgid "Your have unsaved changes, apply now?"
+msgstr "尚未保存设置，立即应用？"
+
+msgid "Server"
+msgstr "服务器"
+
+msgid "Name"
+msgstr "名称"
+
+msgid "Type"
+msgstr "类型"
+
+msgid "Host"
+msgstr "主机"
+
+msgid "Port"
+msgstr "端口"
+
+msgid "Dupli&cate"
+msgstr "副本(&C)"
+
+msgid "New Server"
+msgstr "新增服务器配置"
+
+msgid "Edit Server"
+msgstr "编辑服务器配置"

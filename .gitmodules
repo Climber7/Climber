@@ -1,0 +1,6 @@
+[submodule "vendor/wxWidgets"]
+	path = vendor/wxWidgets
+	url = https://github.com/Climber7/wxWidgets
+[submodule "vendor/json"]
+	path = vendor/json
+	url = https://github.com/nlohmann/json
