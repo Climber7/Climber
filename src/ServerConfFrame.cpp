@@ -6,9 +6,9 @@
 
 ServerConfFrame::ServerConfFrame(wxWindow *parent, wxWindowID winid, const wxString &title)
         : wxFrame(parent, winid, title, wxDefaultPosition, wxSize(400, 600),
-                  wxSYSTEM_MENU | wxCLOSE_BOX | wxCAPTION | wxSTAY_ON_TOP) {
+                  wxSYSTEM_MENU | wxCLOSE_BOX | wxCAPTION | wxTOPLEVEL_EX_DIALOG) {
     this->SetBackgroundColour(*wxWHITE);
-    wxBoxSizer *sizer = new wxBoxSizer(wxVERTICAL);
+    auto *sizer = new wxBoxSizer(wxVERTICAL);
 
 
 

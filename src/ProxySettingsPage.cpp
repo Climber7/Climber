@@ -22,15 +22,12 @@ ProxySettingsPage::ProxySettingsPage(wxWindow *parent, wxWindowID winid)
 
     m_socksPortSpin = new wxSpinCtrl(this, ID_SPIN_SOCKS_PORT, wxEmptyString, wxDefaultPosition, wxDefaultSize,
                                      wxSP_ARROW_KEYS, 1, 65535, m_socksPort);
-//    m_socksPortSpin->SetIncrement(1);
 
     m_httpPortSpin = new wxSpinCtrl(this, ID_SPIN_HTTP_PORT, wxEmptyString, wxDefaultPosition, wxDefaultSize,
                                     wxSP_ARROW_KEYS, 1, 65535, m_httpPort);
-//    m_httpPortSpin->SetIncrement(1);
 
     m_pacPortSpin = new wxSpinCtrl(this, ID_SPIN_PAC_PORT, wxEmptyString, wxDefaultPosition, wxDefaultSize,
                                    wxSP_ARROW_KEYS, 1, 65535, m_pacPort);
-//    m_pacPortSpin->SetIncrement(1);
 
     flexGridSizer->Add(new wxStaticText(this, wxID_ANY, _("Share on Lan")), 0, wxALL, 5);
     flexGridSizer->Add(m_shareOnLanCheckBox, 0, wxALL, 5);

@@ -8,9 +8,9 @@ ServersSettingsPage::ServersSettingsPage(wxWindow *parent, wxWindowID winid)
         : wxPanel(parent, winid) {
 
     m_dataView = new wxDataViewListCtrl(this, ID_DATA_VIEW_SERVER_LIST);
-    m_dataView->AppendTextColumn(_("Name"), wxDATAVIEW_CELL_INERT, 180, wxALIGN_LEFT);
+    m_dataView->AppendTextColumn(_("Name"), wxDATAVIEW_CELL_INERT, 175, wxALIGN_LEFT);
     m_dataView->AppendTextColumn(_("Type"), wxDATAVIEW_CELL_INERT, 110, wxALIGN_LEFT);
-    m_dataView->AppendTextColumn(_("Host"), wxDATAVIEW_CELL_INERT, 196, wxALIGN_LEFT);
+    m_dataView->AppendTextColumn(_("Host"), wxDATAVIEW_CELL_INERT, 192, wxALIGN_LEFT);
     m_dataView->AppendTextColumn(_("Port"), wxDATAVIEW_CELL_INERT, 70, wxALIGN_LEFT);
 
     AddRow("Climber-hk-01", "shadowsocks", "1.1.1.1", "8888");
@@ -61,7 +61,7 @@ void ServersSettingsPage::DeleteRow(int row) {
 
 void ServersSettingsPage::DuplicateRow(int row) {
     wxVector<wxVariant> rowData;
-    for (int i = 0; i < m_dataView->GetColumnCount(); ++i) {
+    for (unsigned int i = 0; i < m_dataView->GetColumnCount(); ++i) {
         rowData.push_back(m_dataView->GetTextValue(row, i));
     }
     m_dataView->AppendItem(rowData);
@@ -77,14 +77,14 @@ void ServersSettingsPage::DuplicateRow(int row) {
 
 void ServersSettingsPage::MoveUpRow(int row) {
     if (row == -1 || row == 0) return;
-    for (int i = 0; i < m_dataView->GetColumnCount(); ++i) {
+    for (unsigned int i = 0; i < m_dataView->GetColumnCount(); ++i) {
         SwapValue(row, row - 1, i);
     }
 }
 
 void ServersSettingsPage::MoveDownRow(int row) {
     if (row == -1 || row == m_dataView->GetItemCount() - 1) return;
-    for (int i = 0; i < m_dataView->GetColumnCount(); ++i) {
+    for (unsigned int i = 0; i < m_dataView->GetColumnCount(); ++i) {
         SwapValue(row, row + 1, i);
     }
 }
@@ -121,8 +121,11 @@ void ServersSettingsPage::OnDeleteRow(wxCommandEvent &event) {
     int selectedRow = m_dataView->GetSelectedRow();
     if (selectedRow == -1) return;
     DeleteRow(selectedRow);
-    if (selectedRow == m_dataView->GetItemCount()) {
+    if (selectedRow == m_dataView->GetItemCount() && m_dataView->GetItemCount() > 0) {
         m_dataView->SelectRow(m_dataView->GetItemCount() - 1);
+    }
+    if (selectedRow == 0 && m_dataView->GetItemCount() > 0) {
+        m_dataView->SelectRow(0);
     }
 }
 

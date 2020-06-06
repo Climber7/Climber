@@ -1,0 +1,41 @@
+﻿IDI_ICON1	ICON    DISCARDABLE	 "icon.ico"
+
+#ifdef UNDER_CE
+#include <winbase.h>
+#else
+#include <winver.h>
+#endif
+
+#cmakedefine CLIMBER_COPYRIGHT "@CLIMBER_COPYRIGHT@"
+#cmakedefine CLIMBER_VERSION "@CLIMBER_VERSION@"
+#cmakedefine CLIMBER_VERSION2 @CLIMBER_VERSION2@
+#cmakedefine CLIMBER_DESCRIPTION "@CLIMBER_DESCRIPTION@"
+
+VS_VERSION_INFO VERSIONINFO
+    FILEVERSION    CLIMBER_VERSION2
+    PRODUCTVERSION CLIMBER_VERSION2
+    FILEFLAGS      0x0L
+    FILEFLAGSMASK  0x3fL
+    FILEOS         VOS_NT
+    FILETYPE       VFT_APP
+    FILESUBTYPE    0x0L
+    BEGIN
+        BLOCK "StringFileInfo"
+        BEGIN
+            BLOCK "000004b0"
+            BEGIN
+                VALUE "CompanyName", "Climber"
+                VALUE "FileDescription", CLIMBER_DESCRIPTION
+                VALUE "FileVersion", CLIMBER_VERSION
+                VALUE "LegalCopyright", CLIMBER_COPYRIGHT
+                VALUE "InternalName", "Climber"
+                VALUE "OriginalFilename", "Climber.exe"
+                VALUE "ProductName", "Climber"
+                VALUE "ProductVersion", CLIMBER_VERSION
+            END
+        END
+        BLOCK "VarFileInfo"
+        BEGIN
+            VALUE "Translation", 0x0, 1200
+        END
+    END

@@ -3,10 +3,13 @@ project(Climber)
 
 set(CMAKE_CXX_STANDARD 14)
 
-set(CLIMBER_VERSION 1.0.0)
+set(CLIMBER_VERSION 0.0.1)
+set(CLIMBER_COPYRIGHT "Copyright (C) 2020 Climber.")
+set(CLIMBER_DESCRIPTION "Yet another cross platform ss/ssr/vmess/trojan GUI client.")
 
 if (WIN32)
     add_compile_options($<$<CXX_COMPILER_ID:MSVC>:/MP>)
+    add_link_options($<$<CXX_COMPILER_ID:MSVC>:/INCREMENTAL:NO>)
 endif()
 
 set(wxBUILD_MONOLITHIC ON)
@@ -40,8 +43,9 @@ if (APPLE)
             MACOSX_BUNDLE_BUNDLE_VERSION "${CLIMBER_VERSION}"
             MACOSX_BUNDLE_LONG_VERSION_STRING "${CLIMBER_VERSION}"
             MACOSX_BUNDLE_SHORT_VERSION_STRING "${CLIMBER_VERSION}"
-            MACOSX_BUNDLE_INFO_STRING "Yet another cross platform ss/ssr/vmess/trojan GUI client."
+            MACOSX_BUNDLE_INFO_STRING "${CLIMBER_DESCRIPTION}"
             MACOSX_BUNDLE_GUI_IDENTIFIER "io.github.climber"
+            MACOSX_BUNDLE_COPYRIGHT "${CLIMBER_COPYRIGHT}"
             MACOSX_BUNDLE_ICON_FILE "icon.icns")
 
     add_custom_command(
@@ -52,17 +56,22 @@ if (APPLE)
     )
 
 elseif (WIN32)
+    set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/Climber")
+
+
+    string(REPLACE "." "," CLIMBER_VERSION2 "${CLIMBER_VERSION}")
+    configure_file("${CMAKE_CURRENT_SOURCE_DIR}/assets/icon.ico" "${CMAKE_CURRENT_BINARY_DIR}/icon.ico" COPYONLY)
+    configure_file("${CMAKE_CURRENT_SOURCE_DIR}/win32.rc.in" "${CMAKE_CURRENT_BINARY_DIR}/win32.rc" @ONLY)
+
     file(MAKE_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/Climber/assets")
     file(MAKE_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/Climber/locale/en")
     file(MAKE_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/Climber/locale/zh_CN")
     file(MAKE_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/Climber/locale/zh_TW")
     configure_file("${CMAKE_CURRENT_SOURCE_DIR}/assets/icon.png" "${CMAKE_CURRENT_BINARY_DIR}/Climber/assets/icon.png" COPYONLY)
 
-    set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/Climber)
-
     set(MSGFMT_EXECUTABLE "${CMAKE_CURRENT_SOURCE_DIR}/tools/win32/msgfmt.exe")
 
-    add_executable(Climber WIN32 ${SOURCES})
+    add_executable(Climber WIN32 ${SOURCES} "${CMAKE_CURRENT_BINARY_DIR}/win32.rc")
 
     add_custom_command(
             TARGET Climber
