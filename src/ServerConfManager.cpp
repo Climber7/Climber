@@ -4,9 +4,8 @@
 
 #include <fstream>
 #include <sstream>
-#include <wx/stdpaths.h>
-#include <wx/filename.h>
 #include "ServerConfManager.h"
+#include "Paths.h"
 #include "impl/TrojanConfItem.h"
 
 ServerConfManager *ServerConfManager::s_instance = nullptr;
@@ -17,30 +16,22 @@ void ServerConfManager::Init() {
     }
 }
 
+void ServerConfManager::Destroy() {
+    if (s_instance != nullptr) {
+        delete s_instance;
+        s_instance = nullptr;
+    }
+}
+
 ServerConfManager &ServerConfManager::GetInstance() {
     return *s_instance;
 }
 
 ServerConfManager::ServerConfManager() {
-    InitPath();
-    Load();
-}
-
-void ServerConfManager::InitPath() {
-    auto &paths = wxStandardPaths::Get();
-    wxString configurationDir = paths.GetUserLocalDataDir();
-    if (!wxDirExists(configurationDir)) {
-        printf("Configuration dir not exists\n");
-        if (wxMkDir(configurationDir, wxS_DIR_DEFAULT)) {
-            printf("Make configuration failed, %s\n", strerror(errno));
-        }
-    }
-
-    wxFileName file;
-    file.AssignDir(configurationDir);
-    file.SetFullName("Servers.json");
-    m_serversListFile = file.GetFullPath();
+    m_serversListFile = Paths::GetConfigDirFile("servers.json");
     printf("Servers list File: %s\n", m_serversListFile.c_str().AsChar());
+
+    Load();
 }
 
 void ServerConfManager::Load() {
@@ -78,21 +69,33 @@ void ServerConfManager::Load() {
     }
 }
 
-void ServerConfManager::Save() {
-    json list;
-    for (auto &item : m_list) {
-        list.push_back(item->GetJsonObject());
-    }
-    std::ofstream out(m_serversListFile.ToStdString(), std::ios::out);
-    if (!out.is_open()) {
-        printf("Open \"%s\" failed, %s\n", m_serversListFile.c_str().AsChar(), strerror(errno));
-        return;
-    }
-    out << list.dump(4) << "\n";
-    out.close();
+void ServerConfManager::Reload() {
+    m_list.clear();
+    Load();
 }
 
-const std::vector<ServerConfItem*> &ServerConfManager::GetServersList() {
+//void ServerConfManager::Save() {
+//    json list;
+//    for (auto &item : m_list) {
+//        list.push_back(item->GetJsonObject());
+//    }
+//    std::ofstream out(m_serversListFile.ToStdString(), std::ios::out);
+//    if (!out.is_open()) {
+//        printf("Open \"%s\" failed, %s\n", m_serversListFile.c_str().AsChar(), strerror(errno));
+//        return;
+//    }
+//    out << list.dump(4) << "\n";
+//    out.close();
+//}
+
+const std::vector<ServerConfItem *> &ServerConfManager::GetServersList() {
     return m_list;
 }
 
+int ServerConfManager::Count() const {
+    return m_list.size();
+}
+
+ServerConfItem *ServerConfManager::Get(int index) const {
+    return m_list[index];
+}

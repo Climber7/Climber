@@ -11,19 +11,28 @@
 #define CONFIGURATION  (Configuration::GetInstance())
 
 
-
 class Configuration {
 public:
     static void Init();
+
+    static void Destroy();
 
     static Configuration &GetInstance();
 
     static wxArrayString GetSupportedLanguageNames();
 
 public:
-    int GetProxyMode() const;
+    bool GetEnable() const;
 
-    void SetProxyMode(int mode);
+    void SetEnable(bool enable);
+
+    const wxString &GetProxyMode() const;
+
+    void SetProxyMode(const wxString &mode);
+
+    int GetSelectedServerIndex() const;
+
+    void SetSelectedServerIndex(int index);
 
     const wxString &GetLanguage() const;
 
@@ -62,13 +71,13 @@ public:
 private:
     Configuration();
 
-    void InitPath();
-
     void InitDefaults();
 
     void Load();
 
     void Save();
+
+    void InitLanguageSupport();
 
 private:
     static bool IsLanguageSupported(const wxString &language);
@@ -79,7 +88,9 @@ private:
     wxString m_configurationFile;
 
 private:
-    int m_proxyMode = DEFAULT_PROXY_MODE;
+    bool m_enable = false;
+    wxString m_proxyMode = DEFAULT_PROXY_MODE;
+    int m_selectedServer = -1;
     wxString m_language = DEFAULT_LANGUAGE;
     bool m_autoStart = DEFAULT_AUTO_START;
     bool m_shareOnLan = DEFAULT_SHARE_ON_LAN;

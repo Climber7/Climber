@@ -4,9 +4,8 @@
 
 #include <utility>
 #include <fstream>
-#include <wx/stdpaths.h>
-#include <wx/filename.h>
 #include "ServerConfItem.h"
+#include "Paths.h"
 
 ServerConfItem::ServerConfItem(json obj) : m_data(std::move(obj)) {
     std::string name = m_data["name"];
@@ -27,20 +26,14 @@ wxString ServerConfItem::GetTypeName() const {
     return m_typeName;
 }
 
-wxString ServerConfItem::WriteToTmp() const {
-    auto &paths = wxStandardPaths::Get();
-    wxFileName tmpFile;
-    tmpFile.AssignDir(paths.GetTempDir());
-    tmpFile.SetFullName(wxString::Format("climber_%s_%d.json", m_typeName, rand()));
-    wxString tmpConfPath = tmpFile.GetFullPath();
-    std::ofstream out(tmpConfPath.ToStdString(), std::ios::out);
+void ServerConfItem::WriteTo(const wxString &file) const {
+    std::ofstream out(file.ToStdString(), std::ios::out);
     if (!out.is_open()) {
-        printf("Open \"%s\" failed, %s\n", tmpConfPath.c_str().AsChar(), strerror(errno));
+        printf("Open \"%s\" failed, %s\n", file.c_str().AsChar(), strerror(errno));
     } else {
         out << m_data["data"].dump(4);
         out.close();
     }
-    return tmpConfPath;
 }
 
 const json &ServerConfItem::GetJsonObject() const {

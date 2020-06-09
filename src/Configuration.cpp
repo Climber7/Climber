@@ -2,12 +2,12 @@
 // Created by Climber on 2020/6/4.
 //
 
-#include <wx/stdpaths.h>
-#include <wx/filename.h>
 #include <nlohmann/json.hpp>
 #include <fstream>
 #include <sstream>
 #include "Configuration.h"
+#include "ServerConfManager.h"
+#include "Paths.h"
 
 using nlohmann::json;
 
@@ -31,6 +31,14 @@ void Configuration::Init() {
     }
 }
 
+void Configuration::Destroy() {
+    if (s_instance != nullptr) {
+        s_instance->Save();
+        delete s_instance;
+        s_instance = nullptr;
+    }
+}
+
 Configuration &Configuration::GetInstance() {
     return *s_instance;
 }
@@ -43,12 +51,38 @@ wxArrayString Configuration::GetSupportedLanguageNames() {
     return arr;
 }
 
-int Configuration::GetProxyMode() const {
+bool Configuration::GetEnable() const {
+    return m_enable;
+}
+
+void Configuration::SetEnable(bool enable) {
+    m_enable = enable;
+    Save();
+}
+
+const wxString &Configuration::GetProxyMode() const {
     return m_proxyMode;
 }
 
-void Configuration::SetProxyMode(int mode) {
-    m_proxyMode = mode;
+void Configuration::SetProxyMode(const wxString &mode) {
+    if (mode == PROXY_MODE_DIRECT
+        || mode == PROXY_MODE_PAC
+        || mode == PROXY_MODE_GLOBAL) {
+        m_proxyMode = wxString(mode);
+    }
+    Save();
+}
+
+int Configuration::GetSelectedServerIndex() const {
+    return m_selectedServer;
+}
+
+void Configuration::SetSelectedServerIndex(int index) {
+    if (index < 0 || index >= SERVER_CONF_MANAGER.Count()) {
+        m_selectedServer = -1;
+    } else {
+        m_selectedServer = index;
+    }
     Save();
 }
 
@@ -140,9 +174,12 @@ bool Configuration::PortAlreadyInUse(int port) const {
 }
 
 Configuration::Configuration() {
-    InitPath();
+    m_configurationFile = Paths::GetConfigDirFile("config.json");
+    printf("Configuration File: %s\n", m_configurationFile.c_str().AsChar());
+
     InitDefaults();
     Load();
+    InitLanguageSupport();
 }
 
 void Configuration::InitDefaults() {
@@ -151,23 +188,6 @@ void Configuration::InitDefaults() {
     if (IsLanguageSupported(language)) {
         m_language = language;
     }
-}
-
-void Configuration::InitPath() {
-    auto &paths = wxStandardPaths::Get();
-    wxString configurationDir = paths.GetUserLocalDataDir();
-    if (!wxDirExists(configurationDir)) {
-        printf("Configuration dir not exists\n");
-        if (wxMkDir(configurationDir, wxS_DIR_DEFAULT)) {
-            printf("Make configuration failed, %s\n", strerror(errno));
-        }
-    }
-
-    wxFileName file;
-    file.AssignDir(configurationDir);
-    file.SetFullName("Climber.json");
-    m_configurationFile = file.GetFullPath();
-    printf("Configuration File: %s\n", m_configurationFile.c_str().AsChar());
 }
 
 void Configuration::Load() {
@@ -186,17 +206,32 @@ void Configuration::Load() {
 
     auto obj = json::parse(jsonStr);
 
+    if (obj.find("enable") != obj.end()) {
+        m_enable = obj["enable"];
+    }
+
     if (obj.find("proxy_mode") != obj.end()) {
-        int mode = obj["proxy_mode"];
-        if (mode >= PROXY_MODE_DIRECT && mode <= PROXY_MODE_GLOBAL) {
-            m_proxyMode = mode;
+        std::string mode = obj["proxy_mode"];
+        if (mode == PROXY_MODE_DIRECT
+            || mode == PROXY_MODE_PAC
+            || mode == PROXY_MODE_GLOBAL) {
+            m_proxyMode = wxString(mode);
+        }
+    }
+
+    if (obj.find("selected_server") != obj.end()) {
+        int index = obj["selected_server"];
+        if (index < 0 || index >= SERVER_CONF_MANAGER.Count()) {
+            m_selectedServer = -1;
+        } else {
+            m_selectedServer = index;
         }
     }
 
     if (obj.find("language") != obj.end()) {
         std::string language = obj["language"];
         if (IsLanguageSupported(language)) {
-            m_language = language;
+            m_language = wxString(language);
         }
     }
 
@@ -224,7 +259,9 @@ void Configuration::Load() {
 
 void Configuration::Save() {
     json obj;
+    obj["enable"] = m_enable;
     obj["proxy_mode"] = m_proxyMode;
+    obj["selected_server"] = m_selectedServer;
     obj["language"] = m_language;
     obj["auto_start"] = m_autoStart;
     obj["share_on_lan"] = m_shareOnLan;
@@ -238,6 +275,21 @@ void Configuration::Save() {
     }
     out << obj.dump(4) << "\n";
     out.close();
+}
+
+void Configuration::InitLanguageSupport() {
+#ifdef CLIMBER_WINDOWS
+    wxLocale::AddCatalogLookupPathPrefix(Paths::GetLocaleDir());
+#endif
+    wxLocale *locale;
+    int language = GetLanguageCode();
+    if (wxLocale::IsAvailable(language)) {
+        locale = new wxLocale(language);
+        locale->AddCatalog("Climber");
+        printf("Load locale data %s\n", locale->IsOk() ? "ok" : "failed");
+    } else {
+        printf("Language %d not available\n", language);
+    }
 }
 
 bool Configuration::IsLanguageSupported(const wxString &language) {

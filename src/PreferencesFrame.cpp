@@ -7,7 +7,7 @@
 #include "PreferencesFrame.h"
 
 
-#ifdef __APPLE__
+#ifdef CLIMBER_DARWIN
 #define PREFERENCES_FRAME_TITLE _("Preferences")
 #else
 #define PREFERENCES_FRAME_TITLE _("Settings")

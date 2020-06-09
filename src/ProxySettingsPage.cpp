@@ -4,6 +4,7 @@
 
 #include "ProxySettingsPage.h"
 #include "Configuration.h"
+#include "Climber.h"
 
 ProxySettingsPage::ProxySettingsPage(wxWindow *parent, wxWindowID winid)
         : wxPanel(parent, winid) {
@@ -53,7 +54,7 @@ ProxySettingsPage::ProxySettingsPage(wxWindow *parent, wxWindowID winid)
 void ProxySettingsPage::CheckUnsavedChanges() {
     if (!m_hasUnsavedChanges) return;
     wxMessageDialog dlg(this, _("Your have unsaved changes, apply now?"),
-                        wxMessageBoxCaptionStr, wxYES_NO | wxCENTRE);
+                        _("Warning"), wxYES_NO | wxCENTRE);
     dlg.SetYesNoLabels(_("Apply"), _("Cancel"));
     int ret = dlg.ShowModal();
     if (ret == wxID_YES) {
@@ -65,7 +66,7 @@ void ProxySettingsPage::CheckUnsavedChanges() {
 
 void ProxySettingsPage::ApplyProxySettings() {
     if (!m_hasUnsavedChanges) {
-        wxMessageDialog(this, wxString::Format(_("No changes!"), m_socksPort)).ShowModal();
+        wxMessageDialog(this, wxString::Format(_("No changes!"), m_socksPort), _("Information")).ShowModal();
         return;
     }
 
@@ -76,7 +77,8 @@ void ProxySettingsPage::ApplyProxySettings() {
     }
     if (m_socksPort != CONFIGURATION.GetSocksPort()) {
         if (CONFIGURATION.PortAlreadyInUse(m_socksPort)) {
-            wxMessageDialog(this, wxString::Format(_("Port %d already in use!"), m_socksPort)).ShowModal();
+            wxMessageDialog(this, wxString::Format(_("Port %d already in use!"), m_socksPort),
+                            _("Warning")).ShowModal();
         } else {
             CONFIGURATION.SetSocksPort(m_socksPort);
             needRestart = true;
@@ -84,7 +86,7 @@ void ProxySettingsPage::ApplyProxySettings() {
     }
     if (m_httpPort != CONFIGURATION.GetHttpPort()) {
         if (CONFIGURATION.PortAlreadyInUse(m_httpPort)) {
-            wxMessageDialog(this, wxString::Format(_("Port %d already in use!"), m_httpPort)).ShowModal();
+            wxMessageDialog(this, wxString::Format(_("Port %d already in use!"), m_httpPort), _("Warning")).ShowModal();
         } else {
             CONFIGURATION.SetHttpPort(m_httpPort);
             needRestart = true;
@@ -92,7 +94,7 @@ void ProxySettingsPage::ApplyProxySettings() {
     }
     if (m_pacPort != CONFIGURATION.GetPacPort()) {
         if (CONFIGURATION.PortAlreadyInUse(m_pacPort)) {
-            wxMessageDialog(this, wxString::Format(_("Port %d already in use!"), m_pacPort)).ShowModal();
+            wxMessageDialog(this, wxString::Format(_("Port %d already in use!"), m_pacPort), _("Warning")).ShowModal();
         } else {
             CONFIGURATION.SetPacPort(m_pacPort);
             needRestart = true;
@@ -100,7 +102,9 @@ void ProxySettingsPage::ApplyProxySettings() {
     }
 
     if (needRestart) {
-        // TODO restart and reset system proxy
+        if (CLIMBER.IsRunning()) {
+            CLIMBER.Restart();
+        }
     }
 
     m_hasUnsavedChanges = false;

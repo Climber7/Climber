@@ -17,21 +17,27 @@ class ServerConfManager {
 public:
     static void Init();
 
+    static void Destroy();
+
     static ServerConfManager &GetInstance();
 
 private:
-    void InitPath();
-
     void Load();
 
-    void Save();
+//    void Save();
 
 public:
-    const std::vector<ServerConfItem*> &GetServersList();
+    void Reload();
+
+    const std::vector<ServerConfItem *> &GetServersList();
+
+    int Count() const;
+
+    ServerConfItem *Get(int index) const;
 
 private:
     wxString m_serversListFile;
-    std::vector<ServerConfItem*> m_list;
+    std::vector<ServerConfItem *> m_list;
 
 private:
     ServerConfManager();

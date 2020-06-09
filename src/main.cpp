@@ -3,44 +3,41 @@
 //
 
 #include <wx/wx.h>
-#include <wx/stdpaths.h>
-#include <wx/filename.h>
+#include "Climber.h"
 #include "SystemTray.h"
 #include "Configuration.h"
 #include "ServerConfManager.h"
+#include "Paths.h"
 
 class ClimberApp : public wxApp {
 
 public:
     ClimberApp() : wxApp() {}
 
-    bool OnInit() override {
-        KeepEventLoopRunning();
-        Configuration::Init();
-        ServerConfManager::Init();
-        wxInitAllImageHandlers();
-        InitLanguageSupport();
-        SystemTray::Init();
-        // TODO start process and set system proxy
-        return true;
+    ~ClimberApp() override {
+        Climber::Destroy();
+        Configuration::Destroy();
+        ServerConfManager::Destroy();
     }
 
-    static void InitLanguageSupport() {
-#ifdef _WIN32
-        wxFileName prefix;
-        prefix.AssignDir(wxStandardPaths::Get().GetResourcesDir());
-        prefix.AppendDir("locale");
-        wxLocale::AddCatalogLookupPathPrefix(prefix.GetFullPath());
-#endif
-        wxLocale *locale;
-        int language = CONFIGURATION.GetLanguageCode();
-        if (wxLocale::IsAvailable(language)) {
-            locale = new wxLocale(language);
-            locale->AddCatalog("Climber");
-            printf("Load locale data %s\n", locale->IsOk() ? "ok" : "failed");
-        } else {
-            printf("Language %d not available\n", language);
+    bool OnInit() override {
+        if (!Paths::PrepareDirectories()) {
+            return false;
         }
+        KeepEventLoopRunning();
+        wxInitAllImageHandlers();
+
+        ServerConfManager::Init();
+        Configuration::Init();
+        Climber::Init();
+
+        new SystemTray();
+
+        if (CONFIGURATION.GetEnable()) {
+            CLIMBER.Start();
+        }
+
+        return true;
     }
 
     inline static void KeepEventLoopRunning() {

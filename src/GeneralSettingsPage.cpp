@@ -37,7 +37,7 @@ void GeneralSettingsPage::OnChooseLanguage(wxCommandEvent &event) {
         return;
     }
     CONFIGURATION.SetLanguageIndex(index);
-    wxMessageDialog(this, _("Your change will take effect after next start.")).ShowModal();
+    wxMessageDialog(this, _("Your change will take effect after next start."), _("Information")).ShowModal();
 }
 
 void GeneralSettingsPage::OnToggleAutoStart(wxCommandEvent &event) {

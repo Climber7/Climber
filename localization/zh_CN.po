@@ -58,10 +58,16 @@ msgid "About"
 msgstr "关于"
 
 msgid "Climber: Off"
-msgstr "Climber：关闭"
+msgstr "Climber：已关闭"
+
+msgid "Climber: On"
+msgstr "Climber：已开启"
 
 msgid "Start Climber"
 msgstr "开启 Climber"
+
+msgid "Stop Climber"
+msgstr "关闭 Climber"
 
 msgid "Proxy Mode"
 msgstr "代理模式"
@@ -75,9 +81,6 @@ msgstr "PAC 模式"
 msgid "Global Mode"
 msgstr "全局模式"
 
-msgid "Servers Settings..."
-msgstr "服务器设置..."
-
 msgid "Servers Settings"
 msgstr "服务器设置"
 
@@ -87,11 +90,11 @@ msgstr "刷新"
 msgid "Servers"
 msgstr "服务器"
 
-msgid "Preferences..."
-msgstr "偏好设置..."
+msgid "Preferences"
+msgstr "偏好设置"
 
-msgid "Settings..."
-msgstr "设置..."
+msgid "Settings"
+msgstr "设置"
 
 msgid "Copy Terminal Proxy Command"
 msgstr "复制终端代理命令"
@@ -105,35 +108,17 @@ msgstr "For Shell"
 msgid "For CMD"
 msgstr "For CMD"
 
-msgid "Show Log"
-msgstr "显示日志"
+msgid "Open Config Directory"
+msgstr "打开配置目录"
 
-msgid "Show Climber Log"
-msgstr "显示 Climber 日志"
+msgid "Open Log Directory"
+msgstr "打开日志目录"
 
-msgid "Show Shadowsocks Log"
-msgstr "显示 Shadowsocks 日志"
-
-msgid "Show ShadowsocksR Log"
-msgstr "显示 ShadowsocksR 日志"
-
-msgid "Show VMess Log"
-msgstr "显示 VMess 日志"
-
-msgid "Show Trojan Log"
-msgstr "显示 Trojan 日志"
-
-msgid "Check for Updates..."
-msgstr "检查更新..."
+msgid "Check for Updates"
+msgstr "检查更新"
 
 msgid "Quit"
 msgstr "退出"
-
-msgid "Preferences"
-msgstr "偏好设置"
-
-msgid "Settings"
-msgstr "设置"
 
 msgid "General"
 msgstr "常规设置"
@@ -197,3 +182,18 @@ msgstr "新增服务器配置"
 
 msgid "Edit Server"
 msgstr "编辑服务器配置"
+
+msgid "Information"
+msgstr "提示"
+
+msgid "Warning"
+msgstr "警告"
+
+msgid "Error"
+msgstr "错误"
+
+msgid "Can't start Climber, please select a server first."
+msgstr "无法开启 Climber，请先选择一个服务器。"
+
+msgid "Start Climber failed, please check log."
+msgstr "开启 Climber 失败，请检查日志。"

@@ -10,7 +10,7 @@ set(CLIMBER_DESCRIPTION "Yet another cross platform ss/ssr/vmess/trojan GUI clie
 if (WIN32)
     add_compile_options($<$<CXX_COMPILER_ID:MSVC>:/MP>)
     add_link_options($<$<CXX_COMPILER_ID:MSVC>:/INCREMENTAL:NO>)
-endif()
+endif ()
 
 set(wxBUILD_MONOLITHIC ON)
 set(wxBUILD_PRECOMP OFF)
@@ -26,6 +26,8 @@ include_directories(vendor/json/single_include)
 file(GLOB_RECURSE SOURCES src/*.cpp src/*.h)
 
 if (APPLE)
+    add_definitions(-DCLIMBER_DARWIN)
+
     file(MAKE_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/Climber.app/Contents/Resources")
     file(MAKE_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/Climber.app/Contents/Resources/assets")
     file(MAKE_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/Climber.app/Contents/Resources/en.lproj")
@@ -33,6 +35,9 @@ if (APPLE)
     file(MAKE_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/Climber.app/Contents/Resources/zh_TW.lproj")
     configure_file("${CMAKE_CURRENT_SOURCE_DIR}/assets/icon.icns" "${CMAKE_CURRENT_BINARY_DIR}/Climber.app/Contents/Resources/icon.icns" COPYONLY)
     configure_file("${CMAKE_CURRENT_SOURCE_DIR}/assets/icon.png" "${CMAKE_CURRENT_BINARY_DIR}/Climber.app/Contents/Resources/assets/icon.png" COPYONLY)
+    configure_file("${CMAKE_CURRENT_SOURCE_DIR}/assets/privoxy.conf" "${CMAKE_CURRENT_BINARY_DIR}/Climber.app/Contents/Resources/assets/privoxy.conf" COPYONLY)
+    configure_file("${CMAKE_CURRENT_SOURCE_DIR}/assets/bin/darwin/trojan" "${CMAKE_CURRENT_BINARY_DIR}/Climber.app/Contents/Resources/assets/bin/trojan" COPYONLY)
+    configure_file("${CMAKE_CURRENT_SOURCE_DIR}/assets/bin/darwin/privoxy" "${CMAKE_CURRENT_BINARY_DIR}/Climber.app/Contents/Resources/assets/bin/privoxy" COPYONLY)
 
 
     set(MSGFMT_EXECUTABLE "${CMAKE_CURRENT_SOURCE_DIR}/tools/darwin/msgfmt")
@@ -56,8 +61,9 @@ if (APPLE)
     )
 
 elseif (WIN32)
-    set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/Climber")
+    add_definitions(-DCLIMBER_WINDOWS)
 
+    set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/Climber")
 
     string(REPLACE "." "," CLIMBER_VERSION2 "${CLIMBER_VERSION}")
     configure_file("${CMAKE_CURRENT_SOURCE_DIR}/assets/icon.ico" "${CMAKE_CURRENT_BINARY_DIR}/icon.ico" COPYONLY)
@@ -68,6 +74,11 @@ elseif (WIN32)
     file(MAKE_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/Climber/locale/zh_CN")
     file(MAKE_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/Climber/locale/zh_TW")
     configure_file("${CMAKE_CURRENT_SOURCE_DIR}/assets/icon.png" "${CMAKE_CURRENT_BINARY_DIR}/Climber/assets/icon.png" COPYONLY)
+    configure_file("${CMAKE_CURRENT_SOURCE_DIR}/assets/privoxy.conf" "${CMAKE_CURRENT_BINARY_DIR}/Climber/assets/privoxy.conf" COPYONLY)
+    configure_file("${CMAKE_CURRENT_SOURCE_DIR}/assets/bin/win32/trojan.exe" "${CMAKE_CURRENT_BINARY_DIR}/Climber/assets/bin/trojan.exe" COPYONLY)
+    configure_file("${CMAKE_CURRENT_SOURCE_DIR}/assets/bin/win32/privoxy.exe" "${CMAKE_CURRENT_BINARY_DIR}/Climber/assets/bin/privoxy.exe" COPYONLY)
+    configure_file("${CMAKE_CURRENT_SOURCE_DIR}/assets/bin/win32/sysproxy.exe" "${CMAKE_CURRENT_BINARY_DIR}/Climber/assets/bin/sysproxy.exe" COPYONLY)
+    configure_file("${CMAKE_CURRENT_SOURCE_DIR}/assets/bin/win32/libsscrypto.dll" "${CMAKE_CURRENT_BINARY_DIR}/Climber/assets/bin/libsscrypto.dll" COPYONLY)
 
     set(MSGFMT_EXECUTABLE "${CMAKE_CURRENT_SOURCE_DIR}/tools/win32/msgfmt.exe")
 
@@ -79,6 +90,11 @@ elseif (WIN32)
             COMMAND "${MSGFMT_EXECUTABLE}" "${CMAKE_CURRENT_SOURCE_DIR}/localization/zh_CN.po" -o "${CMAKE_CURRENT_BINARY_DIR}/Climber/locale/zh_CN/Climber.mo"
             COMMAND "${MSGFMT_EXECUTABLE}" "${CMAKE_CURRENT_SOURCE_DIR}/localization/zh_TW.po" -o "${CMAKE_CURRENT_BINARY_DIR}/Climber/locale/zh_TW/Climber.mo"
     )
+
+elseif (UNIX AND NOT APPLE)
+    add_definitions(-DCLIMBER_LINUX)
+
+    message(FATAL_ERROR "Linux is not supported yet")
 
 else ()
 

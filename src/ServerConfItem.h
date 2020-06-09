@@ -23,7 +23,7 @@ public:
 
     wxString GetTypeName() const;
 
-    wxString WriteToTmp() const;
+    void WriteTo(const wxString &file) const;
 
     const json &GetJsonObject() const;
 

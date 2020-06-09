@@ -11,15 +11,9 @@
 #include "defs.h"
 #include "AboutFrame.h"
 #include "PreferencesFrame.h"
-//#include "ServersSettingsFrame.h"
-
-#define SYSTRAY  (SystemTray::GetInstance())
+#include "ServersSettingsFrame.h"
 
 class SystemTray : public wxTaskBarIcon {
-public:
-    static void Init();
-
-    static SystemTray &GetInstance();
 
 public:
     SystemTray();
@@ -27,18 +21,32 @@ public:
 protected:
     wxMenu *CreatePopupMenu() override;
 
+    wxMenu *CreateProxyModeMenu();
+
+    wxMenu *CreatePacModeMenu();
+
+    wxMenu *CreateServersListMenu();
+
+    wxMenu *CreateCopyCommandMenu();
+
 private:
+    void OnToggleClimber(wxCommandEvent &event);
+
     void OnSelectDirectProxyMode(wxCommandEvent &event);
 
     void OnSelectPacProxyMode(wxCommandEvent &event);
 
     void OnSelectGlobalProxyMode(wxCommandEvent &event);
 
-//    void OnShowServersSettings(wxCommandEvent &event);
+    void OnShowServersSettings(wxCommandEvent &event);
 
     void OnRefreshServers(wxCommandEvent &event);
 
     void OnShowPreferencesFrame(wxCommandEvent &event);
+
+    void OnOpenConfigDirectory(wxCommandEvent &event);
+
+    void OnOpenLogDirectory(wxCommandEvent &event);
 
     void OnShowAboutFrame(wxCommandEvent &event);
 
@@ -46,33 +54,12 @@ private:
 
 private:
     wxMenu *m_taskBarMenu = nullptr;
-    wxMenu *m_serverListMenu = nullptr;
-
-private:
-    wxMenuItem *m_statusMenuItem = nullptr;
-    wxMenuItem *m_toggleMenuItem = nullptr;
-
-    wxMenuItem *m_proxyDirectModeMenuItem = nullptr;
-    wxMenuItem *m_proxyPacModeMenuItem = nullptr;
-    wxMenuItem *m_proxyGlobalModeMenuItem = nullptr;
-
-    wxMenuItem *m_showShadowsocksLogMenuItem = nullptr;
-    wxMenuItem *m_showShadowsocksRLogMenuItem = nullptr;
-    wxMenuItem *m_showVMessLogMenuItem = nullptr;
-    wxMenuItem *m_showTrojanLogMenuItem = nullptr;
-
     std::vector<wxMenuItem *> m_serverMenuItemList;
 
 private:
     AboutFrame *m_aboutFrame = nullptr;
     PreferencesFrame *m_preferencesFrame = nullptr;
-//    ServersSettingsFrame *m_serversSettingsFrame = nullptr;
-
-private:
-    int m_proxyMode = DEFAULT_PROXY_MODE;
-
-private:
-    static SystemTray *s_instance;
+    ServersSettingsFrame *m_serversSettingsFrame = nullptr;
 
 DECLARE_EVENT_TABLE()
 
