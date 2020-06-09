@@ -10,14 +10,12 @@
 #include "defs.h"
 #include "GeneralSettingsPage.h"
 #include "ProxySettingsPage.h"
-#include "ServersSettingsPage.h"
 
 enum {
     SETTINGS_PAGE_START = -1,
     //
     GENERAL_SETTINGS_PAGE_INDEX = 0,
     PROXY_SETTINGS_PAGE_INDEX,
-    SERVERS_SETTINGS_PAGE_INDEX,
     //
     SETTINGS_PAGE_END,
 };
@@ -25,8 +23,6 @@ enum {
 class PreferencesFrame : public wxFrame {
 public:
     PreferencesFrame(wxWindow *parent, wxWindowID winid);
-
-    void ShowWithTab(int index = 0);
 
 private:
     void AddPages();
@@ -37,7 +33,6 @@ private:
     wxNotebook *m_mainTab = nullptr;
     GeneralSettingsPage *m_generalSettingsPage = nullptr;
     ProxySettingsPage *m_proxySettingsPage = nullptr;
-    ServersSettingsPage *m_serversSettingsPage = nullptr;
 
 DECLARE_EVENT_TABLE()
 

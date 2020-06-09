@@ -11,7 +11,7 @@
 
 class ProxySettingsPage : public wxPanel {
 public:
-    ProxySettingsPage(wxWindow *parent, wxWindowID winid = wxID_ANY);
+    explicit ProxySettingsPage(wxWindow *parent, wxWindowID winid = wxID_ANY);
 
     void CheckUnsavedChanges();
 

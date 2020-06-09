@@ -75,17 +75,14 @@ msgstr "PAC 模式"
 msgid "Global Mode"
 msgstr "全局模式"
 
-msgid "Scan QR Code on Screen"
-msgstr "扫描屏幕上的二维码"
-
-msgid "Import from Url"
-msgstr "从链接导入"
-
-msgid "Share Current Server"
-msgstr "共享当前服务器配置"
-
 msgid "Servers Settings..."
 msgstr "服务器设置..."
+
+msgid "Servers Settings"
+msgstr "服务器设置"
+
+msgid "Refresh"
+msgstr "刷新"
 
 msgid "Servers"
 msgstr "服务器"
@@ -99,11 +96,11 @@ msgstr "设置..."
 msgid "Copy Terminal Proxy Command"
 msgstr "复制终端代理命令"
 
-msgid "For Shell"
-msgstr "For Shell"
-
 msgid "For Bash"
 msgstr "For Bash"
+
+msgid "For Shell"
+msgstr "For Shell"
 
 msgid "For CMD"
 msgstr "For CMD"

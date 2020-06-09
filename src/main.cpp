@@ -7,6 +7,7 @@
 #include <wx/filename.h>
 #include "SystemTray.h"
 #include "Configuration.h"
+#include "ServerConfManager.h"
 
 class ClimberApp : public wxApp {
 
@@ -14,9 +15,10 @@ public:
     ClimberApp() : wxApp() {}
 
     bool OnInit() override {
-        Configuration::Init();
-        wxInitAllImageHandlers();
         KeepEventLoopRunning();
+        Configuration::Init();
+        ServerConfManager::Init();
+        wxInitAllImageHandlers();
         InitLanguageSupport();
         SystemTray::Init();
         // TODO start process and set system proxy

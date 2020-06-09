@@ -15,7 +15,7 @@
 
 PreferencesFrame::PreferencesFrame(wxWindow *parent, wxWindowID winid)
         : wxFrame(parent, winid, PREFERENCES_FRAME_TITLE, wxDefaultPosition, wxSize(600, 400),
-                  wxSYSTEM_MENU | wxCLOSE_BOX | wxCAPTION | wxSTAY_ON_TOP) {
+                  wxSYSTEM_MENU | wxCLOSE_BOX | wxCAPTION) {
     this->SetBackgroundColour(*wxWHITE);
     auto *sizer = new wxBoxSizer(wxVERTICAL);
     m_mainTab = new wxNotebook(this, ID_PREFERENCES_MAIN_TAB);
@@ -29,17 +29,9 @@ PreferencesFrame::PreferencesFrame(wxWindow *parent, wxWindowID winid)
     this->Centre(wxBOTH);
 }
 
-void PreferencesFrame::ShowWithTab(int index) {
-    if (index > SETTINGS_PAGE_START && index < SETTINGS_PAGE_END) {
-        m_mainTab->ChangeSelection(index);
-    }
-    wxFrame::Show();
-}
-
 void PreferencesFrame::AddPages() {
     m_generalSettingsPage = new GeneralSettingsPage(m_mainTab);
     m_proxySettingsPage = new ProxySettingsPage(m_mainTab);
-    m_serversSettingsPage = new ServersSettingsPage(m_mainTab);
 
     for (int i = SETTINGS_PAGE_START + 1; i < SETTINGS_PAGE_END; ++i) {
         switch (i) {
@@ -48,9 +40,6 @@ void PreferencesFrame::AddPages() {
                 break;
             case PROXY_SETTINGS_PAGE_INDEX:
                 m_mainTab->AddPage(m_proxySettingsPage, _("Proxy"));
-                break;
-            case SERVERS_SETTINGS_PAGE_INDEX:
-                m_mainTab->AddPage(m_serversSettingsPage, _("Server"));
                 break;
             default:
                 break;

@@ -21,8 +21,6 @@ public:
     static wxArrayString GetSupportedLanguageNames();
 
 public:
-    Configuration();
-
     int GetProxyMode() const;
 
     void SetProxyMode(int mode);
@@ -62,7 +60,9 @@ public:
     bool PortAlreadyInUse(int port) const;
 
 private:
-    void InitPaths();
+    Configuration();
+
+    void InitPath();
 
     void InitDefaults();
 
@@ -76,7 +76,6 @@ private:
     static int LanguageNameToCode(const wxString &language);
 
 private:
-    wxString m_configurationDir;
     wxString m_configurationFile;
 
 private:

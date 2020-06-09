@@ -10,7 +10,7 @@
 
 class GeneralSettingsPage : public wxPanel {
 public:
-    GeneralSettingsPage(wxWindow *parent, wxWindowID winid = wxID_ANY);
+    explicit GeneralSettingsPage(wxWindow *parent, wxWindowID winid = wxID_ANY);
 
 private:
     void OnChooseLanguage(wxCommandEvent &event);

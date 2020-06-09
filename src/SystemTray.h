@@ -11,6 +11,7 @@
 #include "defs.h"
 #include "AboutFrame.h"
 #include "PreferencesFrame.h"
+//#include "ServersSettingsFrame.h"
 
 #define SYSTRAY  (SystemTray::GetInstance())
 
@@ -33,17 +34,15 @@ private:
 
     void OnSelectGlobalProxyMode(wxCommandEvent &event);
 
-    void OnShowServersSettings(wxCommandEvent &event);
+//    void OnShowServersSettings(wxCommandEvent &event);
 
-    void OnShowAboutFrame(wxCommandEvent &event);
+    void OnRefreshServers(wxCommandEvent &event);
 
     void OnShowPreferencesFrame(wxCommandEvent &event);
 
+    void OnShowAboutFrame(wxCommandEvent &event);
+
     void OnQuit(wxCommandEvent &event);
-
-    void OnPreferencesFrameClose(wxCloseEvent &event);
-
-    void OnAboutFrameClose(wxCloseEvent &event);
 
 private:
     wxMenu *m_taskBarMenu = nullptr;
@@ -67,6 +66,7 @@ private:
 private:
     AboutFrame *m_aboutFrame = nullptr;
     PreferencesFrame *m_preferencesFrame = nullptr;
+//    ServersSettingsFrame *m_serversSettingsFrame = nullptr;
 
 private:
     int m_proxyMode = DEFAULT_PROXY_MODE;

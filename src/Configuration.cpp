@@ -23,7 +23,6 @@ wxString Configuration::s_supportedLanguageNames[] = {
         wxT("English (US)"),
         wxT("中文 (简体)"),
         wxT("中文 (中國台灣)"),
-
 };
 
 void Configuration::Init() {
@@ -42,12 +41,6 @@ wxArrayString Configuration::GetSupportedLanguageNames() {
         arr.Add(l);
     }
     return arr;
-}
-
-Configuration::Configuration() {
-    InitPaths();
-    InitDefaults();
-    Load();
 }
 
 int Configuration::GetProxyMode() const {
@@ -146,6 +139,12 @@ bool Configuration::PortAlreadyInUse(int port) const {
            || m_pacPort == port;
 }
 
+Configuration::Configuration() {
+    InitPath();
+    InitDefaults();
+    Load();
+}
+
 void Configuration::InitDefaults() {
     int languageCode = wxLocale::GetSystemLanguage();
     wxString language = wxLocale::GetLanguageCanonicalName(languageCode).ToStdString();
@@ -154,26 +153,21 @@ void Configuration::InitDefaults() {
     }
 }
 
-void Configuration::InitPaths() {
-    {
-        auto &paths = wxStandardPaths::Get();
-        m_configurationDir = paths.GetUserLocalDataDir();
-        if (!wxDirExists(m_configurationDir)) {
-            printf("Configuration dir not exists\n");
-            if (wxMkDir(m_configurationDir, wxS_DIR_DEFAULT)) {
-                printf("Make configuration failed, %s\n", strerror(errno));
-            }
+void Configuration::InitPath() {
+    auto &paths = wxStandardPaths::Get();
+    wxString configurationDir = paths.GetUserLocalDataDir();
+    if (!wxDirExists(configurationDir)) {
+        printf("Configuration dir not exists\n");
+        if (wxMkDir(configurationDir, wxS_DIR_DEFAULT)) {
+            printf("Make configuration failed, %s\n", strerror(errno));
         }
-        printf("Configuration Dir: %s\n", m_configurationDir.c_str().AsChar());
     }
 
-    {
-        wxFileName file;
-        file.AssignDir(m_configurationDir);
-        file.SetFullName("Climber.json");
-        m_configurationFile = file.GetFullPath();
-        printf("Configuration File: %s\n", m_configurationFile.c_str().AsChar());
-    }
+    wxFileName file;
+    file.AssignDir(configurationDir);
+    file.SetFullName("Climber.json");
+    m_configurationFile = file.GetFullPath();
+    printf("Configuration File: %s\n", m_configurationFile.c_str().AsChar());
 }
 
 void Configuration::Load() {
@@ -194,7 +188,7 @@ void Configuration::Load() {
 
     if (obj.find("proxy_mode") != obj.end()) {
         int mode = obj["proxy_mode"];
-        if (mode >= DIRECT_PROXY_MODE && mode <= GLOBAL_PROXY_MODE) {
+        if (mode >= PROXY_MODE_DIRECT && mode <= PROXY_MODE_GLOBAL) {
             m_proxyMode = mode;
         }
     }
