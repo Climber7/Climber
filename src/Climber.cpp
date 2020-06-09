@@ -124,7 +124,9 @@ void Climber::StartPrivoxy() {
 
     int randNum = abs(rand());
     m_privoxyTmpConfigFile = Paths::GetTmpDirFile(wxString::Format("privoxy_%d.conf", randNum));
+#ifndef CLIMBER_WINDOWS
     m_privoxyPidFile = Paths::GetTmpDirFile(wxString::Format("privoxy_%d.pid", randNum));
+#endif
     m_privoxyLogFile = Paths::GetLogDirFile(wxString::Format("privoxy_%d.log", randNum));
     auto privoxyConfigTplFile = Paths::GetAssetsDirFile("privoxy.conf");
     std::ifstream in(privoxyConfigTplFile.ToStdString(), std::ios::in);
@@ -148,35 +150,51 @@ void Climber::StartPrivoxy() {
     out.close();
 
 #ifdef CLIMBER_WINDOWS
-    auto privoxy = Paths::GetBinDirFile("privoxy.exe");
+    auto privoxy = Paths::GetBinDirFile("climber_privoxy.exe");
+    wxExecute(
+            wxString::Format("\"%s\" \"%s\"", privoxy, m_privoxyTmpConfigFile),
+            wxEXEC_ASYNC | wxEXEC_HIDE_CONSOLE);
 #endif
 #ifdef CLIMBER_DARWIN
     auto privoxy = Paths::GetBinDirFile("privoxy");
-#endif
     wxExecute(
             wxString::Format("\"%s\" --pidfile \"%s\" \"%s\"", privoxy, m_privoxyPidFile, m_privoxyTmpConfigFile),
             wxEXEC_ASYNC | wxEXEC_HIDE_CONSOLE);
+#endif
 }
 
 void Climber::StopPrivoxy() {
+#ifndef CLIMBER_WINDOWS
     long privoxyPid = GetPrivoxyPid();
     if (privoxyPid == 0) return;
+#endif
+
+#ifdef CLIMBER_WINDOWS
+    wxExecute("taskkill /f /im climber_privoxy.exe", wxEXEC_BLOCK | wxEXEC_HIDE_CONSOLE);
+#else
     // wxKill not work, don't know why
     killProcess(privoxyPid);
+#endif
+
     if (wxFileExists(m_privoxyTmpConfigFile)) {
         wxRemoveFile(m_privoxyTmpConfigFile);
     }
+    m_privoxyTmpConfigFile = wxEmptyString;
+
     if (wxFileExists(m_privoxyLogFile)) {
         wxRemoveFile(m_privoxyLogFile);
     }
+    m_privoxyLogFile = wxEmptyString;
+
+#ifndef CLIMBER_WINDOWS
     if (wxFileExists(m_privoxyPidFile)) {
         wxRemoveFile(m_privoxyPidFile);
     }
-    m_privoxyTmpConfigFile = wxEmptyString;
-    m_privoxyLogFile = wxEmptyString;
     m_privoxyPidFile = wxEmptyString;
+#endif
 }
 
+#ifndef CLIMBER_WINDOWS
 long Climber::GetPrivoxyPid() {
     if (m_privoxyPidFile.empty()) {
         return 0;
@@ -190,6 +208,7 @@ long Climber::GetPrivoxyPid() {
     in.close();
     return std::strtol(ss.str().c_str(), nullptr, 10);
 }
+#endif
 
 void Climber::RunTrojan(ServerConfItem *conf) {
     int randNum = abs(rand());

@@ -76,7 +76,7 @@ elseif (WIN32)
     configure_file("${CMAKE_CURRENT_SOURCE_DIR}/assets/icon.png" "${CMAKE_CURRENT_BINARY_DIR}/Climber/assets/icon.png" COPYONLY)
     configure_file("${CMAKE_CURRENT_SOURCE_DIR}/assets/privoxy.conf" "${CMAKE_CURRENT_BINARY_DIR}/Climber/assets/privoxy.conf" COPYONLY)
     configure_file("${CMAKE_CURRENT_SOURCE_DIR}/assets/bin/win32/trojan.exe" "${CMAKE_CURRENT_BINARY_DIR}/Climber/assets/bin/trojan.exe" COPYONLY)
-    configure_file("${CMAKE_CURRENT_SOURCE_DIR}/assets/bin/win32/privoxy.exe" "${CMAKE_CURRENT_BINARY_DIR}/Climber/assets/bin/privoxy.exe" COPYONLY)
+    configure_file("${CMAKE_CURRENT_SOURCE_DIR}/assets/bin/win32/climber_privoxy.exe" "${CMAKE_CURRENT_BINARY_DIR}/Climber/assets/bin/climber_privoxy.exe" COPYONLY)
     configure_file("${CMAKE_CURRENT_SOURCE_DIR}/assets/bin/win32/sysproxy.exe" "${CMAKE_CURRENT_BINARY_DIR}/Climber/assets/bin/sysproxy.exe" COPYONLY)
     configure_file("${CMAKE_CURRENT_SOURCE_DIR}/assets/bin/win32/libsscrypto.dll" "${CMAKE_CURRENT_BINARY_DIR}/Climber/assets/bin/libsscrypto.dll" COPYONLY)
 

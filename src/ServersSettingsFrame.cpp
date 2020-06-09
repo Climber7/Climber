@@ -50,7 +50,7 @@ void ServersSettingsFrame::AddRow(const wxVector<wxVariant> &rowData) {
 }
 
 void ServersSettingsFrame::UpdateRow(int row, const wxVector<wxVariant> &rowData) {
-    for (int i = 0; i < rowData.size(); ++i) {
+    for (unsigned int i = 0; i < rowData.size(); ++i) {
         m_dataView->SetValue(rowData[i], row, i);
     }
 }

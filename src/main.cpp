@@ -14,12 +14,6 @@ class ClimberApp : public wxApp {
 public:
     ClimberApp() : wxApp() {}
 
-    ~ClimberApp() override {
-        Climber::Destroy();
-        Configuration::Destroy();
-        ServerConfManager::Destroy();
-    }
-
     bool OnInit() override {
         if (!Paths::PrepareDirectories()) {
             return false;
@@ -38,6 +32,13 @@ public:
         }
 
         return true;
+    }
+
+    int OnExit() override {
+        Climber::Destroy();
+        Configuration::Destroy();
+        ServerConfManager::Destroy();
+        return 0;
     }
 
     inline static void KeepEventLoopRunning() {

@@ -25,13 +25,13 @@ static inline void openDirectory(const wxString &dir) {
 
 static inline void killProcess(long pid) {
 #ifdef CLIMBER_WINDOWS
-    system(wxString::Format("taskkill /f /pid %ld", pid).c_str().AsChar());
+    wxExecute(wxString::Format("taskkill /f /pid %ld", pid), wxEXEC_BLOCK | wxEXEC_HIDE_CONSOLE);
 #endif
 #ifdef CLIMBER_DARWIN
-    system(wxString::Format("kill %ld", pid).c_str().AsChar());
+    wxExecute(wxString::Format("kill %ld", pid), wxEXEC_BLOCK | wxEXEC_HIDE_CONSOLE);
 #endif
 #ifdef CLIMBER_LINUX
-    system(wxString::Format("kill %ld", pid).c_str().AsChar());
+    wxExecute(wxString::Format("kill %ld", pid), wxEXEC_BLOCK | wxEXEC_HIDE_CONSOLE);
 #endif
 }
 

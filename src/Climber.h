@@ -43,7 +43,9 @@ private:
 
     void StopPrivoxy();
 
+#ifndef CLIMBER_WINDOWS
     long GetPrivoxyPid();
+#endif
 
     void RunTrojan(ServerConfItem *conf);
 
@@ -55,7 +57,9 @@ private:
 
     wxString m_privoxyTmpConfigFile = wxEmptyString;
     wxString m_privoxyLogFile = wxEmptyString;
+#ifndef CLIMBER_WINDOWS
     wxString m_privoxyPidFile = wxEmptyString;
+#endif
 
 };
 

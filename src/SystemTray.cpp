@@ -124,8 +124,10 @@ wxMenu *SystemTray::CreateCopyCommandMenu() {
 void SystemTray::OnToggleClimber(wxCommandEvent &event) {
     if (CLIMBER.IsRunning()) {
         CLIMBER.Stop();
+        CONFIGURATION.SetEnable(false);
     } else {
         CLIMBER.Start();
+        CONFIGURATION.SetEnable(true);
     }
     m_taskBarMenu->FindItem(ID_MENU_STATUS)->SetItemLabel(CLIMBER.IsRunning() ? _("Climber: On") : _("Climber: Off"));
     m_taskBarMenu->FindItem(ID_MENU_TOGGLE)->SetItemLabel(CLIMBER.IsRunning() ? _("Stop Climber") : _("Start Climber"));
