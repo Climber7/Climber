@@ -4,6 +4,7 @@
 
 #include "GeneralSettingsPage.h"
 #include "Configuration.h"
+#include "utils.h"
 
 GeneralSettingsPage::GeneralSettingsPage(wxWindow *parent, wxWindowID winid)
         : wxPanel(parent, winid) {
@@ -46,7 +47,7 @@ void GeneralSettingsPage::OnToggleAutoStart(wxCommandEvent &event) {
         return;
     }
     CONFIGURATION.SetAutoStart(autoStart);
-    // TODO set auto start
+    setAutoStart(autoStart);
 }
 
 BEGIN_EVENT_TABLE(GeneralSettingsPage, wxPanel)

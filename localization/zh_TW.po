@@ -197,3 +197,6 @@ msgstr "無法開啟 Climber，請先選擇一個服務器。"
 
 msgid "Start Climber failed, please check log."
 msgstr "開啟 Climber 失敗，請檢查日誌。"
+
+msgid "Another program instance is already running, aborting."
+msgstr "已經有一個實例正在運行！"

@@ -3,11 +3,10 @@
 //
 
 #include <nlohmann/json.hpp>
-#include <fstream>
-#include <sstream>
 #include "Configuration.h"
 #include "ServerConfManager.h"
 #include "Paths.h"
+#include "utils.h"
 
 using nlohmann::json;
 
@@ -191,15 +190,7 @@ void Configuration::InitDefaults() {
 }
 
 void Configuration::Load() {
-    std::ifstream in(m_configurationFile.ToStdString(), std::ios::in);
-    if (!in.is_open()) {
-        return;
-    }
-    std::stringstream ss;
-    ss << in.rdbuf();
-    in.close();
-
-    std::string jsonStr = ss.str();
+    std::string jsonStr = readTextFile(m_configurationFile).ToStdString();
     if (jsonStr.empty()) {
         return;
     }
@@ -268,14 +259,7 @@ void Configuration::Save() {
     obj["socks_port"] = m_socksPort;
     obj["http_port"] = m_httpPort;
     obj["pac_port"] = m_pacPort;
-    std::ofstream out(m_configurationFile.ToStdString(), std::ios::out);
-    if (!out.is_open()) {
-        wxMessageDialog(nullptr, wxString::Format("Open file \"%s\" failed!", m_configurationFile), _("Error"))
-                .ShowModal();
-        return;
-    }
-    out << obj.dump(4) << "\n";
-    out.close();
+    writeTextFile(m_configurationFile, wxString(obj.dump(4)));
 }
 
 void Configuration::InitLanguageSupport() {

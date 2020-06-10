@@ -11,6 +11,14 @@
 
 class Paths {
 public:
+    static wxString GetExecutablePath() {
+        return wxStandardPaths::Get().GetExecutablePath();
+    }
+
+    static wxString GetHomePath() {
+        return wxGetHomeDir();
+    }
+
     static wxString GetDataDir() {
 #ifdef CLIMBER_WINDOWS
         return wxStandardPaths::Get().GetResourcesDir();

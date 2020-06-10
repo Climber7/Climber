@@ -10,6 +10,7 @@
 #include "Configuration.h"
 #include "ServerConfManager.h"
 #include "Paths.h"
+#include "utils.h"
 
 void signalHandler(int sig) {
     if (sig == SIGINT || sig == SIGTERM) {
@@ -17,6 +18,40 @@ void signalHandler(int sig) {
         wxExit();
     }
 }
+
+class SingleInstanceChecker {
+public:
+    SingleInstanceChecker() {
+        m_pidFile = Paths::GetTmpDirFile("Climber.pid");
+        if (wxFileExists(m_pidFile)) {
+            auto pidStr = readTextFile(m_pidFile);
+            if (!pidStr.empty()) {
+                long pid = std::strtol(pidStr.c_str().AsChar(), nullptr, 10);
+                if (wxProcess::Exists(pid)) {
+                    m_isAnotherRunning = true;
+                }
+            }
+        }
+
+        if (!m_isAnotherRunning) {
+            writeTextFile(m_pidFile, wxString::Format("%lu", wxGetProcessId()));
+        }
+    }
+
+    ~SingleInstanceChecker() {
+        if (wxFileExists(m_pidFile)) {
+            wxRemoveFile(m_pidFile);
+        }
+    }
+
+    inline bool IsAnotherRunning() const {
+        return m_isAnotherRunning;
+    }
+
+private:
+    wxString m_pidFile = wxEmptyString;
+    bool m_isAnotherRunning = false;
+};
 
 class ClimberApp : public wxApp {
 
@@ -30,6 +65,14 @@ public:
         if (!Paths::PrepareDirectories()) {
             return false;
         }
+
+        m_checker = new SingleInstanceChecker();
+        if (m_checker->IsAnotherRunning()) {
+            wxMessageDialog(nullptr, _("Another program instance is already running, aborting."), _("Warning"))
+                    .ShowModal();
+            return false;
+        }
+
         KeepEventLoopRunning();
         wxInitAllImageHandlers();
 
@@ -54,6 +97,7 @@ public:
         Configuration::Destroy();
         ServerConfManager::Destroy();
         DestroyLogger();
+        delete m_checker;
         return 0;
     }
 
@@ -61,7 +105,8 @@ public:
         m_climberLogFile = Paths::GetLogDirFile("climber.log");
         m_logStream.open(m_climberLogFile.ToStdString(), std::ios::out | std::ios::app);
         if (!m_logStream.is_open()) {
-            wxMessageDialog(nullptr, wxString::Format("Open file \"%s\" failed!", m_climberLogFile), _("Error"))
+            wxMessageDialog(nullptr, wxString::Format("Open file \"%s\" failed! %s", m_climberLogFile, strerror(errno)),
+                            _("Error"))
                     .ShowModal();
             return false;
         }
@@ -85,6 +130,7 @@ public:
 private:
     wxString m_climberLogFile = wxEmptyString;
     std::ofstream m_logStream;
+    SingleInstanceChecker *m_checker;
 
 };
 

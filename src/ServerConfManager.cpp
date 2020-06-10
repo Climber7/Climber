@@ -2,10 +2,9 @@
 // Created by Climber on 2020/6/8.
 //
 
-#include <fstream>
-#include <sstream>
 #include "ServerConfManager.h"
 #include "Paths.h"
+#include "utils.h"
 #include "impl/ShadowsocksConfItem.h"
 #include "impl/TrojanConfItem.h"
 
@@ -36,15 +35,7 @@ ServerConfManager::ServerConfManager() {
 }
 
 void ServerConfManager::Load() {
-    std::ifstream in(m_serversListFile.ToStdString(), std::ios::in);
-    if (!in.is_open()) {
-        return;
-    }
-    std::stringstream ss;
-    ss << in.rdbuf();
-    in.close();
-
-    std::string jsonStr = ss.str();
+    std::string jsonStr = readTextFile(m_serversListFile).ToStdString();
     if (jsonStr.empty()) {
         return;
     }
@@ -80,14 +71,7 @@ void ServerConfManager::Reload() {
 //    for (auto &item : m_list) {
 //        list.push_back(item->GetJsonObject());
 //    }
-//    std::ofstream out(m_serversListFile.ToStdString(), std::ios::out);
-//    if (!out.is_open()) {
-//        wxMessageDialog(nullptr, wxString::Format("Open file \"%s\" failed!", m_serversListFile), _("Error"))
-//                .ShowModal();
-//        return;
-//    }
-//    out << list.dump(4) << "\n";
-//    out.close();
+//    writeTextFile(m_serversListFile, wxString(list.dump(4)));
 //}
 
 const std::vector<ServerConfItem *> &ServerConfManager::GetServersList() {

@@ -6,6 +6,7 @@
 #include <fstream>
 #include "ServerConfItem.h"
 #include "Paths.h"
+#include "utils.h"
 
 ServerConfItem::ServerConfItem(json obj) : m_data(std::move(obj)) {
     std::string name = m_data["name"];
@@ -31,15 +32,8 @@ json ServerConfItem::OverrideLocalHost(const wxString &localAddr, int localPort)
 }
 
 void ServerConfItem::WriteTo(const wxString &file, const wxString &localAddr, int localPort) const {
-    std::ofstream out(file.ToStdString(), std::ios::out);
-    if (!out.is_open()) {
-        wxMessageDialog(nullptr, wxString::Format("Open file \"%s\" failed!", file), _("Error"))
-                .ShowModal();
-    } else {
-        auto data = OverrideLocalHost(localAddr, localPort);
-        out << data["data"].dump(4);
-        out.close();
-    }
+    auto data = OverrideLocalHost(localAddr, localPort);
+    writeTextFile(file, wxString(data["data"].dump(4)));
 }
 
 const json &ServerConfItem::GetJsonObject() const {

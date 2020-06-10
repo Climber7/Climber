@@ -142,27 +142,13 @@ void Climber::RunPrivoxy() {
     auto privoxyTmpConfigFile = Paths::GetTmpDirFile("privoxy.conf");
     auto privoxyLogFile = Paths::GetLogDirFile("privoxy.log");
     auto privoxyConfigTplFile = Paths::GetAssetsDirFile("privoxy.conf");
-    std::ifstream in(privoxyConfigTplFile.ToStdString(), std::ios::in);
-    if (!in.is_open()) {
-        wxMessageDialog(nullptr, wxString::Format("Open file \"%s\" failed!", privoxyConfigTplFile), _("Error"))
-                .ShowModal();
-    }
-    std::stringstream ss;
-    ss << in.rdbuf();
-    in.close();
-    auto config = wxString(ss.str());
+    auto config = readTextFile(privoxyConfigTplFile);
     config.Replace("__PRIVOXY_BIND_IP__", CONFIGURATION.GetShareOnLan() ? "0.0.0.0" : "127.0.0.1");
     config.Replace("__PRIVOXY_BIND_PORT__", wxString::Format("%d", CONFIGURATION.GetHttpPort()));
     config.Replace("__PRIVOXY_LOG_FILE__", privoxyLogFile);
     config.Replace("__SOCKS_HOST__", "127.0.0.1");
     config.Replace("__SOCKS_PORT__", wxString::Format("%d", CONFIGURATION.GetSocksPort()));
-    std::ofstream out(privoxyTmpConfigFile.ToStdString(), std::ios::out);
-    if (!out.is_open()) {
-        wxMessageDialog(nullptr, wxString::Format("Open file \"%s\" failed!", privoxyTmpConfigFile), _("Error"))
-                .ShowModal();
-    }
-    out << config.ToStdString();
-    out.close();
+    writeTextFile(privoxyTmpConfigFile, config);
 
     auto privoxy = Paths::GetBinDirFile(CLIMBER_PRIVOXY);
     wxExecute(wxString::Format("\"%s\" \"%s\"", privoxy, privoxyTmpConfigFile),
