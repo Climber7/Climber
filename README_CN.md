@@ -9,6 +9,8 @@
 
 # 构建
 
+此项目使用CLion开发，使用cmake可以非常容易的构建。
+
 ## MacOS
 
 Requirement:
@@ -26,6 +28,7 @@ mkdir build
 cd build
 cmake -DCMAKE_BUILD_TYPE=Release .. 
 make -j8
+make create_zip
 ```
 
 ## Windows
@@ -42,8 +45,9 @@ git clone --recurse-submodules https://github.com/Climber7/Climber
 cd Climber
 md build
 cd build
-cmake -DCMAKE_BUILD_TYPE=Release .. 
-nmake
+cmake -DCMAKE_BUILD_TYPE=Release -G "NMake Makefiles" .. 
+nmake # or jom -j8
+nmake create_zip
 ```
 
 # 服务器配置

@@ -7,7 +7,9 @@ Yet another cross platform ss/trojan GUI client.
 
 Currently support MacOS and Windows, Linux support is on plan.
 
-# Build
+# 
+
+This project was developed under CLion, easy to build using cmake.
 
 ## MacOS
 
@@ -26,6 +28,7 @@ mkdir build
 cd build
 cmake -DCMAKE_BUILD_TYPE=Release .. 
 make -j8
+make create_zip
 ```
 
 ## Windows
@@ -42,8 +45,9 @@ git clone --recurse-submodules https://github.com/Climber7/Climber
 cd Climber
 md build
 cd build
-cmake -DCMAKE_BUILD_TYPE=Release .. 
-nmake
+cmake -DCMAKE_BUILD_TYPE=Release -G "NMake Makefiles" .. 
+nmake # or jom -j8
+nmake create_zip
 ```
 
 # Servers Configuration
