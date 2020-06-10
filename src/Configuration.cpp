@@ -105,7 +105,7 @@ int Configuration::GetLanguageIndex() const {
 
 void Configuration::SetLanguage(const wxString &language) {
     if (!IsLanguageSupported(language)) {
-        printf("Language %s not supported\n", language.c_str().AsChar());
+        wxLogWarning("Language %s not supported\n", language);
         return;
     }
     m_language = language;
@@ -175,7 +175,7 @@ bool Configuration::PortAlreadyInUse(int port) const {
 
 Configuration::Configuration() {
     m_configurationFile = Paths::GetConfigDirFile("config.json");
-    printf("Configuration File: %s\n", m_configurationFile.c_str().AsChar());
+    wxLogMessage("Configuration File: %s\n", m_configurationFile);
 
     InitDefaults();
     Load();
@@ -270,7 +270,8 @@ void Configuration::Save() {
     obj["pac_port"] = m_pacPort;
     std::ofstream out(m_configurationFile.ToStdString(), std::ios::out);
     if (!out.is_open()) {
-        printf("Open \"%s\" failed, %s\n", m_configurationFile.c_str().AsChar(), strerror(errno));
+        wxMessageDialog(nullptr, wxString::Format("Open file \"%s\" failed!", m_configurationFile), _("Error"))
+                .ShowModal();
         return;
     }
     out << obj.dump(4) << "\n";
@@ -286,9 +287,9 @@ void Configuration::InitLanguageSupport() {
     if (wxLocale::IsAvailable(language)) {
         locale = new wxLocale(language);
         locale->AddCatalog("Climber");
-        printf("Load locale data %s\n", locale->IsOk() ? "ok" : "failed");
+        wxLogMessage("Load locale data %s\n", locale->IsOk() ? "ok" : "failed");
     } else {
-        printf("Language %d not available\n", language);
+        wxLogMessage("Language %d not available\n", language);
     }
 }
 

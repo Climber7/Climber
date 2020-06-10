@@ -59,8 +59,6 @@ enum {
 enum {
     SERVER_TYPE_UNKNOWN = 0,
     SERVER_TYPE_SS,
-    SERVER_TYPE_SSR,
-    SERVER_TYPE_VMESS,
     SERVER_TYPE_TROJAN,
 };
 

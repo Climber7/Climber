@@ -5,7 +5,7 @@ set(CMAKE_CXX_STANDARD 14)
 
 set(CLIMBER_VERSION 0.0.1)
 set(CLIMBER_COPYRIGHT "Copyright (C) 2020 Climber.")
-set(CLIMBER_DESCRIPTION "Yet another cross platform ss/ssr/vmess/trojan GUI client.")
+set(CLIMBER_DESCRIPTION "Yet another cross platform ss/trojan GUI client.")
 
 if (WIN32)
     add_compile_options($<$<CXX_COMPILER_ID:MSVC>:/MP>)
@@ -28,16 +28,32 @@ file(GLOB_RECURSE SOURCES src/*.cpp src/*.h)
 if (APPLE)
     add_definitions(-DCLIMBER_DARWIN)
 
-    file(MAKE_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/Climber.app/Contents/Resources")
-    file(MAKE_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/Climber.app/Contents/Resources/assets")
-    file(MAKE_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/Climber.app/Contents/Resources/en.lproj")
-    file(MAKE_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/Climber.app/Contents/Resources/zh_CN.lproj")
-    file(MAKE_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/Climber.app/Contents/Resources/zh_TW.lproj")
-    configure_file("${CMAKE_CURRENT_SOURCE_DIR}/assets/icon.icns" "${CMAKE_CURRENT_BINARY_DIR}/Climber.app/Contents/Resources/icon.icns" COPYONLY)
-    configure_file("${CMAKE_CURRENT_SOURCE_DIR}/assets/icon.png" "${CMAKE_CURRENT_BINARY_DIR}/Climber.app/Contents/Resources/assets/icon.png" COPYONLY)
-    configure_file("${CMAKE_CURRENT_SOURCE_DIR}/assets/privoxy.conf" "${CMAKE_CURRENT_BINARY_DIR}/Climber.app/Contents/Resources/assets/privoxy.conf" COPYONLY)
-    configure_file("${CMAKE_CURRENT_SOURCE_DIR}/assets/bin/darwin/trojan" "${CMAKE_CURRENT_BINARY_DIR}/Climber.app/Contents/Resources/assets/bin/trojan" COPYONLY)
-    configure_file("${CMAKE_CURRENT_SOURCE_DIR}/assets/bin/darwin/privoxy" "${CMAKE_CURRENT_BINARY_DIR}/Climber.app/Contents/Resources/assets/bin/privoxy" COPYONLY)
+    set(BINARY_RESOURCES_DIR "${CMAKE_CURRENT_BINARY_DIR}/Climber.app/Contents/Resources")
+
+    set(SOURCE_ASSETS_DIR "${CMAKE_CURRENT_SOURCE_DIR}/assets")
+    set(BINARY_ASSETS_DIR "${BINARY_RESOURCES_DIR}/assets")
+
+    set(SOURCE_BIN_DIR "${SOURCE_ASSETS_DIR}/bin/darwin")
+    set(BINARY_BIN_DIR "${BINARY_ASSETS_DIR}/bin")
+
+    configure_file("${SOURCE_ASSETS_DIR}/icon.icns" "${BINARY_RESOURCES_DIR}/icon.icns" COPYONLY)
+
+    file(MAKE_DIRECTORY "${BINARY_ASSETS_DIR}")
+    file(MAKE_DIRECTORY "${BINARY_RESOURCES_DIR}/en.lproj")
+    file(MAKE_DIRECTORY "${BINARY_RESOURCES_DIR}/zh_CN.lproj")
+    file(MAKE_DIRECTORY "${BINARY_RESOURCES_DIR}/zh_TW.lproj")
+
+    configure_file("${SOURCE_ASSETS_DIR}/icon.png" "${BINARY_ASSETS_DIR}/icon.png" COPYONLY)
+    configure_file("${SOURCE_ASSETS_DIR}/privoxy.conf" "${BINARY_ASSETS_DIR}/privoxy.conf" COPYONLY)
+
+    configure_file("${SOURCE_BIN_DIR}/climber_shadowsocks_libev" "${BINARY_BIN_DIR}/climber_shadowsocks_libev" COPYONLY)
+    configure_file("${SOURCE_BIN_DIR}/libev.4.dylib" "${BINARY_BIN_DIR}/libev.4.dylib" COPYONLY)
+    configure_file("${SOURCE_BIN_DIR}/libcares.2.dylib" "${BINARY_BIN_DIR}/libcares.2.dylib" COPYONLY)
+    configure_file("${SOURCE_BIN_DIR}/libsodium.23.dylib" "${BINARY_BIN_DIR}/libsodium.23.dylib" COPYONLY)
+    configure_file("${SOURCE_BIN_DIR}/libmbedcrypto.3.dylib" "${BINARY_BIN_DIR}/libmbedcrypto.3.dylib" COPYONLY)
+    configure_file("${SOURCE_BIN_DIR}/libpcre.1.dylib" "${BINARY_BIN_DIR}/libpcre.1.dylib" COPYONLY)
+    configure_file("${SOURCE_BIN_DIR}/climber_trojan" "${BINARY_BIN_DIR}/climber_trojan" COPYONLY)
+    configure_file("${SOURCE_BIN_DIR}/climber_privoxy" "${BINARY_BIN_DIR}/climber_privoxy" COPYONLY)
 
 
     set(MSGFMT_EXECUTABLE "${CMAKE_CURRENT_SOURCE_DIR}/tools/darwin/msgfmt")
@@ -56,29 +72,50 @@ if (APPLE)
     add_custom_command(
             TARGET Climber
             POST_BUILD
-            COMMAND "${MSGFMT_EXECUTABLE}" "${CMAKE_CURRENT_SOURCE_DIR}/localization/zh_CN.po" -o "${CMAKE_CURRENT_BINARY_DIR}/Climber.app/Contents/Resources/zh_CN.lproj/Climber.mo"
-            COMMAND "${MSGFMT_EXECUTABLE}" "${CMAKE_CURRENT_SOURCE_DIR}/localization/zh_TW.po" -o "${CMAKE_CURRENT_BINARY_DIR}/Climber.app/Contents/Resources/zh_TW.lproj/Climber.mo"
+            COMMAND "${MSGFMT_EXECUTABLE}" "${CMAKE_CURRENT_SOURCE_DIR}/localization/zh_CN.po" -o "${BINARY_RESOURCES_DIR}/zh_CN.lproj/Climber.mo"
+            COMMAND "${MSGFMT_EXECUTABLE}" "${CMAKE_CURRENT_SOURCE_DIR}/localization/zh_TW.po" -o "${BINARY_RESOURCES_DIR}/zh_TW.lproj/Climber.mo"
     )
 
 elseif (WIN32)
     add_definitions(-DCLIMBER_WINDOWS)
 
-    set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/Climber")
+    set(BINARY_RESOURCES_DIR "${CMAKE_CURRENT_BINARY_DIR}/Climber")
+
+    set(SOURCE_ASSETS_DIR "${CMAKE_CURRENT_SOURCE_DIR}/assets")
+    set(BINARY_ASSETS_DIR "${BINARY_RESOURCES_DIR}/assets")
+
+    set(SOURCE_BIN_DIR "${SOURCE_ASSETS_DIR}/bin/win32")
+    set(BINARY_BIN_DIR "${BINARY_ASSETS_DIR}/bin")
+
+    set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${BINARY_RESOURCES_DIR}")
 
     string(REPLACE "." "," CLIMBER_VERSION2 "${CLIMBER_VERSION}")
-    configure_file("${CMAKE_CURRENT_SOURCE_DIR}/assets/icon.ico" "${CMAKE_CURRENT_BINARY_DIR}/icon.ico" COPYONLY)
+    configure_file("${SOURCE_ASSETS_DIR}/icon.ico" "${CMAKE_CURRENT_BINARY_DIR}/icon.ico" COPYONLY)
     configure_file("${CMAKE_CURRENT_SOURCE_DIR}/win32.rc.in" "${CMAKE_CURRENT_BINARY_DIR}/win32.rc" @ONLY)
 
-    file(MAKE_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/Climber/assets")
-    file(MAKE_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/Climber/locale/en")
-    file(MAKE_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/Climber/locale/zh_CN")
-    file(MAKE_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/Climber/locale/zh_TW")
-    configure_file("${CMAKE_CURRENT_SOURCE_DIR}/assets/icon.png" "${CMAKE_CURRENT_BINARY_DIR}/Climber/assets/icon.png" COPYONLY)
-    configure_file("${CMAKE_CURRENT_SOURCE_DIR}/assets/privoxy.conf" "${CMAKE_CURRENT_BINARY_DIR}/Climber/assets/privoxy.conf" COPYONLY)
-    configure_file("${CMAKE_CURRENT_SOURCE_DIR}/assets/bin/win32/trojan.exe" "${CMAKE_CURRENT_BINARY_DIR}/Climber/assets/bin/trojan.exe" COPYONLY)
-    configure_file("${CMAKE_CURRENT_SOURCE_DIR}/assets/bin/win32/climber_privoxy.exe" "${CMAKE_CURRENT_BINARY_DIR}/Climber/assets/bin/climber_privoxy.exe" COPYONLY)
-    configure_file("${CMAKE_CURRENT_SOURCE_DIR}/assets/bin/win32/sysproxy.exe" "${CMAKE_CURRENT_BINARY_DIR}/Climber/assets/bin/sysproxy.exe" COPYONLY)
-    configure_file("${CMAKE_CURRENT_SOURCE_DIR}/assets/bin/win32/libsscrypto.dll" "${CMAKE_CURRENT_BINARY_DIR}/Climber/assets/bin/libsscrypto.dll" COPYONLY)
+    file(MAKE_DIRECTORY "${BINARY_ASSETS_DIR}")
+    file(MAKE_DIRECTORY "${BINARY_RESOURCES_DIR}/locale/en")
+    file(MAKE_DIRECTORY "${BINARY_RESOURCES_DIR}/locale/zh_CN")
+    file(MAKE_DIRECTORY "${BINARY_RESOURCES_DIR}/locale/zh_TW")
+
+    configure_file("${SOURCE_ASSETS_DIR}/icon.png" "${BINARY_ASSETS_DIR}/icon.png" COPYONLY)
+    configure_file("${SOURCE_ASSETS_DIR}/privoxy.conf" "${BINARY_ASSETS_DIR}/privoxy.conf" COPYONLY)
+
+    configure_file("${SOURCE_BIN_DIR}/climber_shadowsocks_libev.exe" "${BINARY_BIN_DIR}/climber_shadowsocks_libev.exe" COPYONLY)
+    configure_file("${SOURCE_BIN_DIR}/libbloom.dll" "${BINARY_BIN_DIR}/libbloom.dll" COPYONLY)
+    configure_file("${SOURCE_BIN_DIR}/libcares-4.dll" "${BINARY_BIN_DIR}/libcares-4.dll" COPYONLY)
+    configure_file("${SOURCE_BIN_DIR}/libcork.dll" "${BINARY_BIN_DIR}/libcork.dll" COPYONLY)
+    configure_file("${SOURCE_BIN_DIR}/libev-4.dll" "${BINARY_BIN_DIR}/libev-4.dll" COPYONLY)
+    configure_file("${SOURCE_BIN_DIR}/libgcc_s_dw2-1.dll" "${BINARY_BIN_DIR}/libgcc_s_dw2-1.dll" COPYONLY)
+    configure_file("${SOURCE_BIN_DIR}/libipset.dll" "${BINARY_BIN_DIR}/libipset.dll" COPYONLY)
+    configure_file("${SOURCE_BIN_DIR}/libmbedcrypto.dll" "${BINARY_BIN_DIR}/libmbedcrypto.dll" COPYONLY)
+    configure_file("${SOURCE_BIN_DIR}/libpcre-1.dll" "${BINARY_BIN_DIR}/libpcre-1.dll" COPYONLY)
+    configure_file("${SOURCE_BIN_DIR}/libsodium-23.dll" "${BINARY_BIN_DIR}/libsodium-23.dll" COPYONLY)
+    configure_file("${SOURCE_BIN_DIR}/libwinpthread-1.dll" "${BINARY_BIN_DIR}/libwinpthread-1.dll" COPYONLY)
+    configure_file("${SOURCE_BIN_DIR}/climber_trojan.exe" "${BINARY_BIN_DIR}/climber_trojan.exe" COPYONLY)
+    configure_file("${SOURCE_BIN_DIR}/climber_privoxy.exe" "${BINARY_BIN_DIR}/climber_privoxy.exe" COPYONLY)
+    configure_file("${SOURCE_BIN_DIR}/climber_sysproxy.exe" "${BINARY_BIN_DIR}/climber_sysproxy.exe" COPYONLY)
+    configure_file("${SOURCE_BIN_DIR}/libsscrypto.dll" "${BINARY_BIN_DIR}/libsscrypto.dll" COPYONLY)
 
     set(MSGFMT_EXECUTABLE "${CMAKE_CURRENT_SOURCE_DIR}/tools/win32/msgfmt.exe")
 
@@ -87,8 +124,8 @@ elseif (WIN32)
     add_custom_command(
             TARGET Climber
             POST_BUILD
-            COMMAND "${MSGFMT_EXECUTABLE}" "${CMAKE_CURRENT_SOURCE_DIR}/localization/zh_CN.po" -o "${CMAKE_CURRENT_BINARY_DIR}/Climber/locale/zh_CN/Climber.mo"
-            COMMAND "${MSGFMT_EXECUTABLE}" "${CMAKE_CURRENT_SOURCE_DIR}/localization/zh_TW.po" -o "${CMAKE_CURRENT_BINARY_DIR}/Climber/locale/zh_TW/Climber.mo"
+            COMMAND "${MSGFMT_EXECUTABLE}" "${CMAKE_CURRENT_SOURCE_DIR}/localization/zh_CN.po" -o "${BINARY_RESOURCES_DIR}/locale/zh_CN/Climber.mo"
+            COMMAND "${MSGFMT_EXECUTABLE}" "${CMAKE_CURRENT_SOURCE_DIR}/localization/zh_TW.po" -o "${BINARY_RESOURCES_DIR}/locale/zh_TW/Climber.mo"
     )
 
 elseif (UNIX AND NOT APPLE)

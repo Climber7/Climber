@@ -37,29 +37,18 @@ public:
     void ClearSystemProxy();
 
 private:
-    void StopClient();
+    static void RunShadowsocks(const ServerConfItem *conf);
 
-    void StartPrivoxy();
+    static void RunTrojan(const ServerConfItem *conf);
 
-    void StopPrivoxy();
+    static void KillClient();
 
-#ifndef CLIMBER_WINDOWS
-    long GetPrivoxyPid();
-#endif
+    static void RunPrivoxy();
 
-    void RunTrojan(ServerConfItem *conf);
+    static void KillPrivoxy();
 
 private:
     bool m_running = false;
-    wxString m_clientTmpConfigFile = wxEmptyString;
-    wxString m_clientLogFile = wxEmptyString;
-    long m_clientPid = 0;
-
-    wxString m_privoxyTmpConfigFile = wxEmptyString;
-    wxString m_privoxyLogFile = wxEmptyString;
-#ifndef CLIMBER_WINDOWS
-    wxString m_privoxyPidFile = wxEmptyString;
-#endif
 
 };
 

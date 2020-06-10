@@ -10,6 +10,20 @@
 #include "ServerConfManager.h"
 #include "Paths.h"
 
+#ifdef CLIMBER_WINDOWS
+
+#define CLIMBER_SHADOWSOCKS ("climber_shadowsocks_libev.exe")
+#define CLIMBER_TROJAN ("climber_trojan.exe")
+#define CLIMBER_PRIVOXY ("climber_privoxy.exe")
+
+#elif defined CLIMBER_DARWIN
+
+#define CLIMBER_SHADOWSOCKS ("climber_shadowsocks_libev")
+#define CLIMBER_TROJAN ("climber_trojan")
+#define CLIMBER_PRIVOXY ("climber_privoxy")
+
+#endif
+
 Climber *Climber::s_instance = nullptr;
 
 void Climber::Init() {
@@ -41,7 +55,7 @@ bool Climber::IsRunning() const {
 void Climber::Start() {
     if (m_running) return;
 
-    // TODO 检查是否有残留的进程没有关闭
+    KillClient();
 
     int index = CONFIGURATION.GetSelectedServerIndex();
     if (index == -1) {
@@ -52,41 +66,29 @@ void Climber::Start() {
         return;
     }
 
-    auto *conf = SERVER_CONF_MANAGER.Get(index);
+    const auto *conf = SERVER_CONF_MANAGER.Get(index);
     switch (conf->GetType()) {
         // TODO other type
         case SERVER_TYPE_SS:
-            break;
-        case SERVER_TYPE_SSR:
-            break;
-        case SERVER_TYPE_VMESS:
+            RunShadowsocks(conf);
             break;
         case SERVER_TYPE_TROJAN:
             RunTrojan(conf);
             break;
         default:
-            printf("Unsupported type %s", conf->GetTypeName().c_str().AsChar());
+            wxLogWarning("Unsupported type %s", conf->GetTypeName());
             break;
     }
 
-    wxMilliSleep(500);
-    m_running = wxProcess::Exists(m_clientPid);
-    if (!m_running) {
-        wxMessageDialog(
-                nullptr,
-                _("Start Climber failed, please check log."),
-                _("Error")).ShowModal();
-    }
+    RunPrivoxy();
+    SetSystemProxy();
 
-    if (m_running) {
-        StartPrivoxy();
-        SetSystemProxy();
-    }
+    m_running = true;
 }
 
 void Climber::Stop() {
-    StopClient();
-    StopPrivoxy();
+    KillClient();
+    KillPrivoxy();
     ClearSystemProxy();
     m_running = false;
 }
@@ -104,34 +106,46 @@ void Climber::ClearSystemProxy() {
     // TODO
 }
 
-void Climber::StopClient() {
-    if (m_clientPid == 0) return;
-    // wxKill not work, don't know why
-    killProcess(m_clientPid);
-    if (wxFileExists(m_clientTmpConfigFile)) {
-        wxRemoveFile(m_clientTmpConfigFile);
-    }
-    if (wxFileExists(m_clientLogFile)) {
-        wxRemoveFile(m_clientLogFile);
-    }
-    m_clientPid = 0;
-    m_clientTmpConfigFile = wxEmptyString;
-    m_clientLogFile = wxEmptyString;
+void Climber::RunShadowsocks(const ServerConfItem *conf) {
+    auto clientTmpConfigFile = Paths::GetTmpDirFile("shadowsocks.json");
+//    auto clientLogFile = Paths::GetLogDirFile("shadowsocks.log");
+    auto localAddr = CONFIGURATION.GetShareOnLan() ? "0.0.0.0" : "127.0.0.1";
+    auto localPort = CONFIGURATION.GetSocksPort();
+    conf->WriteTo(clientTmpConfigFile, localAddr, localPort);
+
+    auto shadowsocks = Paths::GetBinDirFile(CLIMBER_SHADOWSOCKS);
+    wxExecute(wxString::Format("\"%s\" -c \"%s\"", shadowsocks, clientTmpConfigFile),
+              wxEXEC_ASYNC | wxEXEC_HIDE_CONSOLE);
+    // TODO log
 }
 
-void Climber::StartPrivoxy() {
-    // TODO 检查是否有残留的进程没有关闭
+void Climber::RunTrojan(const ServerConfItem *conf) {
+    auto clientTmpConfigFile = Paths::GetTmpDirFile("trojan.json");
+    auto clientLogFile = Paths::GetLogDirFile("trojan.log");
+    auto localAddr = CONFIGURATION.GetShareOnLan() ? "0.0.0.0" : "127.0.0.1";
+    auto localPort = CONFIGURATION.GetSocksPort();
+    conf->WriteTo(clientTmpConfigFile, localAddr, localPort);
 
-    int randNum = abs(rand());
-    m_privoxyTmpConfigFile = Paths::GetTmpDirFile(wxString::Format("privoxy_%d.conf", randNum));
-#ifndef CLIMBER_WINDOWS
-    m_privoxyPidFile = Paths::GetTmpDirFile(wxString::Format("privoxy_%d.pid", randNum));
-#endif
-    m_privoxyLogFile = Paths::GetLogDirFile(wxString::Format("privoxy_%d.log", randNum));
+    auto trojan = Paths::GetBinDirFile(CLIMBER_TROJAN);
+    wxExecute(wxString::Format("\"%s\" -c \"%s\" -l \"%s\"", trojan, clientTmpConfigFile, clientLogFile),
+              wxEXEC_ASYNC | wxEXEC_HIDE_CONSOLE);
+}
+
+void Climber::KillClient() {
+    killProcessByName(CLIMBER_SHADOWSOCKS);
+    killProcessByName(CLIMBER_TROJAN);
+}
+
+void Climber::RunPrivoxy() {
+    KillPrivoxy();
+
+    auto privoxyTmpConfigFile = Paths::GetTmpDirFile("privoxy.conf");
+    auto privoxyLogFile = Paths::GetLogDirFile("privoxy.log");
     auto privoxyConfigTplFile = Paths::GetAssetsDirFile("privoxy.conf");
     std::ifstream in(privoxyConfigTplFile.ToStdString(), std::ios::in);
     if (!in.is_open()) {
-        printf("Open \"%s\" failed, %s\n", privoxyConfigTplFile.c_str().AsChar(), strerror(errno));
+        wxMessageDialog(nullptr, wxString::Format("Open file \"%s\" failed!", privoxyConfigTplFile), _("Error"))
+                .ShowModal();
     }
     std::stringstream ss;
     ss << in.rdbuf();
@@ -139,91 +153,22 @@ void Climber::StartPrivoxy() {
     auto config = wxString(ss.str());
     config.Replace("__PRIVOXY_BIND_IP__", CONFIGURATION.GetShareOnLan() ? "0.0.0.0" : "127.0.0.1");
     config.Replace("__PRIVOXY_BIND_PORT__", wxString::Format("%d", CONFIGURATION.GetHttpPort()));
-    config.Replace("__PRIVOXY_LOG_FILE__", m_privoxyLogFile);
+    config.Replace("__PRIVOXY_LOG_FILE__", privoxyLogFile);
     config.Replace("__SOCKS_HOST__", "127.0.0.1");
     config.Replace("__SOCKS_PORT__", wxString::Format("%d", CONFIGURATION.GetSocksPort()));
-    std::ofstream out(m_privoxyTmpConfigFile.ToStdString(), std::ios::out);
+    std::ofstream out(privoxyTmpConfigFile.ToStdString(), std::ios::out);
     if (!out.is_open()) {
-        printf("Open \"%s\" failed, %s\n", m_privoxyTmpConfigFile.c_str().AsChar(), strerror(errno));
+        wxMessageDialog(nullptr, wxString::Format("Open file \"%s\" failed!", privoxyTmpConfigFile), _("Error"))
+                .ShowModal();
     }
     out << config.ToStdString();
     out.close();
 
-#ifdef CLIMBER_WINDOWS
-    auto privoxy = Paths::GetBinDirFile("climber_privoxy.exe");
-    wxExecute(
-            wxString::Format("\"%s\" \"%s\"", privoxy, m_privoxyTmpConfigFile),
-            wxEXEC_ASYNC | wxEXEC_HIDE_CONSOLE);
-#endif
-#ifdef CLIMBER_DARWIN
-    auto privoxy = Paths::GetBinDirFile("privoxy");
-    wxExecute(
-            wxString::Format("\"%s\" --pidfile \"%s\" \"%s\"", privoxy, m_privoxyPidFile, m_privoxyTmpConfigFile),
-            wxEXEC_ASYNC | wxEXEC_HIDE_CONSOLE);
-#endif
+    auto privoxy = Paths::GetBinDirFile(CLIMBER_PRIVOXY);
+    wxExecute(wxString::Format("\"%s\" \"%s\"", privoxy, privoxyTmpConfigFile),
+              wxEXEC_ASYNC | wxEXEC_HIDE_CONSOLE);
 }
 
-void Climber::StopPrivoxy() {
-#ifndef CLIMBER_WINDOWS
-    long privoxyPid = GetPrivoxyPid();
-    if (privoxyPid == 0) return;
-#endif
-
-#ifdef CLIMBER_WINDOWS
-    wxExecute("taskkill /f /im climber_privoxy.exe", wxEXEC_BLOCK | wxEXEC_HIDE_CONSOLE);
-#else
-    // wxKill not work, don't know why
-    killProcess(privoxyPid);
-#endif
-
-    if (wxFileExists(m_privoxyTmpConfigFile)) {
-        wxRemoveFile(m_privoxyTmpConfigFile);
-    }
-    m_privoxyTmpConfigFile = wxEmptyString;
-
-    if (wxFileExists(m_privoxyLogFile)) {
-        wxRemoveFile(m_privoxyLogFile);
-    }
-    m_privoxyLogFile = wxEmptyString;
-
-#ifndef CLIMBER_WINDOWS
-    if (wxFileExists(m_privoxyPidFile)) {
-        wxRemoveFile(m_privoxyPidFile);
-    }
-    m_privoxyPidFile = wxEmptyString;
-#endif
-}
-
-#ifndef CLIMBER_WINDOWS
-long Climber::GetPrivoxyPid() {
-    if (m_privoxyPidFile.empty()) {
-        return 0;
-    }
-    std::ifstream in(m_privoxyPidFile.ToStdString(), std::ios::in);
-    if (!in.is_open()) {
-        return 0;
-    }
-    std::stringstream ss;
-    ss << in.rdbuf();
-    in.close();
-    return std::strtol(ss.str().c_str(), nullptr, 10);
-}
-#endif
-
-void Climber::RunTrojan(ServerConfItem *conf) {
-    int randNum = abs(rand());
-    m_clientTmpConfigFile = Paths::GetTmpDirFile(wxString::Format("trojan_%d.json", randNum));
-    m_clientLogFile = Paths::GetLogDirFile(wxString::Format("trojan_%d.log", randNum));
-    conf->SetLocalAddr(CONFIGURATION.GetShareOnLan() ? "0.0.0.0" : "127.0.0.1");
-    conf->SetLocalPort(CONFIGURATION.GetSocksPort());
-    conf->WriteTo(m_clientTmpConfigFile);
-#ifdef CLIMBER_WINDOWS
-    auto trojan = Paths::GetBinDirFile("trojan.exe");
-#endif
-#ifdef CLIMBER_DARWIN
-    auto trojan = Paths::GetBinDirFile("trojan");
-#endif
-    m_clientPid = wxExecute(
-            wxString::Format("\"%s\" -c \"%s\" -l \"%s\"", trojan, m_clientTmpConfigFile, m_clientLogFile),
-            wxEXEC_ASYNC | wxEXEC_HIDE_CONSOLE);
+void Climber::KillPrivoxy() {
+    killProcessByName(CLIMBER_PRIVOXY);
 }

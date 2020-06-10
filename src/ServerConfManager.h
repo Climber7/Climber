@@ -33,7 +33,7 @@ public:
 
     int Count() const;
 
-    ServerConfItem *Get(int index) const;
+    const ServerConfItem *Get(int index) const;
 
 private:
     wxString m_serversListFile;

@@ -83,12 +83,14 @@ wxMenu *SystemTray::CreateServersListMenu() {
 //    serverListMenu->Append(ID_MENU_SERVERS_SETTINGS, _("Servers Settings"));
     serverListMenu->Append(ID_MENU_SERVERS_REFRESH, _("Refresh"));
 
-    serverListMenu->AppendSeparator();
-
     const auto &serverList = SERVER_CONF_MANAGER.GetServersList();
+    if (serverList.size() > 0) {
+        serverListMenu->AppendSeparator();
+    }
+
     const int maxCount = ID_MENU_SERVER_ITEM_END - ID_MENU_SERVER_ITEM_START;
     if (serverList.size() > maxCount) {
-        printf("Max servers count %d, %lu provided", maxCount, serverList.size());
+        wxLogWarning("Max servers count %d, %lu provided", maxCount, serverList.size());
     }
     const int count = wxMin(serverList.size(), maxCount);
     const int selected = CONFIGURATION.GetSelectedServerIndex();

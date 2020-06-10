@@ -26,12 +26,18 @@ wxString ServerConfItem::GetTypeName() const {
     return m_typeName;
 }
 
-void ServerConfItem::WriteTo(const wxString &file) const {
+json ServerConfItem::OverrideLocalHost(const wxString &localAddr, int localPort) const {
+    return m_data;
+}
+
+void ServerConfItem::WriteTo(const wxString &file, const wxString &localAddr, int localPort) const {
     std::ofstream out(file.ToStdString(), std::ios::out);
     if (!out.is_open()) {
-        printf("Open \"%s\" failed, %s\n", file.c_str().AsChar(), strerror(errno));
+        wxMessageDialog(nullptr, wxString::Format("Open file \"%s\" failed!", file), _("Error"))
+                .ShowModal();
     } else {
-        out << m_data["data"].dump(4);
+        auto data = OverrideLocalHost(localAddr, localPort);
+        out << data["data"].dump(4);
         out.close();
     }
 }

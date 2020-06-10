@@ -2,14 +2,14 @@
 // Created by Climber on 2020/6/8.
 //
 
-#ifndef CLIMBER_TROJANCONFITEM_H
-#define CLIMBER_TROJANCONFITEM_H
+#ifndef CLIMBER_SHADOWSOCKSCONFITEM_H
+#define CLIMBER_SHADOWSOCKSCONFITEM_H
 
 #include "../ServerConfItem.h"
 
-class TrojanConfItem : public ServerConfItem {
+class ShadowsocksConfItem : public ServerConfItem {
 public:
-    explicit TrojanConfItem(json obj);
+    explicit ShadowsocksConfItem(json obj);
 
     json OverrideLocalHost(const wxString &localAddr, int localPort) const override;
 
@@ -20,4 +20,4 @@ public:
 };
 
 
-#endif //CLIMBER_TROJANCONFITEM_H
+#endif //CLIMBER_SHADOWSOCKSCONFITEM_H

@@ -6,6 +6,7 @@
 #include <sstream>
 #include "ServerConfManager.h"
 #include "Paths.h"
+#include "impl/ShadowsocksConfItem.h"
 #include "impl/TrojanConfItem.h"
 
 ServerConfManager *ServerConfManager::s_instance = nullptr;
@@ -29,7 +30,7 @@ ServerConfManager &ServerConfManager::GetInstance() {
 
 ServerConfManager::ServerConfManager() {
     m_serversListFile = Paths::GetConfigDirFile("servers.json");
-    printf("Servers list File: %s\n", m_serversListFile.c_str().AsChar());
+    wxLogMessage("Servers list File: %s\n", m_serversListFile);
 
     Load();
 }
@@ -54,22 +55,22 @@ void ServerConfManager::Load() {
         switch (ServerConfItem::GetServerTypeByName(typeName)) {
             // TODO other type
             case SERVER_TYPE_SS:
-                break;
-            case SERVER_TYPE_SSR:
-                break;
-            case SERVER_TYPE_VMESS:
+                m_list.push_back(new ShadowsocksConfItem(item));
                 break;
             case SERVER_TYPE_TROJAN:
                 m_list.push_back(new TrojanConfItem(item));
                 break;
             default:
-                printf("Unsupported type %s", typeName.c_str());
+                wxLogWarning("Unsupported type %s", wxString(typeName));
                 break;
         }
     }
 }
 
 void ServerConfManager::Reload() {
+    for (auto *item : m_list) {
+        delete item;
+    }
     m_list.clear();
     Load();
 }
@@ -81,7 +82,8 @@ void ServerConfManager::Reload() {
 //    }
 //    std::ofstream out(m_serversListFile.ToStdString(), std::ios::out);
 //    if (!out.is_open()) {
-//        printf("Open \"%s\" failed, %s\n", m_serversListFile.c_str().AsChar(), strerror(errno));
+//        wxMessageDialog(nullptr, wxString::Format("Open file \"%s\" failed!", m_serversListFile), _("Error"))
+//                .ShowModal();
 //        return;
 //    }
 //    out << list.dump(4) << "\n";
@@ -96,6 +98,6 @@ int ServerConfManager::Count() const {
     return m_list.size();
 }
 
-ServerConfItem *ServerConfManager::Get(int index) const {
+const ServerConfItem *ServerConfManager::Get(int index) const {
     return m_list[index];
 }

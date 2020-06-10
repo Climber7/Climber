@@ -2,18 +2,17 @@
 // Created by Climber on 2020/6/8.
 //
 
+#include <utility>
 #include "TrojanConfItem.h"
 
-#include <utility>
 
 TrojanConfItem::TrojanConfItem(json obj) : ServerConfItem(std::move(obj)) {}
 
-void TrojanConfItem::SetLocalAddr(const wxString &localAddr) {
-    m_data["data"]["local_addr"] = localAddr.ToStdString();
-}
-
-void TrojanConfItem::SetLocalPort(int port) {
-    m_data["data"]["local_port"] = port;
+json TrojanConfItem::OverrideLocalHost(const wxString &localAddr, int localPort) const {
+    json data = m_data;
+    data["data"]["local_addr"] = localAddr.ToStdString();
+    data["data"]["local_port"] = localPort;
+    return data;
 }
 
 wxString TrojanConfItem::GetSystemTrayTitle() const {

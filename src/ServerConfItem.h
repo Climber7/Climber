@@ -23,13 +23,11 @@ public:
 
     wxString GetTypeName() const;
 
-    void WriteTo(const wxString &file) const;
+    void WriteTo(const wxString &file, const wxString &localAddr, int localPort) const;
 
     const json &GetJsonObject() const;
 
-    virtual void SetLocalAddr(const wxString &localAddr) = 0;
-
-    virtual void SetLocalPort(int port) = 0;
+    virtual json OverrideLocalHost(const wxString &localAddr, int localPort) const;
 
     virtual wxString GetSystemTrayTitle() const = 0;
 
@@ -39,10 +37,6 @@ public:
         switch (type) {
             case SERVER_TYPE_SS:
                 return "shadowsocks";
-            case SERVER_TYPE_SSR:
-                return "shadowsocksR";
-            case SERVER_TYPE_VMESS:
-                return "vmess";
             case SERVER_TYPE_TROJAN:
                 return "trojan";
             default:
@@ -56,8 +50,6 @@ public:
 
     static inline int GetServerTypeByName(const wxString &type) {
         if (type == "shadowsocks") return SERVER_TYPE_SS;
-        if (type == "shadowsocksR") return SERVER_TYPE_SSR;
-        if (type == "vmess") return SERVER_TYPE_VMESS;
         if (type == "trojan") return SERVER_TYPE_TROJAN;
         return SERVER_TYPE_UNKNOWN;
     }
