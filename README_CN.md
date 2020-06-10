@@ -3,11 +3,11 @@
 [English](README.md)
 [中文](README_CN.md)
 
-Yet another cross platform ss/trojan GUI client.
+一个新的跨平台 ss/trojan 图形客户端。
 
-Currently support MacOS and Windows, Linux support is on plan.
+目前支持 MacOS 和 Windows, Linux 支持正在计划中。
 
-# Build
+# 构建
 
 ## MacOS
 
@@ -44,9 +44,9 @@ cmake -DCMAKE_BUILD_TYPE=Release ..
 nmake
 ```
 
-# Servers Configuration
+# 服务器配置
 
-Click `Open Config Directory` and create a file named `servers.json`
+点击 `打开配置目录`，创建一个 `servers.json` 文件。
 
 ```json
 [
@@ -104,18 +104,18 @@ Click `Open Config Directory` and create a file named `servers.json`
 ]
 ```
 
-**Note: Local address and port will be override by Climber, so you can let these empty or delete these key. You can set these values in preferences.**
+**注意: 本地监听地址和端口会被 Climber 配置覆盖，所以在配置文件里可以留空这两项或直接删除这两个键。可以在设置中手动设置这两个值。**
 
-# QA
+# 问答
 
-Q: Why not make a GUI for configuring servers?
+Q: 为什么不做一个图形界面来配置服务器设置？
 
-A: I like config file, it's perfect for me. In fact, I'm lazy.
+A: 因为我喜欢用配置文件的方式，够用，自由，并且可以保持更新。实际上是因为我懒。
 
-# Announcement
+# 声明
 
-This project is just for research and education purpose, 
-using it requires you to ensure compliance with local laws.
-Otherwise you are not allow to use it, and should uninstall it immediately.
+此项目仅作为实验或教育目的，
+使用它需要你保证遵守当地的法律，
+否则，你不被允许使用，且必须立即卸载它。
 
-**Any violation of the law by anyone using this software has nothing to do with the author.**
+**任何人使用此软件产生的任何违法行为均与此软件的作者无关！**
