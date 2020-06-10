@@ -66,6 +66,9 @@ public:
 
     void SetPacPort(int port);
 
+    // TODO
+    const wxString &GetProxyBypass() { return m_proxyBypass; }
+
     bool PortAlreadyInUse(int port) const;
 
 private:
@@ -97,6 +100,7 @@ private:
     int m_socksPort = DEFAULT_SOCKS_PORT;
     int m_httpPort = DEFAULT_HTTP_PORT;
     int m_pacPort = DEFAULT_PAC_PORT;
+    wxString m_proxyBypass = wxEmptyString;
 
 private:
     static Configuration *s_instance;

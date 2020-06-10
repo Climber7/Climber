@@ -78,7 +78,7 @@ static void setAutoStart(bool enable) {
     auto name = wxString("Climber");
     auto path = Paths::GetExecutablePath();
 #ifdef CLIMBER_WINDOWS
-    wxRegKey *regKey = new wxRegKey("HKEY_CURRENT_USER\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run");
+    wxRegKey regKey(HKCU, "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run");
     if (enable) {
         regKey.SetValue(name, path);
     } else {
@@ -137,6 +137,104 @@ X-GNOME-Autostart-enabled=true
     }
 #endif
 }
+
+#ifdef CLIMBER_WINDOWS
+
+static void setProxy(
+        const wxString &socksHost, int socksPort,
+        const wxString &httpHost, int httpPort,
+        const wxString &bypass) {
+    auto sysproxy = Paths::GetBinDirFile("climber_sysproxy");
+    wxExecute(wxString::Format("\"%s\" global \"%s:%d\" \"%s\"", sysproxy, httpHost, httpPort, bypass), wxEXEC_BLOCK | wxEXEC_HIDE_CONSOLE);
+}
+
+static void setProxyPac(const wxString &pacUrl, const wxString &bypass) {
+    auto sysproxy = Paths::GetBinDirFile("climber_sysproxy");
+    wxExecute(wxString::Format("\"%s\" pac \"%s\"", sysproxy, pacUrl), wxEXEC_BLOCK | wxEXEC_HIDE_CONSOLE);
+}
+
+static void clearProxy() {
+    auto sysproxy = Paths::GetBinDirFile("climber_sysproxy");
+    wxExecute(wxString::Format("\"%s\" off", sysproxy), wxEXEC_BLOCK | wxEXEC_HIDE_CONSOLE);
+}
+
+#endif
+
+#ifdef CLIMBER_DARWIN
+
+static wxArrayString getNetworkServices() {
+    wxArrayString lines;
+    wxExecute("networksetup -listallnetworkservices", lines, wxEXEC_SYNC | wxEXEC_HIDE_CONSOLE);
+    lines.erase(lines.begin(), lines.begin() + 1);
+    return lines;
+}
+
+static bool isNetworkServicesActive(const wxString &service) {
+    wxArrayString lines;
+    wxExecute(wxString::Format("networksetup -getinfo \"%s\"", service), lines, wxEXEC_SYNC | wxEXEC_HIDE_CONSOLE);
+    for (auto &line : lines) {
+        if ((line.find("IP address:") == 0 && line.find("IP address: none") == wxNOT_FOUND)
+            || (line.find("IPv6 IP address:") == 0 && line.find("IPv6 IP address: none") == wxNOT_FOUND)) {
+            return true;
+        }
+    }
+    return false;
+}
+
+static void setProxy(
+        const wxString &socksHost, int socksPort,
+        const wxString &httpHost, int httpPort,
+        const wxString &bypass) {
+    auto services = getNetworkServices();
+    for (auto &service : services) {
+        if (!isNetworkServicesActive(service)) continue;
+        wxExecute(
+                wxString::Format("networksetup -setsocksfirewallproxy \"%s\" \"%s\" %d", service, socksHost, socksPort),
+                wxEXEC_BLOCK | wxEXEC_HIDE_CONSOLE);
+        wxExecute(wxString::Format("networksetup -setwebproxy \"%s\" \"%s\" %d", service, httpHost, httpPort),
+                  wxEXEC_BLOCK | wxEXEC_HIDE_CONSOLE);
+        wxExecute(wxString::Format("networksetup -setsecurewebproxy \"%s\" \"%s\" %d", service, httpHost, httpPort),
+                  wxEXEC_BLOCK | wxEXEC_HIDE_CONSOLE);
+        wxExecute(wxString::Format("networksetup -setautoproxystate \"%s\" off", service),
+                  wxEXEC_BLOCK | wxEXEC_HIDE_CONSOLE);
+        wxExecute(wxString::Format("networksetup -setproxybypassdomains \"%s\" \"%s\"", service, bypass),
+                  wxEXEC_BLOCK | wxEXEC_HIDE_CONSOLE);
+    }
+}
+
+static void setProxyPac(const wxString &pacUrl, const wxString &bypass) {
+    auto services = getNetworkServices();
+    for (auto &service : services) {
+        if (!isNetworkServicesActive(service)) continue;
+        wxExecute(wxString::Format("networksetup -setautoproxyurl \"%s\" \"%s\"", service, pacUrl),
+                  wxEXEC_BLOCK | wxEXEC_HIDE_CONSOLE);
+        wxExecute(wxString::Format("networksetup -setsocksfirewallproxystate \"%s\" off", service),
+                  wxEXEC_BLOCK | wxEXEC_HIDE_CONSOLE);
+        wxExecute(wxString::Format("networksetup -setwebproxystate \"%s\" off", service),
+                  wxEXEC_BLOCK | wxEXEC_HIDE_CONSOLE);
+        wxExecute(wxString::Format("networksetup -setsecurewebproxystate \"%s\" off", service),
+                  wxEXEC_BLOCK | wxEXEC_HIDE_CONSOLE);
+        wxExecute(wxString::Format("networksetup -setproxybypassdomains \"%s\" \"%s\"", service, bypass),
+                  wxEXEC_BLOCK | wxEXEC_HIDE_CONSOLE);
+    }
+}
+
+static void clearProxy() {
+    auto services = getNetworkServices();
+    for (auto &service : services) {
+        if (!isNetworkServicesActive(service)) continue;
+        wxExecute(wxString::Format("networksetup -setsocksfirewallproxystate \"%s\" off", service),
+                  wxEXEC_BLOCK | wxEXEC_HIDE_CONSOLE);
+        wxExecute(wxString::Format("networksetup -setwebproxystate \"%s\" off", service),
+                  wxEXEC_BLOCK | wxEXEC_HIDE_CONSOLE);
+        wxExecute(wxString::Format("networksetup -setsecurewebproxystate \"%s\" off", service),
+                  wxEXEC_BLOCK | wxEXEC_HIDE_CONSOLE);
+        wxExecute(wxString::Format("networksetup -setautoproxystate \"%s\" off", service),
+                  wxEXEC_BLOCK | wxEXEC_HIDE_CONSOLE);
+    }
+}
+
+#endif
 
 
 #endif //CLIMBER_UTILS_H

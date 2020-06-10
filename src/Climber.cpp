@@ -99,11 +99,21 @@ void Climber::Restart() {
 }
 
 void Climber::SetSystemProxy() {
-    // TODO
+    const auto &mode = CONFIGURATION.GetProxyMode();
+    if (mode == PROXY_MODE_DIRECT) {
+        ClearSystemProxy();
+    } else if (mode == PROXY_MODE_PAC) {
+        setProxyPac(wxString::Format("http://127.0.0.1:%d/proxy.pac", CONFIGURATION.GetPacPort()),
+                    CONFIGURATION.GetProxyBypass());
+    } else if (mode == PROXY_MODE_GLOBAL) {
+        setProxy("127.0.0.1", CONFIGURATION.GetSocksPort(),
+                 "127.0.0.1", CONFIGURATION.GetHttpPort(),
+                 CONFIGURATION.GetProxyBypass());
+    }
 }
 
 void Climber::ClearSystemProxy() {
-    // TODO
+    clearProxy();
 }
 
 void Climber::RunShadowsocks(const ServerConfItem *conf) {
@@ -158,3 +168,5 @@ void Climber::RunPrivoxy() {
 void Climber::KillPrivoxy() {
     killProcessByName(CLIMBER_PRIVOXY);
 }
+
+// TODO pac server
