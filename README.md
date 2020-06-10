@@ -23,6 +23,7 @@ Build:
 git clone --recurse-submodules https://github.com/Climber7/Climber
 cd Climber
 mkdir build
+cd build
 cmake -DCMAKE_BUILD_TYPE=Release .. 
 make -j8
 ```
@@ -40,6 +41,7 @@ Build:
 git clone --recurse-submodules https://github.com/Climber7/Climber
 cd Climber
 md build
+cd build
 cmake -DCMAKE_BUILD_TYPE=Release .. 
 nmake
 ```
@@ -105,6 +107,18 @@ Click `Open Config Directory` and create a file named `servers.json`
 ```
 
 **Note: Local address and port will be override by Climber, so you can let these empty or delete these key. You can set these values in preferences.**
+
+# Special Thanks
+
+* [wxWidgets](https://www.wxwidgets.org/) For cross platform GUI.
+* [json](https://github.com/nlohmann/json) For json serialization/deserialization.
+* [shadowsocks-libev](https://github.com/shadowsocks/shadowsocks-libev) For shadowsocks support.
+* [shadowsocks-libev-win](https://github.com/DDoSolitary/shadowsocks-libev-win) Windows builds for shadowsocks-libev.
+* [trojan](https://github.com/trojan-gfw/trojan) For trojan support.
+* [privoxy](https://www.privoxy.org/) For converting socks5 proxy to http.
+* [sysproxy](https://github.com/shadowsocks/sysproxy) For system proxy setting on Windows.
+
+And thanks to many other good open source project!
 
 # QA
 

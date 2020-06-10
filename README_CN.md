@@ -23,6 +23,7 @@ Build:
 git clone --recurse-submodules https://github.com/Climber7/Climber
 cd Climber
 mkdir build
+cd build
 cmake -DCMAKE_BUILD_TYPE=Release .. 
 make -j8
 ```
@@ -40,6 +41,7 @@ Build:
 git clone --recurse-submodules https://github.com/Climber7/Climber
 cd Climber
 md build
+cd build
 cmake -DCMAKE_BUILD_TYPE=Release .. 
 nmake
 ```
@@ -105,6 +107,18 @@ nmake
 ```
 
 **注意: 本地监听地址和端口会被 Climber 配置覆盖，所以在配置文件里可以留空这两项或直接删除这两个键。可以在设置中手动设置这两个值。**
+
+# 特别鸣谢
+
+* [wxWidgets](https://www.wxwidgets.org/) 用于跨平台GUI。
+* [json](https://github.com/nlohmann/json) 用于json序列化/反序列化
+* [shadowsocks-libev](https://github.com/shadowsocks/shadowsocks-libev) 用于支持shadowsocks.
+* [shadowsocks-libev-win](https://github.com/DDoSolitary/shadowsocks-libev-win) 用于windows的shadowsocks-libev
+* [trojan](https://github.com/trojan-gfw/trojan) 用于支持trojan。
+* [privoxy](https://www.privoxy.org/) 用于转换socks5代理为http代理。
+* [sysproxy](https://github.com/shadowsocks/sysproxy) 用于Windows设置系统代理。
+
+还有很多优秀的开源项目，不能一一列出，再次感谢！
 
 # 问答
 
