@@ -46,10 +46,6 @@ public:
 
     void SetLanguageIndex(int index);
 
-    bool GetAutoStart() const;
-
-    void SetAutoStart(bool autoStart);
-
     bool GetShareOnLan() const;
 
     void SetShareOnLan(bool shareOnLan);
@@ -95,7 +91,6 @@ private:
     wxString m_proxyMode = DEFAULT_PROXY_MODE;
     int m_selectedServer = -1;
     wxString m_language = DEFAULT_LANGUAGE;
-    bool m_autoStart = DEFAULT_AUTO_START;
     bool m_shareOnLan = DEFAULT_SHARE_ON_LAN;
     int m_socksPort = DEFAULT_SOCKS_PORT;
     int m_httpPort = DEFAULT_HTTP_PORT;

@@ -9,7 +9,7 @@
 GeneralSettingsPage::GeneralSettingsPage(wxWindow *parent, wxWindowID winid)
         : wxPanel(parent, winid) {
 
-    wxFlexGridSizer *flexGridSizer = new wxFlexGridSizer(0, 2, 0, 0);
+    auto *flexGridSizer = new wxFlexGridSizer(0, 2, 0, 0);
     flexGridSizer->SetFlexibleDirection(wxBOTH);
     flexGridSizer->SetNonFlexibleGrowMode(wxFLEX_GROWMODE_SPECIFIED);
 
@@ -18,7 +18,7 @@ GeneralSettingsPage::GeneralSettingsPage(wxWindow *parent, wxWindowID winid)
     languageChoice->SetSelection(CONFIGURATION.GetLanguageIndex());
 
     auto *autoStartCheckBox = new wxCheckBox(this, ID_CHECK_BOX_AUTO_START, wxEmptyString);
-    autoStartCheckBox->SetValue(CONFIGURATION.GetAutoStart());
+    autoStartCheckBox->SetValue(getAutoStart());
 
     flexGridSizer->Add(new wxStaticText(this, wxID_ANY, _("Language")), 0, wxALL, 5);
     flexGridSizer->Add(languageChoice, 0, wxALL, 5);
@@ -43,10 +43,9 @@ void GeneralSettingsPage::OnChooseLanguage(wxCommandEvent &event) {
 
 void GeneralSettingsPage::OnToggleAutoStart(wxCommandEvent &event) {
     bool autoStart = event.IsChecked();
-    if (autoStart == CONFIGURATION.GetAutoStart()) {
+    if (autoStart == getAutoStart()) {
         return;
     }
-    CONFIGURATION.SetAutoStart(autoStart);
     setAutoStart(autoStart);
 }
 

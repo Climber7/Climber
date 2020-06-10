@@ -59,10 +59,10 @@ public:
     ClimberApp() : wxApp() {}
 
     bool OnInit() override {
-        if (!InitLogger()) {
+        if (!Paths::PrepareDirectories()) {
             return false;
         }
-        if (!Paths::PrepareDirectories()) {
+        if (!InitLogger()) {
             return false;
         }
 

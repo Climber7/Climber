@@ -116,7 +116,7 @@ nmake
 * [shadowsocks-libev-win](https://github.com/DDoSolitary/shadowsocks-libev-win) 用于windows的shadowsocks-libev
 * [trojan](https://github.com/trojan-gfw/trojan) 用于支持trojan。
 * [privoxy](https://www.privoxy.org/) 用于转换socks5代理为http代理。
-* [sysproxy](https://github.com/shadowsocks/sysproxy) 用于Windows设置系统代理。
+* [sysproxy](https://github.com/Noisyfox/sysproxy) 用于Windows设置系统代理。
 
 还有很多优秀的开源项目，不能一一列出，再次感谢！
 

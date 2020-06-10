@@ -121,15 +121,6 @@ void Configuration::SetLanguageIndex(int index) {
     SetLanguage(language);
 }
 
-bool Configuration::GetAutoStart() const {
-    return m_autoStart;
-}
-
-void Configuration::SetAutoStart(bool autoStart) {
-    m_autoStart = autoStart;
-    Save();
-}
-
 bool Configuration::GetShareOnLan() const {
     return m_shareOnLan;
 }
@@ -226,10 +217,6 @@ void Configuration::Load() {
         }
     }
 
-    if (obj.find("auto_start") != obj.end()) {
-        m_autoStart = obj["auto_start"];
-    }
-
     if (obj.find("share_on_lan") != obj.end()) {
         m_shareOnLan = obj["share_on_lan"];
     }
@@ -254,7 +241,6 @@ void Configuration::Save() {
     obj["proxy_mode"] = m_proxyMode;
     obj["selected_server"] = m_selectedServer;
     obj["language"] = m_language;
-    obj["auto_start"] = m_autoStart;
     obj["share_on_lan"] = m_shareOnLan;
     obj["socks_port"] = m_socksPort;
     obj["http_port"] = m_httpPort;

@@ -11,7 +11,6 @@
 #include "defs.h"
 #include "AboutFrame.h"
 #include "PreferencesFrame.h"
-#include "ServersSettingsFrame.h"
 
 class SystemTray : public wxTaskBarIcon {
 
@@ -38,8 +37,6 @@ private:
 
     void OnSelectGlobalProxyMode(wxCommandEvent &event);
 
-    void OnShowServersSettings(wxCommandEvent &event);
-
     void OnRefreshServers(wxCommandEvent &event);
 
     void OnShowPreferencesFrame(wxCommandEvent &event);
@@ -59,7 +56,6 @@ private:
 private:
     AboutFrame *m_aboutFrame = nullptr;
     PreferencesFrame *m_preferencesFrame = nullptr;
-    ServersSettingsFrame *m_serversSettingsFrame = nullptr;
 
 DECLARE_EVENT_TABLE()
 

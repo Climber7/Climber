@@ -80,7 +80,6 @@ wxMenu *SystemTray::CreatePacModeMenu() {
 
 wxMenu *SystemTray::CreateServersListMenu() {
     auto *serverListMenu = new wxMenu();
-//    serverListMenu->Append(ID_MENU_SERVERS_SETTINGS, _("Servers Settings"));
     serverListMenu->Append(ID_MENU_SERVERS_REFRESH, _("Refresh"));
 
     const auto &serverList = SERVER_CONF_MANAGER.GetServersList();
@@ -165,24 +164,6 @@ void SystemTray::OnSelectGlobalProxyMode(wxCommandEvent &event) {
     }
 }
 
-void SystemTray::OnShowServersSettings(wxCommandEvent &event) {
-    if (m_serversSettingsFrame == nullptr) {
-        m_serversSettingsFrame = new ServersSettingsFrame(nullptr, ID_FRAME_SERVERS_SETTINGS);
-        m_serversSettingsFrame->Bind(wxEVT_CLOSE_WINDOW, [&](wxCloseEvent &event) {
-            m_serversSettingsFrame = nullptr;
-            event.Skip();
-        });
-    }
-
-//    Raise do not work, why?
-//    m_serversSettingsFrame->Raise();
-
-    long style = m_serversSettingsFrame->GetWindowStyle();
-    m_serversSettingsFrame->SetWindowStyle(style | wxSTAY_ON_TOP);
-    m_serversSettingsFrame->Show();
-    m_serversSettingsFrame->SetWindowStyle(style);
-}
-
 void SystemTray::OnRefreshServers(wxCommandEvent &event) {
     SERVER_CONF_MANAGER.Reload();
     if (CLIMBER.IsRunning()) {
@@ -244,7 +225,6 @@ BEGIN_EVENT_TABLE(SystemTray, wxTaskBarIcon)
                 EVT_MENU(ID_MENU_PROXY_DIRECT_MODE, SystemTray::OnSelectDirectProxyMode)
                 EVT_MENU(ID_MENU_PROXY_PAC_MODE, SystemTray::OnSelectPacProxyMode)
                 EVT_MENU(ID_MENU_PROXY_GLOBAL_MODE, SystemTray::OnSelectGlobalProxyMode)
-                EVT_MENU(ID_MENU_SERVERS_SETTINGS, SystemTray::OnShowServersSettings)
                 EVT_MENU(ID_MENU_SERVERS_REFRESH, SystemTray::OnRefreshServers)
                 EVT_MENU(ID_MENU_PREFERENCES, SystemTray::OnShowPreferencesFrame)
                 EVT_MENU(ID_MENU_OPEN_CONFIG_DIRECTORY, SystemTray::OnOpenConfigDirectory)

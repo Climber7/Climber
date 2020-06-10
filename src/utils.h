@@ -11,8 +11,10 @@
 #include "Paths.h"
 
 #ifdef CLIMBER_WINDOWS
+
 #include <wx/msw/registry.h>
 #include <Windows.h>
+
 #endif
 
 static inline void openDirectory(const wxString &dir) {
@@ -74,15 +76,54 @@ static void writeTextFile(const wxString &file, const wxString &content) {
     out.close();
 }
 
+static bool getAutoStart() {
+    auto name = wxString("Climber");
+    auto path = Paths::GetExecutablePath();
+#ifdef CLIMBER_WINDOWS
+    wxRegKey regKey(wxRegKey::HKCU, "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run");
+    if (regKey.HasValue(name)) {
+        wxString value;
+        regKey.QueryValue(name, value);
+        return value == wxString::Format("\"%s\"", path);
+    } else {
+        return false;
+    }
+#endif
+#ifdef CLIMBER_DARWIN
+    wxString plistFile = Paths::GetHomePath() + "/Library/LaunchAgents/io.github.climber.plist";
+    if (!wxFileExists(plistFile)) {
+        return false;
+    }
+    auto plistContent = readTextFile(plistFile);
+    if (plistContent.find(path) == wxNOT_FOUND) {
+        return false;
+    } else {
+        return true;
+    }
+#endif
+#ifdef CLIMBER_LINUX
+    wxString desktopFile = Paths::GetHomePath() + "/.config/autostart/Climber.desktop";
+    if (!wxFileExists(desktopFile)) {
+        return false;
+    }
+    auto desktopContent = readTextFile(desktopFile);
+    if (desktopContent.find(path) == wxNOT_FOUND) {
+        return false;
+    } else {
+        return true;
+    }
+#endif
+}
+
 static void setAutoStart(bool enable) {
     auto name = wxString("Climber");
     auto path = Paths::GetExecutablePath();
 #ifdef CLIMBER_WINDOWS
-    wxRegKey regKey(HKCU, "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run");
+    wxRegKey regKey(wxRegKey::HKCU, "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run");
     if (enable) {
-        regKey.SetValue(name, path);
+        regKey.SetValue(name, wxString::Format("\"%s\"", path));
     } else {
-        regKey.DeleteKey(name);
+        regKey.DeleteValue(name);
     }
 #endif
 #ifdef CLIMBER_DARWIN
@@ -145,7 +186,8 @@ static void setProxy(
         const wxString &httpHost, int httpPort,
         const wxString &bypass) {
     auto sysproxy = Paths::GetBinDirFile("climber_sysproxy");
-    wxExecute(wxString::Format("\"%s\" global \"%s:%d\" \"%s\"", sysproxy, httpHost, httpPort, bypass), wxEXEC_BLOCK | wxEXEC_HIDE_CONSOLE);
+    wxExecute(wxString::Format("\"%s\" global \"%s:%d\" \"%s\"", sysproxy, httpHost, httpPort, bypass),
+              wxEXEC_BLOCK | wxEXEC_HIDE_CONSOLE);
 }
 
 static void setProxyPac(const wxString &pacUrl, const wxString &bypass) {

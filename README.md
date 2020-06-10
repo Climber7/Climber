@@ -116,7 +116,7 @@ Click `Open Config Directory` and create a file named `servers.json`
 * [shadowsocks-libev-win](https://github.com/DDoSolitary/shadowsocks-libev-win) Windows builds for shadowsocks-libev.
 * [trojan](https://github.com/trojan-gfw/trojan) For trojan support.
 * [privoxy](https://www.privoxy.org/) For converting socks5 proxy to http.
-* [sysproxy](https://github.com/shadowsocks/sysproxy) For system proxy setting on Windows.
+* [sysproxy](https://github.com/Noisyfox/sysproxy) For system proxy setting on Windows.
 
 And thanks to many other good open source project!
 

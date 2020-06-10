@@ -9,7 +9,14 @@ set(CLIMBER_DESCRIPTION "Yet another cross platform ss/trojan GUI client.")
 
 if (WIN32)
     add_compile_options($<$<CXX_COMPILER_ID:MSVC>:/MP>)
+    add_compile_options($<$<CXX_COMPILER_ID:MSVC>:/w44996>)
     add_link_options($<$<CXX_COMPILER_ID:MSVC>:/INCREMENTAL:NO>)
+    set(wxBUILD_USE_STATIC_RUNTIME ON)
+    add_compile_options(
+            $<$<CONFIG:>:/MT>
+            $<$<CONFIG:Debug>:/MTd>
+            $<$<CONFIG:Release>:/MT>
+    )
 endif ()
 
 set(wxBUILD_MONOLITHIC ON)
@@ -76,6 +83,11 @@ if (APPLE)
             COMMAND "${MSGFMT_EXECUTABLE}" "${CMAKE_CURRENT_SOURCE_DIR}/localization/zh_TW.po" -o "${BINARY_RESOURCES_DIR}/zh_TW.lproj/Climber.mo"
     )
 
+    add_custom_target(create_zip COMMAND
+            ${CMAKE_COMMAND} -E tar "cfv" "${CMAKE_CURRENT_BINARY_DIR}/Climber_macos_${CLIMBER_VERSION}.zip" --format=zip
+            "${CMAKE_CURRENT_BINARY_DIR}/Climber.app"
+    )
+
 elseif (WIN32)
     add_definitions(-DCLIMBER_WINDOWS)
 
@@ -126,6 +138,11 @@ elseif (WIN32)
             POST_BUILD
             COMMAND "${MSGFMT_EXECUTABLE}" "${CMAKE_CURRENT_SOURCE_DIR}/localization/zh_CN.po" -o "${BINARY_RESOURCES_DIR}/locale/zh_CN/Climber.mo"
             COMMAND "${MSGFMT_EXECUTABLE}" "${CMAKE_CURRENT_SOURCE_DIR}/localization/zh_TW.po" -o "${BINARY_RESOURCES_DIR}/locale/zh_TW/Climber.mo"
+    )
+
+    add_custom_target(create_zip COMMAND
+            ${CMAKE_COMMAND} -E tar "cfv" "${CMAKE_CURRENT_BINARY_DIR}/Climber_windows_${CLIMBER_VERSION}.zip" --format=zip
+            "${BINARY_RESOURCES_DIR}"
     )
 
 elseif (UNIX AND NOT APPLE)
