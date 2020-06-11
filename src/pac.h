@@ -6,11 +6,11 @@
 #define CLIMBER_PAC_H
 
 #include <wx/wx.h>
-#include <wx/base64.h>
 #include <wx/tokenzr.h>
 #include <nlohmann/json.hpp>
 #include "Paths.h"
 #include "utils.h"
+#include "base64.h"
 
 using nlohmann::json;
 
@@ -23,12 +23,12 @@ static wxString getPacScript(const wxString &tpl, const wxString &host, int sock
         if (wxFileExists(Paths::GetRuleDirFile("gfwlist.txt"))) {
             gfwlistBase64 = readTextFile(Paths::GetRuleDirFile("gfwlist.txt"));
         } else {
-            gfwlistBase64 = readTextFile(Paths::GetAssetsDirFile("gfwlist.txt"));
+            gfwlistBase64 = readTextFile(Paths::GetAssetsDirFile("gfwlist.txt"), "", true);
         }
 
         gfwlistBase64.Replace("\n", "");
-        auto buffer = wxBase64Decode(gfwlistBase64);
-        auto gfwlist = wxString(buffer);
+        auto gfwlist = wxString(base64_decode(gfwlistBase64.ToStdString()));
+
         wxStringTokenizer lines(gfwlist, "\n");
         while (lines.HasMoreTokens()) {
             auto line = lines.GetNextToken();

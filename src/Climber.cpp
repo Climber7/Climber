@@ -154,7 +154,7 @@ void Climber::RunPrivoxy() {
     auto privoxyTmpConfigFile = Paths::GetTmpDirFile("privoxy.conf");
     auto privoxyLogFile = Paths::GetLogDirFile("privoxy.log");
     auto privoxyConfigTplFile = Paths::GetAssetsDirFile("privoxy.conf");
-    auto config = readTextFile(privoxyConfigTplFile);
+    auto config = readTextFile(privoxyConfigTplFile, "", true);
     config.Replace("__PRIVOXY_BIND_IP__", CONFIGURATION.GetShareOnLan() ? "0.0.0.0" : "127.0.0.1");
     config.Replace("__PRIVOXY_BIND_PORT__", wxString::Format("%d", CONFIGURATION.GetHttpPort()));
     config.Replace("__PRIVOXY_LOG_FILE__", privoxyLogFile);
@@ -175,7 +175,7 @@ void Climber::StartPacServer() {
     if (m_pacServerThread != nullptr) return;
 
     m_pacServerThread = new std::thread([&]() {
-        auto pacTpl = readTextFile(Paths::GetAssetsDirFile("proxy.pac"));
+        auto pacTpl = readTextFile(Paths::GetAssetsDirFile("proxy.pac"), "", true);
         m_pacServer = new httplib::Server();
         m_pacServer->Get("/proxy.pac", [&](const httplib::Request &req, httplib::Response &res) {
             auto host = req.headers.find("Host")->second;

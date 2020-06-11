@@ -15,6 +15,16 @@
 // TODO github action
 // TODO windows log
 
+static void signalHandler(int sig) {
+    if (sig == SIGINT) {
+        wxLogMessage("Recv SIGINT, bye!\n");
+        wxExit();
+    } else if (sig == SIGTERM) {
+        wxLogMessage("Recv SIGTERM, bye!\n");
+        wxExit();
+    }
+}
+
 class SingleInstanceChecker {
 public:
     SingleInstanceChecker() {
@@ -82,8 +92,13 @@ public:
             CLIMBER.Start();
         }
 
-        SetSignalHandler(SIGINT, SignalHandler);
-        SetSignalHandler(SIGTERM, SignalHandler);
+#ifdef CLIMBER_WINDOWS
+        signal(SIGINT, signalHandler);
+        signal(SIGTERM, signalHandler);
+#else
+        SetSignalHandler(SIGINT, signalHandler);
+        SetSignalHandler(SIGTERM, signalHandler);
+#endif
 
         return true;
     }
@@ -127,16 +142,6 @@ public:
         // just for keeping event loop running after all other frame closed
         auto *invisibleFrame = new wxFrame(nullptr, wxID_ANY, wxEmptyString, wxDefaultPosition, wxSize(0, 0), 0);
         invisibleFrame->Hide();
-    }
-
-    static void SignalHandler(int sig) {
-        if (sig == SIGINT) {
-            wxLogMessage("Recv SIGINT, bye!\n");
-            wxExit();
-        } else if (sig == SIGTERM) {
-            wxLogMessage("Recv SIGTERM, bye!\n");
-            wxExit();
-        }
     }
 
 private:

@@ -32,6 +32,7 @@ include_directories(vendor/json/single_include)
 add_subdirectory(vendor/zlib)
 add_subdirectory(vendor/openssl-cmake)
 include_directories(vendor/cpp-httplib)
+include_directories(vendor/zlib)
 
 file(GLOB_RECURSE SOURCES src/*.cpp src/*.h)
 

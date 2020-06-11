@@ -55,11 +55,14 @@ static inline void killProcessByName(const wxString &name) {
 #endif
 }
 
-static wxString readTextFile(const wxString &file, const wxString &defaultValue = wxEmptyString) {
+static wxString
+readTextFile(const wxString &file, const wxString &defaultValue = wxEmptyString, bool promptOnFail = false) {
     std::ifstream in(file.ToStdString(), std::ios::in);
     if (!in.is_open()) {
-        wxMessageDialog(nullptr, wxString::Format("Open file \"%s\" failed!", file), _("Error"))
-                .ShowModal();
+        if (promptOnFail) {
+            wxMessageDialog(nullptr, wxString::Format("Open file \"%s\" failed!", file), _("Error"))
+                    .ShowModal();
+        }
         return defaultValue;
     }
     std::stringstream ss;
@@ -190,11 +193,11 @@ static wxString normBypass(const wxString &bypass) {
         auto item = tokens.GetNextToken();
         item.Trim();
         item.Trim(false);
-        if(item.empty()) continue;
+        if (item.empty()) continue;
         bypassArgs += wxString::Format("%s;", item);
     }
-    if(bypassArgs.size() > 0) {
-        bypassArgs = bypassArgs.substr(0, bypassArgs.size()-1);
+    if (bypassArgs.size() > 0) {
+        bypassArgs = bypassArgs.substr(0, bypassArgs.size() - 1);
     }
 
     return bypassArgs;
