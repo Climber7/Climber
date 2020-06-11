@@ -8,6 +8,8 @@
 #include <fstream>
 #include <sstream>
 #include <wx/wx.h>
+#include <wx/clipbrd.h>
+#include <wx/tokenzr.h>
 #include "Paths.h"
 
 #ifdef CLIMBER_WINDOWS
@@ -181,12 +183,29 @@ X-GNOME-Autostart-enabled=true
 
 #ifdef CLIMBER_WINDOWS
 
+static wxString normBypass(const wxString &bypass) {
+    wxString bypassArgs = wxEmptyString;
+    wxStringTokenizer tokens(bypass, ";\n,");
+    while (tokens.HasMoreTokens()) {
+        auto item = tokens.GetNextToken();
+        item.Trim();
+        item.Trim(false);
+        if(item.empty()) continue;
+        bypassArgs += wxString::Format("%s;", item);
+    }
+    if(bypassArgs.size() > 0) {
+        bypassArgs = bypassArgs.substr(0, bypassArgs.size()-1);
+    }
+
+    return bypassArgs;
+}
+
 static void setProxy(
         const wxString &socksHost, int socksPort,
         const wxString &httpHost, int httpPort,
         const wxString &bypass) {
     auto sysproxy = Paths::GetBinDirFile("climber_sysproxy");
-    wxExecute(wxString::Format("\"%s\" global \"%s:%d\" \"%s\"", sysproxy, httpHost, httpPort, bypass),
+    wxExecute(wxString::Format("\"%s\" global \"%s:%d\" \"%s\"", sysproxy, httpHost, httpPort, normBypass(bypass)),
               wxEXEC_BLOCK | wxEXEC_HIDE_CONSOLE);
 }
 
@@ -223,6 +242,19 @@ static bool isNetworkServicesActive(const wxString &service) {
     return false;
 }
 
+static wxString normBypass(const wxString &bypass) {
+    wxString bypassArgs = wxEmptyString;
+    wxStringTokenizer tokens(bypass, ";\n,");
+    while (tokens.HasMoreTokens()) {
+        auto item = tokens.GetNextToken();
+        item.Trim();
+        item.Trim(false);
+        if (item.empty()) continue;
+        bypassArgs += wxString::Format("\"%s\" ", item);
+    }
+    return bypassArgs;
+}
+
 static void setProxy(
         const wxString &socksHost, int socksPort,
         const wxString &httpHost, int httpPort,
@@ -239,7 +271,7 @@ static void setProxy(
                   wxEXEC_BLOCK | wxEXEC_HIDE_CONSOLE);
         wxExecute(wxString::Format("networksetup -setautoproxystate \"%s\" off", service),
                   wxEXEC_BLOCK | wxEXEC_HIDE_CONSOLE);
-        wxExecute(wxString::Format("networksetup -setproxybypassdomains \"%s\" \"%s\"", service, bypass),
+        wxExecute(wxString::Format("networksetup -setproxybypassdomains \"%s\" %s", service, normBypass(bypass)),
                   wxEXEC_BLOCK | wxEXEC_HIDE_CONSOLE);
     }
 }
@@ -256,7 +288,7 @@ static void setProxyPac(const wxString &pacUrl, const wxString &bypass) {
                   wxEXEC_BLOCK | wxEXEC_HIDE_CONSOLE);
         wxExecute(wxString::Format("networksetup -setsecurewebproxystate \"%s\" off", service),
                   wxEXEC_BLOCK | wxEXEC_HIDE_CONSOLE);
-        wxExecute(wxString::Format("networksetup -setproxybypassdomains \"%s\" \"%s\"", service, bypass),
+        wxExecute(wxString::Format("networksetup -setproxybypassdomains \"%s\" %s", service, normBypass(bypass)),
                   wxEXEC_BLOCK | wxEXEC_HIDE_CONSOLE);
     }
 }
@@ -273,60 +305,20 @@ static void clearProxy() {
                   wxEXEC_BLOCK | wxEXEC_HIDE_CONSOLE);
         wxExecute(wxString::Format("networksetup -setautoproxystate \"%s\" off", service),
                   wxEXEC_BLOCK | wxEXEC_HIDE_CONSOLE);
+        wxExecute(wxString::Format("networksetup -setproxybypassdomains \"%s\" \"\"", service),
+                  wxEXEC_BLOCK | wxEXEC_HIDE_CONSOLE);
     }
 }
 
 #endif
 
-
-static const wxString base64_chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
-
-static inline bool is_base64(unsigned char c) {
-    return (isalnum(c) || (c == '+') || (c == '/'));
-}
-
-static wxString base64Decode(wxString strSource) {
-    int in_len = strSource.Len();
-    int i = 0;
-    int j = 0;
-    int in_ = 0;
-    unsigned char char_array_4[4], char_array_3[3];
-    wxString ret;
-
-    while (in_len-- && (strSource[in_] != '=') && is_base64(strSource[in_])) {
-        char_array_4[i++] = strSource[in_];
-        in_++;
-        if (i == 4) {
-            for (i = 0; i < 4; i++)
-                char_array_4[i] = base64_chars.find(char_array_4[i]);
-
-            char_array_3[0] = (char_array_4[0] << 2) + ((char_array_4[1] & 0x30) >> 4);
-            char_array_3[1] = ((char_array_4[1] & 0xf) << 4) + ((char_array_4[2] & 0x3c) >> 2);
-            char_array_3[2] = ((char_array_4[2] & 0x3) << 6) + char_array_4[3];
-
-            for (i = 0; (i < 3); i++)
-                ret += char_array_3[i];
-
-            i = 0;
-        }
+static void setClipboardText(const wxString &text) {
+    if (wxTheClipboard->Open()) {
+        wxTheClipboard->Clear();
+        wxTheClipboard->SetData(new wxTextDataObject(text));
+        wxTheClipboard->Flush();
+        wxTheClipboard->Close();
     }
-
-    if (i) {
-        for (j = i; j < 4; j++)
-            char_array_4[j] = 0;
-
-        for (j = 0; j < 4; j++)
-            char_array_4[j] = base64_chars.find(char_array_4[j]);
-
-        char_array_3[0] = (char_array_4[0] << 2) + ((char_array_4[1] & 0x30) >> 4);
-        char_array_3[1] = ((char_array_4[1] & 0xf) << 4) + ((char_array_4[2] & 0x3c) >> 2);
-        char_array_3[2] = ((char_array_4[2] & 0x3) << 6) + char_array_4[3];
-
-        for (j = 0; (j < i - 1); j++)
-            ret += char_array_3[j];
-    }
-
-    return ret;
 }
 
 

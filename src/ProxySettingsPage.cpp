@@ -17,6 +17,7 @@ ProxySettingsPage::ProxySettingsPage(wxWindow *parent, wxWindowID winid)
     m_socksPort = CONFIGURATION.GetSocksPort();
     m_httpPort = CONFIGURATION.GetHttpPort();
     m_pacPort = CONFIGURATION.GetPacPort();
+    m_proxyBypass = CONFIGURATION.GetProxyBypass();
 
     m_shareOnLanCheckBox = new wxCheckBox(this, ID_CHECK_BOX_SHARE_ON_LAN, wxEmptyString);
     m_shareOnLanCheckBox->SetValue(m_shareOnLan);
@@ -29,6 +30,8 @@ ProxySettingsPage::ProxySettingsPage(wxWindow *parent, wxWindowID winid)
 
     m_pacPortSpin = new wxSpinCtrl(this, ID_SPIN_PAC_PORT, wxEmptyString, wxDefaultPosition, wxDefaultSize,
                                    wxSP_ARROW_KEYS, 1, 65535, m_pacPort);
+    m_proxyBypassTextCtrl = new wxTextCtrl(this, ID_TEXT_CTRL_PROXY_BYPASS, m_proxyBypass, wxDefaultPosition,
+                                           wxSize(240, -1), wxTE_MULTILINE);
 
     flexGridSizer->Add(new wxStaticText(this, wxID_ANY, _("Share on Lan")), 0, wxALL, 5);
     flexGridSizer->Add(m_shareOnLanCheckBox, 0, wxALL, 5);
@@ -38,6 +41,8 @@ ProxySettingsPage::ProxySettingsPage(wxWindow *parent, wxWindowID winid)
     flexGridSizer->Add(m_httpPortSpin, 0, wxALL, 5);
     flexGridSizer->Add(new wxStaticText(this, wxID_ANY, _("PAC Port")), 0, wxALL, 5);
     flexGridSizer->Add(m_pacPortSpin, 0, wxALL, 5);
+    flexGridSizer->Add(new wxStaticText(this, wxID_ANY, _("Proxy Bypass")), 0, wxALL, 5);
+    flexGridSizer->Add(m_proxyBypassTextCtrl, 0, wxALL, 5);
 
     auto *stdButtonSizer = new wxBoxSizer(wxHORIZONTAL);
     stdButtonSizer->Add(new wxButton(this, ID_BUTTON_CANCEL_PROXY_SETTINGS, _("Cancel")), 0, wxALIGN_BOTTOM | wxALL, 5);
@@ -52,6 +57,11 @@ ProxySettingsPage::ProxySettingsPage(wxWindow *parent, wxWindowID winid)
 }
 
 void ProxySettingsPage::CheckUnsavedChanges() {
+    if (m_proxyBypassTextCtrl->GetValue() != CONFIGURATION.GetProxyBypass()) {
+        m_hasUnsavedChanges = true;
+        m_proxyBypass = m_proxyBypassTextCtrl->GetValue();
+    }
+
     if (!m_hasUnsavedChanges) return;
     wxMessageDialog dlg(this, _("Your have unsaved changes, apply now?"),
                         _("Warning"), wxYES_NO | wxCENTRE);
@@ -65,12 +75,19 @@ void ProxySettingsPage::CheckUnsavedChanges() {
 }
 
 void ProxySettingsPage::ApplyProxySettings() {
+    if (m_proxyBypassTextCtrl->GetValue() != CONFIGURATION.GetProxyBypass()) {
+        m_hasUnsavedChanges = true;
+        m_proxyBypass = m_proxyBypassTextCtrl->GetValue();
+    }
+
     if (!m_hasUnsavedChanges) {
         wxMessageDialog(this, wxString::Format(_("No changes!"), m_socksPort), _("Information")).ShowModal();
         return;
     }
 
     bool needRestart = false;
+    bool needResetSystemProxy = false;
+
     if (m_shareOnLan != CONFIGURATION.GetShareOnLan()) {
         CONFIGURATION.SetShareOnLan(m_shareOnLan);
         needRestart = true;
@@ -100,10 +117,19 @@ void ProxySettingsPage::ApplyProxySettings() {
             needRestart = true;
         }
     }
+    if (m_proxyBypass != CONFIGURATION.GetProxyBypass()) {
+        CONFIGURATION.SetProxyBypass(m_proxyBypass);
+        needResetSystemProxy = true;
+    }
 
     if (needRestart) {
         if (CLIMBER.IsRunning()) {
             CLIMBER.Restart();
+        }
+    } else if (needResetSystemProxy) {
+        if (CLIMBER.IsRunning()) {
+            CLIMBER.ClearSystemProxy();
+            CLIMBER.SetSystemProxy();
         }
     }
 

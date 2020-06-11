@@ -8,9 +8,22 @@
 #include <wx/wx.h>
 #include <wx/taskbar.h>
 #include <wx/windowptr.h>
+#include <wx/thread.h>
 #include "defs.h"
 #include "AboutFrame.h"
 #include "PreferencesFrame.h"
+
+DEFINE_EVENT_TYPE(wxEVT_UPDATE_GFWLIST_FINISHED)
+
+class UpdateGfwlistThread : public wxThread {
+public:
+    UpdateGfwlistThread(wxEvtHandler *parent) : wxThread(), m_parent(parent) {}
+
+protected:
+    ExitCode Entry() override;
+
+    wxEvtHandler *m_parent;
+};
 
 class SystemTray : public wxTaskBarIcon {
 
@@ -22,7 +35,7 @@ protected:
 
     wxMenu *CreateProxyModeMenu();
 
-    wxMenu *CreatePacModeMenu();
+    wxMenu *CreatePacMenu();
 
     wxMenu *CreateServersListMenu();
 
@@ -37,9 +50,19 @@ private:
 
     void OnSelectGlobalProxyMode(wxCommandEvent &event);
 
+    void OnUpdateGfwlist(wxCommandEvent &event);
+
+    void OnUpdateGfwlistFinished(wxCommandEvent &event);
+
+    void OnEditUserRules(wxCommandEvent &event);
+
     void OnRefreshServers(wxCommandEvent &event);
 
     void OnShowPreferencesFrame(wxCommandEvent &event);
+
+    void OnCopyProxyCommandBash(wxCommandEvent &event);
+
+    void OnCopyProxyCommandCmd(wxCommandEvent &event);
 
     void OnOpenConfigDirectory(wxCommandEvent &event);
 
@@ -56,6 +79,7 @@ private:
 private:
     AboutFrame *m_aboutFrame = nullptr;
     PreferencesFrame *m_preferencesFrame = nullptr;
+    UpdateGfwlistThread *m_updateGfwlistThread = nullptr;
 
 DECLARE_EVENT_TABLE()
 

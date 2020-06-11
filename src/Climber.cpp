@@ -33,6 +33,7 @@ void Climber::Init() {
 
 void Climber::Destroy() {
     if (s_instance != nullptr) {
+        s_instance->StopPacServer(false);
         s_instance->Stop();
         delete s_instance;
         s_instance = nullptr;
@@ -87,10 +88,10 @@ void Climber::Start() {
 }
 
 void Climber::Stop() {
+    ClearSystemProxy();
     KillClient();
     KillPrivoxy();
     StopPacServer();
-    ClearSystemProxy();
     m_running = false;
 }
 
@@ -115,11 +116,6 @@ void Climber::SetSystemProxy() {
 
 void Climber::ClearSystemProxy() {
     clearProxy();
-}
-
-void Climber::RestartPacServer() {
-    StopPacServer();
-    StartPacServer();
 }
 
 void Climber::RunShadowsocks(const ServerConfItem *conf) {
@@ -196,20 +192,27 @@ void Climber::StartPacServer() {
         wxLogMessage("PAC server start at %s:%d",
                      CONFIGURATION.GetShareOnLan() ? "0.0.0.0" : "127.0.0.1",
                      CONFIGURATION.GetPacPort());
-        m_pacServer->listen(CONFIGURATION.GetShareOnLan() ? "0.0.0.0" : "127.0.0.1", CONFIGURATION.GetPacPort());
+        bool ok = m_pacServer->listen(CONFIGURATION.GetShareOnLan() ? "0.0.0.0" : "127.0.0.1",
+                                      CONFIGURATION.GetPacPort());
+        if (!ok) {
+            wxLogMessage("PAC server error listening!");
+        }
     });
 }
 
-void Climber::StopPacServer() {
+void Climber::StopPacServer(bool joinThread) {
     if (m_pacServer == nullptr) return;
 
     m_pacServer->stop();
-    m_pacServerThread->join();
 
-    wxLogMessage("PAC server stopped");
+    if (joinThread && m_pacServerThread->joinable()) {
+        m_pacServerThread->join();
+        delete m_pacServerThread;
+    }
 
     delete m_pacServer;
-    delete m_pacServerThread;
     m_pacServer = nullptr;
     m_pacServerThread = nullptr;
+
+    wxLogMessage("PAC server stopped!");
 }

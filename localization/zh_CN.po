@@ -84,6 +84,15 @@ msgstr "全局模式"
 msgid "Servers Settings"
 msgstr "服务器设置"
 
+msgid "PAC"
+msgstr "PAC"
+
+msgid "Update gfwlist.txt"
+msgstr "更新 gfwlist.txt"
+
+msgid "Edit User Rules"
+msgstr "编辑用户规则"
+
 msgid "Refresh"
 msgstr "刷新"
 
@@ -200,3 +209,15 @@ msgstr "开启 Climber 失败，请检查日志。"
 
 msgid "Another program instance is already running, aborting."
 msgstr "已经有一个实例正在运行！"
+
+msgid "Update gfwlist suc!"
+msgstr "更新 gfwlist 成功！"
+
+msgid "Update gfwlist failed!"
+msgstr "更新 gfwlist 失败！"
+
+msgid "You must turn on Climber first to update gfwlist!"
+msgstr "你必须先开启 Climber 才能更新 gfwlist"
+
+msgid "Proxy Bypass"
+msgstr "忽略代理"

@@ -12,13 +12,6 @@
 #include "Paths.h"
 #include "utils.h"
 
-void signalHandler(int sig) {
-    if (sig == SIGINT || sig == SIGTERM) {
-        wxLogMessage("Recv signal %d, bye!\n", sig);
-        wxExit();
-    }
-}
-
 class SingleInstanceChecker {
 public:
     SingleInstanceChecker() {
@@ -86,8 +79,8 @@ public:
             CLIMBER.Start();
         }
 
-        signal(SIGINT, signalHandler);
-        signal(SIGTERM, signalHandler);
+        SetSignalHandler(SIGINT, SignalHandler);
+        SetSignalHandler(SIGTERM, SignalHandler);
 
         return true;
     }
@@ -133,11 +126,20 @@ public:
         invisibleFrame->Hide();
     }
 
+    static void SignalHandler(int sig) {
+        if (sig == SIGINT) {
+            wxLogMessage("Recv SIGINT, bye!\n");
+            wxExit();
+        } else if (sig == SIGTERM) {
+            wxLogMessage("Recv SIGTERM, bye!\n");
+            wxExit();
+        }
+    }
+
 private:
     wxString m_climberLogFile = wxEmptyString;
     std::ofstream m_logStream;
     SingleInstanceChecker *m_checker;
-
 };
 
 wxIMPLEMENT_APP(ClimberApp);

@@ -30,8 +30,8 @@ wxMenu *SystemTray::CreatePopupMenu() {
     m_taskBarMenu->AppendSeparator();
 
     m_taskBarMenu->AppendSubMenu(CreateProxyModeMenu(), _("Proxy Mode"));
-    m_taskBarMenu->AppendSubMenu(CreatePacModeMenu(), _("PAC Mode"));
     m_taskBarMenu->AppendSubMenu(CreateServersListMenu(), _("Servers"));
+    m_taskBarMenu->AppendSubMenu(CreatePacMenu(), _("PAC"));
 
     m_taskBarMenu->AppendSeparator();
 
@@ -71,11 +71,11 @@ wxMenu *SystemTray::CreateProxyModeMenu() {
     return proxyModeMenu;
 }
 
-wxMenu *SystemTray::CreatePacModeMenu() {
-    auto *pacModeMenu = new wxMenu();
-    // TODO pac list, when change pac file, restart pac server
-    pacModeMenu->Append(wxID_ANY, "...");
-    return pacModeMenu;
+wxMenu *SystemTray::CreatePacMenu() {
+    auto *pacMenu = new wxMenu();
+    pacMenu->Append(ID_MENU_UPDATE_GFWLIST, _("Update gfwlist.txt"));
+    pacMenu->Append(ID_MENU_EDIT_USER_RULE, _("Edit User Rules"));
+    return pacMenu;
 }
 
 wxMenu *SystemTray::CreateServersListMenu() {
@@ -117,8 +117,9 @@ wxMenu *SystemTray::CreateServersListMenu() {
 wxMenu *SystemTray::CreateCopyCommandMenu() {
     auto *copyCommandMenu = new wxMenu();
     copyCommandMenu->Append(ID_MENU_COPY_TERMINAL_PROXY_COMMAND_BASH, _("For Bash"));
-    copyCommandMenu->Append(ID_MENU_COPY_TERMINAL_PROXY_COMMAND_SHELL, _("For Shell"));
+//#ifdef CLIMBER_WINDOWS
     copyCommandMenu->Append(ID_MENU_COPY_TERMINAL_PROXY_COMMAND_CMD, _("For CMD"));
+//#endif
     return copyCommandMenu;
 }
 
@@ -164,6 +165,52 @@ void SystemTray::OnSelectGlobalProxyMode(wxCommandEvent &event) {
     }
 }
 
+void SystemTray::OnUpdateGfwlist(wxCommandEvent &event) {
+    if (m_updateGfwlistThread != nullptr) {
+        return;
+    }
+    if (!CLIMBER.IsRunning()) {
+        wxMessageDialog(nullptr, _("You must turn on Climber first to update gfwlist!"), _("Warning")).ShowModal();
+        return;
+    }
+
+    m_updateGfwlistThread = new UpdateGfwlistThread(this);
+    m_updateGfwlistThread->Run();
+}
+
+wxThread::ExitCode UpdateGfwlistThread::Entry() {
+    httplib::SSLClient client("github.com", 443);
+    client.set_proxy("127.0.0.1", CONFIGURATION.GetHttpPort());
+    auto res = client.Get("/gfwlist/gfwlist/blob/master/gfwlist.txt");
+    if (res && res->status == 200) {
+        writeTextFile(Paths::GetRuleDirFile("gfwlist.txt"), wxString(res->body));
+        wxCommandEvent event(wxEVT_UPDATE_GFWLIST_FINISHED, wxID_ANY);
+        event.SetInt(1);
+        m_parent->AddPendingEvent(event);
+    } else {
+        wxCommandEvent event(wxEVT_UPDATE_GFWLIST_FINISHED, wxID_ANY);
+        event.SetInt(0);
+        m_parent->AddPendingEvent(event);
+    }
+    return 0;
+}
+
+void SystemTray::OnUpdateGfwlistFinished(wxCommandEvent &event) {
+    m_updateGfwlistThread = nullptr;
+    if (event.GetInt()) {
+        wxMessageDialog(nullptr, _("Update gfwlist suc!"), _("Information")).ShowModal();
+    } else {
+        wxMessageDialog(nullptr, _("Update gfwlist failed!"), _("Warning")).ShowModal();
+    }
+}
+
+void SystemTray::OnEditUserRules(wxCommandEvent &event) {
+    if (!wxFileExists(Paths::GetRuleDirFile("user-rule.txt"))) {
+        wxCopyFile(Paths::GetAssetsDirFile("user-rule.txt"), Paths::GetRuleDirFile("user-rule.txt"));
+    }
+    openDirectory(Paths::GetRuleDir());
+}
+
 void SystemTray::OnRefreshServers(wxCommandEvent &event) {
     SERVER_CONF_MANAGER.Reload();
     if (CLIMBER.IsRunning()) {
@@ -187,6 +234,24 @@ void SystemTray::OnShowPreferencesFrame(wxCommandEvent &event) {
     m_preferencesFrame->SetWindowStyle(style | wxSTAY_ON_TOP);
     m_preferencesFrame->Show();
     m_preferencesFrame->SetWindowStyle(style);
+}
+
+void SystemTray::OnCopyProxyCommandBash(wxCommandEvent &event) {
+    setClipboardText(wxString::Format(
+            "export all_proxy=socks5://127.0.0.1:%d; export http_proxy=http://127.0.0.1:%d; export https_proxy=http://127.0.0.1:%d;",
+            CONFIGURATION.GetSocksPort(),
+            CONFIGURATION.GetHttpPort(),
+            CONFIGURATION.GetHttpPort()
+    ));
+}
+
+void SystemTray::OnCopyProxyCommandCmd(wxCommandEvent &event) {
+    setClipboardText(wxString::Format(
+            "set all_proxy=socks5://127.0.0.1:%d&&set http_proxy=http://127.0.0.1:%d&&set https_proxy=http://127.0.0.1:%d",
+            CONFIGURATION.GetSocksPort(),
+            CONFIGURATION.GetHttpPort(),
+            CONFIGURATION.GetHttpPort()
+    ));
 }
 
 void SystemTray::OnOpenConfigDirectory(wxCommandEvent &event) {
@@ -225,8 +290,13 @@ BEGIN_EVENT_TABLE(SystemTray, wxTaskBarIcon)
                 EVT_MENU(ID_MENU_PROXY_DIRECT_MODE, SystemTray::OnSelectDirectProxyMode)
                 EVT_MENU(ID_MENU_PROXY_PAC_MODE, SystemTray::OnSelectPacProxyMode)
                 EVT_MENU(ID_MENU_PROXY_GLOBAL_MODE, SystemTray::OnSelectGlobalProxyMode)
+                EVT_MENU(ID_MENU_UPDATE_GFWLIST, SystemTray::OnUpdateGfwlist)
+                EVT_COMMAND(wxID_ANY, wxEVT_UPDATE_GFWLIST_FINISHED, SystemTray::OnUpdateGfwlistFinished)
+                EVT_MENU(ID_MENU_EDIT_USER_RULE, SystemTray::OnEditUserRules)
                 EVT_MENU(ID_MENU_SERVERS_REFRESH, SystemTray::OnRefreshServers)
                 EVT_MENU(ID_MENU_PREFERENCES, SystemTray::OnShowPreferencesFrame)
+                EVT_MENU(ID_MENU_COPY_TERMINAL_PROXY_COMMAND_BASH, SystemTray::OnCopyProxyCommandBash)
+                EVT_MENU(ID_MENU_COPY_TERMINAL_PROXY_COMMAND_CMD, SystemTray::OnCopyProxyCommandCmd)
                 EVT_MENU(ID_MENU_OPEN_CONFIG_DIRECTORY, SystemTray::OnOpenConfigDirectory)
                 EVT_MENU(ID_MENU_OPEN_LOG_DIRECTORY, SystemTray::OnOpenLogDirectory)
                 EVT_MENU(ID_MENU_ABOUT, SystemTray::OnShowAboutFrame)

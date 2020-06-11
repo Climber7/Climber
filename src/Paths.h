@@ -118,17 +118,11 @@ public:
 #endif
 
     static bool PrepareDirectories() {
-        bool ok = PrepareDirectory(GetDataDir())
-                  && PrepareDirectory(GetConfigDir())
-                  && PrepareDirectory(GetRuleDir())
-                  && PrepareDirectory(GetLogDir())
-                  && PrepareDirectory(GetTmpDir());
-        if (!ok) return ok;
-
-        if (!wxFileExists(Paths::GetRuleDirFile("user-rule.txt"))) {
-            ok = wxCopyFile(Paths::GetAssetsDirFile("user-rule.txt"), Paths::GetRuleDirFile("user-rule.txt"));
-        }
-        return ok;
+        return PrepareDirectory(GetDataDir())
+               && PrepareDirectory(GetConfigDir())
+               && PrepareDirectory(GetRuleDir())
+               && PrepareDirectory(GetLogDir())
+               && PrepareDirectory(GetTmpDir());
     }
 
 private:

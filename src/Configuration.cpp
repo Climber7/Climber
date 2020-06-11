@@ -8,6 +8,13 @@
 #include "Paths.h"
 #include "utils.h"
 
+#ifdef CLIMBER_DARWIN
+#define PROXY_BYPASS_KEY ("proxy_bypass_darwin")
+#endif
+#ifdef CLIMBER_WINDOWS
+#define PROXY_BYPASS_KEY ("proxy_bypass_windows")
+#endif
+
 using nlohmann::json;
 
 Configuration *Configuration::s_instance = nullptr;
@@ -157,6 +164,15 @@ void Configuration::SetPacPort(int port) {
     Save();
 }
 
+const wxString &Configuration::GetProxyBypass() {
+    return m_proxyBypass;
+}
+
+void Configuration::SetProxyBypass(const wxString &bypass) {
+    m_proxyBypass = bypass;
+    Save();
+}
+
 bool Configuration::PortAlreadyInUse(int port) const {
     return m_socksPort == port
            || m_httpPort == port
@@ -233,6 +249,11 @@ void Configuration::Load() {
         m_pacPort = obj["pac_port"];
     }
 
+    if (obj.find(PROXY_BYPASS_KEY) != obj.end()) {
+        std::string bypass = obj[PROXY_BYPASS_KEY];
+        m_proxyBypass = wxString(bypass);
+    }
+
 }
 
 void Configuration::Save() {
@@ -245,6 +266,7 @@ void Configuration::Save() {
     obj["socks_port"] = m_socksPort;
     obj["http_port"] = m_httpPort;
     obj["pac_port"] = m_pacPort;
+    obj[PROXY_BYPASS_KEY] = m_proxyBypass;
     writeTextFile(m_configurationFile, wxString(obj.dump(4)));
 }
 

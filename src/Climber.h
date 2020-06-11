@@ -38,8 +38,6 @@ public:
 
     void ClearSystemProxy();
 
-    void RestartPacServer();
-
 private:
     static void RunShadowsocks(const ServerConfItem *conf);
 
@@ -53,7 +51,7 @@ private:
 
     void StartPacServer();
 
-    void StopPacServer();
+    void StopPacServer(bool joinThread = true);
 
 private:
     bool m_running = false;
