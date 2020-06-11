@@ -284,7 +284,7 @@ void SystemTray::OnCheckForUpdates(wxCommandEvent &event) {
 wxThread::ExitCode CheckForUpdatesThread::Entry() {
     httplib::SSLClient client("api.github.com", 443);
     client.set_proxy("127.0.0.1", CONFIGURATION.GetHttpPort());
-    auto res = client.Get("/repos/Climber7/Climber/releases");
+    auto res = client.Get("/repos/Climber7/Climber/releases/latest");
     if (res && res->status == 200) {
         wxCommandEvent event(wxEVT_CHECK_FOR_UPDATES_FINISHED, wxID_ANY);
         event.SetInt(1);
@@ -301,12 +301,7 @@ wxThread::ExitCode CheckForUpdatesThread::Entry() {
 void SystemTray::OnCheckForUpdatesFinished(wxCommandEvent &event) {
     m_checkForUpdatesThread = nullptr;
     if (event.GetInt()) {
-        auto releases = json::parse(event.GetString().ToStdString());
-        if (releases.size() == 0) {
-            wxMessageDialog(nullptr, _("Already up-to-date!"), _("Information")).ShowModal();
-            return;
-        }
-        auto release = releases[0];
+        auto release = json::parse(event.GetString().ToStdString());
         std::string tagName = release["tag_name"];
         auto version = wxString(tagName);
         if (version.starts_with("v")) {
