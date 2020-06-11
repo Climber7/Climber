@@ -89,9 +89,11 @@ if (APPLE)
             COMMAND "${MSGFMT_EXECUTABLE}" "${CMAKE_CURRENT_SOURCE_DIR}/localization/zh_TW.po" -o "${BINARY_RESOURCES_DIR}/zh_TW.lproj/Climber.mo"
     )
 
-    add_custom_target(create_zip COMMAND
-            ${CMAKE_COMMAND} -E tar "cfv" "${CMAKE_CURRENT_BINARY_DIR}/Climber_macos_${CLIMBER_VERSION}.zip" --format=zip
-            "${CMAKE_CURRENT_BINARY_DIR}/Climber.app"
+    set(CLIMBER_ZIP "${CMAKE_CURRENT_BINARY_DIR}/Climber_macos_${CLIMBER_VERSION}.zip")
+
+    add_custom_target(create_zip
+            COMMAND ${CMAKE_COMMAND} -E rm -f "${CLIMBER_ZIP}"
+            COMMAND ${CMAKE_COMMAND} -E tar cfv "${CLIMBER_ZIP}" --format=zip "${CMAKE_CURRENT_BINARY_DIR}/Climber.app"
     )
 
 elseif (WIN32)
@@ -136,7 +138,6 @@ elseif (WIN32)
     configure_file("${SOURCE_BIN_DIR}/climber_trojan.exe" "${BINARY_BIN_DIR}/climber_trojan.exe" COPYONLY)
     configure_file("${SOURCE_BIN_DIR}/climber_privoxy.exe" "${BINARY_BIN_DIR}/climber_privoxy.exe" COPYONLY)
     configure_file("${SOURCE_BIN_DIR}/climber_sysproxy.exe" "${BINARY_BIN_DIR}/climber_sysproxy.exe" COPYONLY)
-    configure_file("${SOURCE_BIN_DIR}/libsscrypto.dll" "${BINARY_BIN_DIR}/libsscrypto.dll" COPYONLY)
 
     set(MSGFMT_EXECUTABLE "${CMAKE_CURRENT_SOURCE_DIR}/tools/win32/msgfmt.exe")
 
@@ -149,9 +150,11 @@ elseif (WIN32)
             COMMAND "${MSGFMT_EXECUTABLE}" "${CMAKE_CURRENT_SOURCE_DIR}/localization/zh_TW.po" -o "${BINARY_RESOURCES_DIR}/locale/zh_TW/Climber.mo"
     )
 
-    add_custom_target(create_zip COMMAND
-            ${CMAKE_COMMAND} -E tar "cfv" "${CMAKE_CURRENT_BINARY_DIR}/Climber_windows_${CLIMBER_VERSION}.zip" --format=zip
-            "${BINARY_RESOURCES_DIR}"
+    set(CLIMBER_ZIP "${CMAKE_CURRENT_BINARY_DIR}/Climber_windows_${CLIMBER_VERSION}.zip")
+
+    add_custom_target(create_zip
+            COMMAND ${CMAKE_COMMAND} -E rm -f "${CLIMBER_ZIP}"
+            COMMAND ${CMAKE_COMMAND} -E tar cfv "${CLIMBER_ZIP}" --format=zip "${BINARY_RESOURCES_DIR}"
     )
 
 elseif (UNIX AND NOT APPLE)
