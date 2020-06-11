@@ -2,13 +2,12 @@
 // Created by Climber on 2020/6/9.
 //
 
-#include <fstream>
-#include <sstream>
 #include "utils.h"
 #include "Climber.h"
 #include "Configuration.h"
 #include "ServerConfManager.h"
 #include "Paths.h"
+#include "pac.h"
 
 #ifdef CLIMBER_WINDOWS
 
@@ -81,6 +80,7 @@ void Climber::Start() {
     }
 
     RunPrivoxy();
+    StartPacServer();
     SetSystemProxy();
 
     m_running = true;
@@ -89,6 +89,7 @@ void Climber::Start() {
 void Climber::Stop() {
     KillClient();
     KillPrivoxy();
+    StopPacServer();
     ClearSystemProxy();
     m_running = false;
 }
@@ -114,6 +115,11 @@ void Climber::SetSystemProxy() {
 
 void Climber::ClearSystemProxy() {
     clearProxy();
+}
+
+void Climber::RestartPacServer() {
+    StopPacServer();
+    StartPacServer();
 }
 
 void Climber::RunShadowsocks(const ServerConfItem *conf) {
@@ -169,4 +175,41 @@ void Climber::KillPrivoxy() {
     killProcessByName(CLIMBER_PRIVOXY);
 }
 
-// TODO pac server
+void Climber::StartPacServer() {
+    if (m_pacServerThread != nullptr) return;
+
+    m_pacServerThread = new std::thread([&]() {
+        auto pacTpl = readTextFile(Paths::GetAssetsDirFile("proxy.pac"));
+        m_pacServer = new httplib::Server();
+        m_pacServer->Get("/proxy.pac", [&](const httplib::Request &req, httplib::Response &res) {
+            auto host = req.headers.find("Host")->second;
+            std::string ip;
+            auto startPos = host.find(":");
+            if (startPos != wxNOT_FOUND) {
+                ip = host.substr(0, startPos);
+            } else {
+                ip = host;
+            }
+            wxString pac = getPacScript(pacTpl, ip, CONFIGURATION.GetSocksPort(), CONFIGURATION.GetHttpPort());
+            res.set_content(pac.ToStdString(), "text/plain");
+        });
+        wxLogMessage("PAC server start at %s:%d",
+                     CONFIGURATION.GetShareOnLan() ? "0.0.0.0" : "127.0.0.1",
+                     CONFIGURATION.GetPacPort());
+        m_pacServer->listen(CONFIGURATION.GetShareOnLan() ? "0.0.0.0" : "127.0.0.1", CONFIGURATION.GetPacPort());
+    });
+}
+
+void Climber::StopPacServer() {
+    if (m_pacServer == nullptr) return;
+
+    m_pacServer->stop();
+    m_pacServerThread->join();
+
+    wxLogMessage("PAC server stopped");
+
+    delete m_pacServer;
+    delete m_pacServerThread;
+    m_pacServer = nullptr;
+    m_pacServerThread = nullptr;
+}

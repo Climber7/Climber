@@ -29,6 +29,9 @@ set(wxUSE_LIBTIFF OFF)
 
 add_subdirectory(vendor/wxWidgets)
 include_directories(vendor/json/single_include)
+add_subdirectory(vendor/zlib)
+add_subdirectory(vendor/openssl-cmake)
+include_directories(vendor/cpp-httplib)
 
 file(GLOB_RECURSE SOURCES src/*.cpp src/*.h)
 
@@ -52,6 +55,9 @@ if (APPLE)
 
     configure_file("${SOURCE_ASSETS_DIR}/icon.png" "${BINARY_ASSETS_DIR}/icon.png" COPYONLY)
     configure_file("${SOURCE_ASSETS_DIR}/privoxy.conf" "${BINARY_ASSETS_DIR}/privoxy.conf" COPYONLY)
+    configure_file("${SOURCE_ASSETS_DIR}/gfwlist.txt" "${BINARY_ASSETS_DIR}/gfwlist.txt" COPYONLY)
+    configure_file("${SOURCE_ASSETS_DIR}/user-rule.txt" "${BINARY_ASSETS_DIR}/user-rule.txt" COPYONLY)
+    configure_file("${SOURCE_ASSETS_DIR}/proxy.pac" "${BINARY_ASSETS_DIR}/proxy.pac" COPYONLY)
 
     configure_file("${SOURCE_BIN_DIR}/climber_shadowsocks_libev" "${BINARY_BIN_DIR}/climber_shadowsocks_libev" COPYONLY)
     configure_file("${SOURCE_BIN_DIR}/libev.4.dylib" "${BINARY_BIN_DIR}/libev.4.dylib" COPYONLY)
@@ -112,6 +118,9 @@ elseif (WIN32)
 
     configure_file("${SOURCE_ASSETS_DIR}/icon.png" "${BINARY_ASSETS_DIR}/icon.png" COPYONLY)
     configure_file("${SOURCE_ASSETS_DIR}/privoxy.conf" "${BINARY_ASSETS_DIR}/privoxy.conf" COPYONLY)
+    configure_file("${SOURCE_ASSETS_DIR}/gfwlist.txt" "${BINARY_ASSETS_DIR}/gfwlist.txt" COPYONLY)
+    configure_file("${SOURCE_ASSETS_DIR}/user-rule.txt" "${BINARY_ASSETS_DIR}/user-rule.txt" COPYONLY)
+    configure_file("${SOURCE_ASSETS_DIR}/proxy.pac" "${BINARY_ASSETS_DIR}/proxy.pac" COPYONLY)
 
     configure_file("${SOURCE_BIN_DIR}/climber_shadowsocks_libev.exe" "${BINARY_BIN_DIR}/climber_shadowsocks_libev.exe" COPYONLY)
     configure_file("${SOURCE_BIN_DIR}/libbloom.dll" "${BINARY_BIN_DIR}/libbloom.dll" COPYONLY)
@@ -156,4 +165,7 @@ else ()
 
 endif ()
 
-target_link_libraries(Climber wxmono)
+target_link_libraries(Climber wxmono zlibstatic ssl crypto)
+target_compile_definitions(Climber PUBLIC
+        CPPHTTPLIB_ZLIB_SUPPORT
+        CPPHTTPLIB_OPENSSL_SUPPORT)

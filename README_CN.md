@@ -121,6 +121,7 @@ nmake create_zip
 * [trojan](https://github.com/trojan-gfw/trojan) 用于支持trojan。
 * [privoxy](https://www.privoxy.org/) 用于转换socks5代理为http代理。
 * [sysproxy](https://github.com/Noisyfox/sysproxy) 用于Windows设置系统代理。
+* [cpp-httplib](https://github.com/yhirose/cpp-httplib) 用于发送http请求和创建http服务。
 
 还有很多优秀的开源项目，不能一一列出，再次感谢！
 

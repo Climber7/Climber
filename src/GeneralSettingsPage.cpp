@@ -22,7 +22,7 @@ GeneralSettingsPage::GeneralSettingsPage(wxWindow *parent, wxWindowID winid)
 
     flexGridSizer->Add(new wxStaticText(this, wxID_ANY, _("Language")), 0, wxALL, 5);
     flexGridSizer->Add(languageChoice, 0, wxALL, 5);
-    flexGridSizer->Add(new wxStaticText(this, wxID_ANY, _("Launch on Startup")), 0, wxALL, 5);
+    flexGridSizer->Add(new wxStaticText(this, wxID_ANY, _("Start at Login")), 0, wxALL, 5);
     flexGridSizer->Add(autoStartCheckBox, 0, wxALL, 5);
 
     auto *boxSizer = new wxBoxSizer(wxVERTICAL);

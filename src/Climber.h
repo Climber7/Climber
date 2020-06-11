@@ -5,6 +5,8 @@
 #ifndef CLIMBER_CLIMBER_H
 #define CLIMBER_CLIMBER_H
 
+#include <thread>
+#include <httplib.h>
 #include <wx/process.h>
 #include "ServerConfItem.h"
 
@@ -36,6 +38,8 @@ public:
 
     void ClearSystemProxy();
 
+    void RestartPacServer();
+
 private:
     static void RunShadowsocks(const ServerConfItem *conf);
 
@@ -47,8 +51,14 @@ private:
 
     static void KillPrivoxy();
 
+    void StartPacServer();
+
+    void StopPacServer();
+
 private:
     bool m_running = false;
+    std::thread *m_pacServerThread = nullptr;
+    httplib::Server *m_pacServer = nullptr;
 
 };
 

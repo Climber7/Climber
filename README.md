@@ -121,6 +121,7 @@ Click `Open Config Directory` and create a file named `servers.json`
 * [trojan](https://github.com/trojan-gfw/trojan) For trojan support.
 * [privoxy](https://www.privoxy.org/) For converting socks5 proxy to http.
 * [sysproxy](https://github.com/Noisyfox/sysproxy) For system proxy setting on Windows.
+* [cpp-httplib](https://github.com/yhirose/cpp-httplib) For http client/server.
 
 And thanks to many other good open source project!
 

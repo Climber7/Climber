@@ -102,6 +102,7 @@ public:
     }
 
     bool InitLogger() {
+#ifdef NDEBUG
         m_climberLogFile = Paths::GetLogDirFile("climber.log");
         m_logStream.open(m_climberLogFile.ToStdString(), std::ios::out | std::ios::app);
         if (!m_logStream.is_open()) {
@@ -112,13 +113,18 @@ public:
         }
 
         wxLog *logger = new wxLogStream(&m_logStream);
+#else
+        wxLog *logger = new wxLogStream(&std::cout);
+#endif
         wxLog::SetActiveTarget(logger);
         wxLog::DisableTimestamp();
         return true;
     }
 
     void DestroyLogger() {
+#ifdef NDEBUG
         m_logStream.close();
+#endif
     }
 
     inline static void KeepEventLoopRunning() {

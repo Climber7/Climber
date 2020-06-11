@@ -129,7 +129,7 @@ msgstr "代理設置"
 msgid "Language"
 msgstr "語言"
 
-msgid "Launch on Startup"
+msgid "Start at Login"
 msgstr "開機自啟動"
 
 msgid "Your change will take effect after next start."

@@ -45,6 +45,17 @@ public:
         return f.GetFullPath();
     }
 
+    static wxString GetRuleDir() {
+        return GetDataDirFile("rule");
+    }
+
+    static wxString GetRuleDirFile(const wxString &file) {
+        wxFileName f;
+        f.AssignDir(GetRuleDir());
+        f.SetFullName(file);
+        return f.GetFullPath();
+    }
+
     static wxString GetLogDir() {
         return GetDataDirFile("log");
     }
@@ -107,10 +118,17 @@ public:
 #endif
 
     static bool PrepareDirectories() {
-        return PrepareDirectory(GetDataDir())
-               && PrepareDirectory(GetConfigDir())
-               && PrepareDirectory(GetLogDir())
-               && PrepareDirectory(GetTmpDir());
+        bool ok = PrepareDirectory(GetDataDir())
+                  && PrepareDirectory(GetConfigDir())
+                  && PrepareDirectory(GetRuleDir())
+                  && PrepareDirectory(GetLogDir())
+                  && PrepareDirectory(GetTmpDir());
+        if (!ok) return ok;
+
+        if (!wxFileExists(Paths::GetRuleDirFile("user-rule.txt"))) {
+            ok = wxCopyFile(Paths::GetAssetsDirFile("user-rule.txt"), Paths::GetRuleDirFile("user-rule.txt"));
+        }
+        return ok;
     }
 
 private:
