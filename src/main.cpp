@@ -12,6 +12,9 @@
 #include "Paths.h"
 #include "utils.h"
 
+// TODO github action
+// TODO windows log
+
 class SingleInstanceChecker {
 public:
     SingleInstanceChecker() {

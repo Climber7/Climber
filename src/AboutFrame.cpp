@@ -11,7 +11,7 @@ AboutFrame::AboutFrame(wxWindow *parent, wxWindowID winid)
     this->SetBackgroundColour(*wxWHITE);
     auto *sizer = new wxBoxSizer(wxVERTICAL);
 
-
+    // TODO
 
     this->SetSizer(sizer);
     this->Layout();

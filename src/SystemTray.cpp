@@ -117,9 +117,9 @@ wxMenu *SystemTray::CreateServersListMenu() {
 wxMenu *SystemTray::CreateCopyCommandMenu() {
     auto *copyCommandMenu = new wxMenu();
     copyCommandMenu->Append(ID_MENU_COPY_TERMINAL_PROXY_COMMAND_BASH, _("For Bash"));
-//#ifdef CLIMBER_WINDOWS
+#ifdef CLIMBER_WINDOWS
     copyCommandMenu->Append(ID_MENU_COPY_TERMINAL_PROXY_COMMAND_CMD, _("For CMD"));
-//#endif
+#endif
     return copyCommandMenu;
 }
 
@@ -262,6 +262,10 @@ void SystemTray::OnOpenLogDirectory(wxCommandEvent &event) {
     openDirectory(Paths::GetLogDir());
 }
 
+void SystemTray::OnCheckForUpdates(wxCommandEvent &event) {
+    // TODO
+}
+
 void SystemTray::OnShowAboutFrame(wxCommandEvent &event) {
     if (m_aboutFrame == nullptr) {
         m_aboutFrame = new AboutFrame(nullptr, ID_FRAME_ABOUT);
@@ -299,6 +303,7 @@ BEGIN_EVENT_TABLE(SystemTray, wxTaskBarIcon)
                 EVT_MENU(ID_MENU_COPY_TERMINAL_PROXY_COMMAND_CMD, SystemTray::OnCopyProxyCommandCmd)
                 EVT_MENU(ID_MENU_OPEN_CONFIG_DIRECTORY, SystemTray::OnOpenConfigDirectory)
                 EVT_MENU(ID_MENU_OPEN_LOG_DIRECTORY, SystemTray::OnOpenLogDirectory)
+                EVT_MENU(ID_MENU_CHECK_FOR_UPDATES, SystemTray::OnCheckForUpdates)
                 EVT_MENU(ID_MENU_ABOUT, SystemTray::OnShowAboutFrame)
                 EVT_MENU(ID_MENU_EXIT, SystemTray::OnQuit)
 END_EVENT_TABLE()

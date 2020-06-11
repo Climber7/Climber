@@ -68,6 +68,8 @@ private:
 
     void OnOpenLogDirectory(wxCommandEvent &event);
 
+    void OnCheckForUpdates(wxCommandEvent &event);
+
     void OnShowAboutFrame(wxCommandEvent &event);
 
     void OnQuit(wxCommandEvent &event);

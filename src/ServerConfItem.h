@@ -33,6 +33,7 @@ public:
 
     virtual wxVector<wxVariant> GetDataViewRowData() const = 0;
 
+    // TODO other type
     static inline wxString GetServerTypeName(int type) {
         switch (type) {
             case SERVER_TYPE_SS:
@@ -48,6 +49,7 @@ public:
         return GetServerTypeByName(wxString(type));
     }
 
+    // TODO other type
     static inline int GetServerTypeByName(const wxString &type) {
         if (type == "shadowsocks") return SERVER_TYPE_SS;
         if (type == "trojan") return SERVER_TYPE_TROJAN;
