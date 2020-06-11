@@ -5,6 +5,7 @@
 #ifndef CLIMBER_UTILS_H
 #define CLIMBER_UTILS_H
 
+#include <array>
 #include <fstream>
 #include <sstream>
 #include <wx/wx.h>
@@ -324,5 +325,34 @@ static void setClipboardText(const wxString &text) {
     }
 }
 
+static int compareVersion(wxString v1, wxString v2) {
+    std::array<long, 3> l1;
+    wxStringTokenizer tokens1(v1, ".");
+    for (int i = 0; i < 3; ++i) {
+        if (tokens1.HasMoreTokens()) {
+            l1[i] = std::strtol(tokens1.GetNextToken().c_str().AsChar(), nullptr, 10);
+        } else {
+            l1[i] = 0;
+        }
+    }
+
+    std::array<long, 3> l2;
+    wxStringTokenizer tokens2(v2, ".");
+    for (int i = 0; i < 3; ++i) {
+        if (tokens2.HasMoreTokens()) {
+            l2[i] = std::strtol(tokens2.GetNextToken().c_str().AsChar(), nullptr, 10);
+        } else {
+            l2[i] = 0;
+        }
+    }
+
+    if (l1[0] != l2[0]) {
+        return l1[0] - l2[0];
+    } else if (l1[1] != l2[1]) {
+        return l1[1] - l2[1];
+    } else {
+        return l1[2] - l2[2];
+    }
+}
 
 #endif //CLIMBER_UTILS_H

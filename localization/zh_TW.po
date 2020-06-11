@@ -219,5 +219,17 @@ msgstr "更新 gfwlist 失敗！"
 msgid "You must turn on Climber first to update gfwlist!"
 msgstr "你必須先開啟 Climber 才能更新 gfwlist"
 
+msgid "You must turn on Climber first to check for updates!"
+msgstr "你必须先开启 Climber 才能檢查更新"
+
+msgid "Check for updates failed!"
+msgstr "檢查更新失敗！"
+
+msgid "Already up-to-date!"
+msgstr "當前已經是最新版本！"
+
+msgid "New version, download now?"
+msgstr "發現新版本，立即下載？"
+
 msgid "Proxy Bypass"
 msgstr "忽略代理"

@@ -171,5 +171,6 @@ endif ()
 
 target_link_libraries(Climber wxmono zlibstatic ssl crypto)
 target_compile_definitions(Climber PUBLIC
+        CLIMBER_VERSION="${CLIMBER_VERSION}"
         CPPHTTPLIB_ZLIB_SUPPORT
         CPPHTTPLIB_OPENSSL_SUPPORT)

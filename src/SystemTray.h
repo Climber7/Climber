@@ -14,10 +14,21 @@
 #include "PreferencesFrame.h"
 
 DEFINE_EVENT_TYPE(wxEVT_UPDATE_GFWLIST_FINISHED)
+DEFINE_EVENT_TYPE(wxEVT_CHECK_FOR_UPDATES_FINISHED)
 
 class UpdateGfwlistThread : public wxThread {
 public:
     UpdateGfwlistThread(wxEvtHandler *parent) : wxThread(), m_parent(parent) {}
+
+protected:
+    ExitCode Entry() override;
+
+    wxEvtHandler *m_parent;
+};
+
+class CheckForUpdatesThread : public wxThread {
+public:
+    CheckForUpdatesThread(wxEvtHandler *parent) : wxThread(), m_parent(parent) {}
 
 protected:
     ExitCode Entry() override;
@@ -70,6 +81,8 @@ private:
 
     void OnCheckForUpdates(wxCommandEvent &event);
 
+    void OnCheckForUpdatesFinished(wxCommandEvent &event);
+
     void OnShowAboutFrame(wxCommandEvent &event);
 
     void OnQuit(wxCommandEvent &event);
@@ -82,6 +95,8 @@ private:
     AboutFrame *m_aboutFrame = nullptr;
     PreferencesFrame *m_preferencesFrame = nullptr;
     UpdateGfwlistThread *m_updateGfwlistThread = nullptr;
+    CheckForUpdatesThread *m_checkForUpdatesThread = nullptr;
+
 
 DECLARE_EVENT_TABLE()
 

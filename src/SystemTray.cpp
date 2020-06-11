@@ -2,6 +2,7 @@
 // Created by Climber on 2020/6/3.
 //
 
+#include <nlohmann/json.hpp>
 #include "SystemTray.h"
 #include "Configuration.h"
 #include "Climber.h"
@@ -14,6 +15,8 @@
 #else
 #define PREFERENCES_MENU_TITLE _("Settings")
 #endif
+
+using nlohmann::json;
 
 SystemTray::SystemTray() {
     wxTaskBarIcon::SetIcon(wxIcon(Paths::GetAssetsDirFile("icon.png"), wxBITMAP_TYPE_ANY));
@@ -208,7 +211,8 @@ void SystemTray::OnEditUserRules(wxCommandEvent &event) {
     if (!wxFileExists(Paths::GetRuleDirFile("user-rule.txt"))) {
         wxCopyFile(Paths::GetAssetsDirFile("user-rule.txt"), Paths::GetRuleDirFile("user-rule.txt"));
     }
-    openDirectory(Paths::GetRuleDir());
+//    openDirectory(Paths::GetRuleDir());
+    wxLaunchDefaultApplication(Paths::GetRuleDirFile("user-rule.txt"));
 }
 
 void SystemTray::OnRefreshServers(wxCommandEvent &event) {
@@ -255,15 +259,73 @@ void SystemTray::OnCopyProxyCommandCmd(wxCommandEvent &event) {
 }
 
 void SystemTray::OnOpenConfigDirectory(wxCommandEvent &event) {
-    openDirectory(Paths::GetConfigDir());
+    wxLaunchDefaultApplication(Paths::GetConfigDir());
+//    openDirectory(Paths::GetConfigDir());
 }
 
 void SystemTray::OnOpenLogDirectory(wxCommandEvent &event) {
-    openDirectory(Paths::GetLogDir());
+    wxLaunchDefaultApplication(Paths::GetLogDir());
+//    openDirectory(Paths::GetLogDir());
 }
 
 void SystemTray::OnCheckForUpdates(wxCommandEvent &event) {
-    // TODO
+    if (m_checkForUpdatesThread != nullptr) {
+        return;
+    }
+    if (!CLIMBER.IsRunning()) {
+        wxMessageDialog(nullptr, _("You must turn on Climber first to check for updates!"), _("Warning")).ShowModal();
+        return;
+    }
+
+    m_checkForUpdatesThread = new CheckForUpdatesThread(this);
+    m_checkForUpdatesThread->Run();
+}
+
+wxThread::ExitCode CheckForUpdatesThread::Entry() {
+    httplib::SSLClient client("api.github.com", 443);
+    client.set_proxy("127.0.0.1", CONFIGURATION.GetHttpPort());
+    auto res = client.Get("/repos/Climber7/Climber/releases");
+    if (res && res->status == 200) {
+        wxCommandEvent event(wxEVT_CHECK_FOR_UPDATES_FINISHED, wxID_ANY);
+        event.SetInt(1);
+        event.SetString(res->body);
+        m_parent->AddPendingEvent(event);
+    } else {
+        wxCommandEvent event(wxEVT_CHECK_FOR_UPDATES_FINISHED, wxID_ANY);
+        event.SetInt(0);
+        m_parent->AddPendingEvent(event);
+    }
+    return 0;
+}
+
+void SystemTray::OnCheckForUpdatesFinished(wxCommandEvent &event) {
+    m_checkForUpdatesThread = nullptr;
+    if (event.GetInt()) {
+        auto releases = json::parse(event.GetString().ToStdString());
+        if (releases.size() == 0) {
+            wxMessageDialog(nullptr, _("Already up-to-date!"), _("Information")).ShowModal();
+            return;
+        }
+        auto release = releases[0];
+        std::string tagName = release["tag_name"];
+        auto version = wxString(tagName);
+        if (version.starts_with("v")) {
+            version = version.substr(1);
+        }
+        wxString curVersion = CLIMBER_VERSION;
+
+        if (compareVersion(curVersion, version) >= 0) {
+            wxMessageDialog(nullptr, _("Already up-to-date!"), _("Information")).ShowModal();
+        } else {
+            int ret = wxMessageDialog(nullptr, _("New version, download now?"), _("Information"),
+                            wxYES_NO | wxCENTRE).ShowModal();
+            if(ret == wxID_YES) {
+                wxLaunchDefaultBrowser("https://github.com/Climber7/Climber/releases/latest");
+            }
+        }
+    } else {
+        wxMessageDialog(nullptr, _("Check for updates failed!"), _("Warning")).ShowModal();
+    }
 }
 
 void SystemTray::OnShowAboutFrame(wxCommandEvent &event) {
@@ -296,6 +358,7 @@ BEGIN_EVENT_TABLE(SystemTray, wxTaskBarIcon)
                 EVT_MENU(ID_MENU_PROXY_GLOBAL_MODE, SystemTray::OnSelectGlobalProxyMode)
                 EVT_MENU(ID_MENU_UPDATE_GFWLIST, SystemTray::OnUpdateGfwlist)
                 EVT_COMMAND(wxID_ANY, wxEVT_UPDATE_GFWLIST_FINISHED, SystemTray::OnUpdateGfwlistFinished)
+                EVT_COMMAND(wxID_ANY, wxEVT_CHECK_FOR_UPDATES_FINISHED, SystemTray::OnCheckForUpdatesFinished)
                 EVT_MENU(ID_MENU_EDIT_USER_RULE, SystemTray::OnEditUserRules)
                 EVT_MENU(ID_MENU_SERVERS_REFRESH, SystemTray::OnRefreshServers)
                 EVT_MENU(ID_MENU_PREFERENCES, SystemTray::OnShowPreferencesFrame)
