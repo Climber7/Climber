@@ -27,7 +27,7 @@ jobs:
                 with:
                     path: build/Climber_*.zip
 
-    build-windows:
+    build-windows-x86:
         runs-on: windows-latest
         steps:
             -   name: Checkout
@@ -35,9 +35,28 @@ jobs:
                 with:
                     submodules: recursive
             -   name: Build
-                shell: cmd
+                shell: cmd /k "C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Auxiliary\Build\vcvars32.bat"
                 run: |
-                    "C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\VC\Auxiliary\Build\vcvars64.bat"
+                    md build
+                    cd build
+                    cmake -DCMAKE_BUILD_TYPE=Release -G "NMake Makefiles" ..
+                    nmake
+                    nmake create_zip
+            -   name: Upload Artifact
+                uses: actions/upload-artifact@v2
+                with:
+                    path: build/Climber_*.zip
+
+    build-windows-x64:
+        runs-on: windows-latest
+        steps:
+            -   name: Checkout
+                uses: actions/checkout@v2
+                with:
+                    submodules: recursive
+            -   name: Build
+                shell: cmd /k "C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\VC\Auxiliary\Build\vcvars64.bat"
+                run: |
                     md build
                     cd build
                     cmake -DCMAKE_BUILD_TYPE=Release -G "NMake Makefiles" ..
