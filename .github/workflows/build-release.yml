@@ -33,6 +33,7 @@ jobs:
                     submodules: recursive
             -   name: Build
                 run: |
+                    cmd
                     md build
                     cd build
                     cmake -DCMAKE_BUILD_TYPE=Release -G "NMake Makefiles" ..

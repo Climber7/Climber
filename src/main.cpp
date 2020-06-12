@@ -12,7 +12,6 @@
 #include "Paths.h"
 #include "utils.h"
 
-// TODO github action
 // TODO windows log
 
 static void signalHandler(int sig) {
