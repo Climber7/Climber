@@ -83,6 +83,7 @@ void ProxySettingsPage::ApplyProxySettings() {
         needRestart = true;
     }
 
+    // TODO message
     if (socksPort != CONFIGURATION.GetSocksPort()) {
         if (CONFIGURATION.PortAlreadyInUse(socksPort)) {
             wxMessageDialog(this, wxString::Format(_("Port %d already in use!"), socksPort), _("Warning")).ShowModal();

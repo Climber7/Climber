@@ -347,15 +347,17 @@ static int compareVersion(wxString v1, wxString v2) {
 }
 
 static bool isPortInUse(int port) {
-    wxIPV4address addr;
-    addr.Service(port);
-    wxSocketServer socket(addr);
-    if (socket.Ok()) {
-        socket.Close();
-        return false;
-    } else {
-        return true;
-    }
+    // TODO
+    // wxIPV4address addr;
+    // addr.Service(port);
+    // wxSocketServer socket(addr);
+    // if (socket.Ok()) {
+    //     socket.Close();
+    //     return false;
+    // } else {
+    //     return true;
+    // }
+    return false;
 }
 
 #endif //CLIMBER_UTILS_H
