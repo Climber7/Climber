@@ -118,7 +118,7 @@ nmake create_zip
 * [json](https://github.com/nlohmann/json) 用于json序列化/反序列化
 * [shadowsocks-libev](https://github.com/shadowsocks/shadowsocks-libev) 用于支持shadowsocks.
 * [shadowsocks-libev-win](https://github.com/DDoSolitary/shadowsocks-libev-win) 用于windows的shadowsocks-libev
-* [trojan](https://github.com/trojan-gfw/trojan) 用于支持trojan。
+* [trojan-go](https://github.com/p4gefau1t/trojan-go) 用于支持trojan。
 * [privoxy](https://www.privoxy.org/) 用于转换socks5代理为http代理。
 * [sysproxy](https://github.com/Noisyfox/sysproxy) 用于Windows设置系统代理。
 * [cpp-httplib](https://github.com/yhirose/cpp-httplib) 用于发送http请求和创建http服务。

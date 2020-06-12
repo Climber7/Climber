@@ -118,7 +118,7 @@ Click `Open Config Directory` and create a file named `servers.json`
 * [json](https://github.com/nlohmann/json) For json serialization/deserialization.
 * [shadowsocks-libev](https://github.com/shadowsocks/shadowsocks-libev) For shadowsocks support.
 * [shadowsocks-libev-win](https://github.com/DDoSolitary/shadowsocks-libev-win) Windows builds for shadowsocks-libev.
-* [trojan](https://github.com/trojan-gfw/trojan) For trojan support.
+* [trojan-go](https://github.com/p4gefau1t/trojan-go) For trojan support.
 * [privoxy](https://www.privoxy.org/) For converting socks5 proxy to http.
 * [sysproxy](https://github.com/Noisyfox/sysproxy) For system proxy setting on Windows.
 * [cpp-httplib](https://github.com/yhirose/cpp-httplib) For http client/server.

@@ -67,7 +67,7 @@ if (APPLE)
     configure_file("${SOURCE_BIN_DIR}/libsodium.23.dylib" "${BINARY_BIN_DIR}/libsodium.23.dylib" COPYONLY)
     configure_file("${SOURCE_BIN_DIR}/libmbedcrypto.3.dylib" "${BINARY_BIN_DIR}/libmbedcrypto.3.dylib" COPYONLY)
     configure_file("${SOURCE_BIN_DIR}/libpcre.1.dylib" "${BINARY_BIN_DIR}/libpcre.1.dylib" COPYONLY)
-    configure_file("${SOURCE_BIN_DIR}/climber_trojan" "${BINARY_BIN_DIR}/climber_trojan" COPYONLY)
+    configure_file("${SOURCE_BIN_DIR}/climber_trojan_go" "${BINARY_BIN_DIR}/climber_trojan_go" COPYONLY)
     configure_file("${SOURCE_BIN_DIR}/climber_privoxy" "${BINARY_BIN_DIR}/climber_privoxy" COPYONLY)
 
 
@@ -137,7 +137,7 @@ elseif (WIN32)
     configure_file("${SOURCE_BIN_DIR}/libpcre-1.dll" "${BINARY_BIN_DIR}/libpcre-1.dll" COPYONLY)
     configure_file("${SOURCE_BIN_DIR}/libsodium-23.dll" "${BINARY_BIN_DIR}/libsodium-23.dll" COPYONLY)
     configure_file("${SOURCE_BIN_DIR}/libwinpthread-1.dll" "${BINARY_BIN_DIR}/libwinpthread-1.dll" COPYONLY)
-    configure_file("${SOURCE_BIN_DIR}/climber_trojan.exe" "${BINARY_BIN_DIR}/climber_trojan.exe" COPYONLY)
+    configure_file("${SOURCE_BIN_DIR}/climber_trojan_go.exe" "${BINARY_BIN_DIR}/climber_trojan_go.exe" COPYONLY)
     configure_file("${SOURCE_BIN_DIR}/climber_privoxy.exe" "${BINARY_BIN_DIR}/climber_privoxy.exe" COPYONLY)
     configure_file("${SOURCE_BIN_DIR}/climber_sysproxy.exe" "${BINARY_BIN_DIR}/climber_sysproxy.exe" COPYONLY)
 

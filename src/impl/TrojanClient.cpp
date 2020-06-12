@@ -25,11 +25,12 @@ wxString TrojanClient::GetSystemTrayTitle() const {
 
 void TrojanClient::Start() const {
     auto clientTmpConfigFile = Paths::GetTmpDirFile("trojan.json");
-    auto clientLogFile = Paths::GetLogDirFile("trojan.log");
+//    auto clientLogFile = Paths::GetLogDirFile("trojan.log");
     auto localAddr = CONFIGURATION.GetShareOnLan() ? "0.0.0.0" : "127.0.0.1";
     auto localPort = CONFIGURATION.GetSocksPort();
     this->WriteTo(clientTmpConfigFile, localAddr, localPort);
 
-    wxExecute(wxString::Format("\"%s\" -c \"%s\" -l \"%s\"", m_bin, clientTmpConfigFile, clientLogFile),
+    wxExecute(wxString::Format("\"%s\" -config \"%s\"", m_bin, clientTmpConfigFile),
               wxEXEC_ASYNC | wxEXEC_HIDE_CONSOLE);
+    // TODO trojan log
 }

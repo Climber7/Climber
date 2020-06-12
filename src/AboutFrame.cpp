@@ -105,8 +105,8 @@ void AboutFrame::SetContent(wxRichTextCtrl *r) {
 
     r->Newline();
 
-    r->BeginURL("https://github.com/trojan-gfw/trojan");
-    r->WriteText("trojan");
+    r->BeginURL("https://github.com/p4gefau1t/trojan-go");
+    r->WriteText("trojan-go");
     r->EndURL();
 
     r->Newline();

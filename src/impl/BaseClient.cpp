@@ -14,12 +14,12 @@
 #ifdef CLIMBER_WINDOWS
 
 #define CLIMBER_SHADOWSOCKS_BIN ("climber_shadowsocks_libev.exe")
-#define CLIMBER_TROJAN_BIN ("climber_trojan.exe")
+#define CLIMBER_TROJAN_BIN ("climber_trojan_go.exe")
 
 #elif defined CLIMBER_DARWIN
 
 #define CLIMBER_SHADOWSOCKS_BIN ("climber_shadowsocks_libev")
-#define CLIMBER_TROJAN_BIN ("climber_trojan")
+#define CLIMBER_TROJAN_BIN ("climber_trojan_go")
 
 #endif
 
