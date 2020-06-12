@@ -1,10 +1,8 @@
-name: Build Every Commit
+name: Build Release
 
 on:
-    push:
-        branches: [ master ]
-    pull_request:
-        branches: [ master ]
+    release:
+        types: [released]
 
 jobs:
     build-darwin:
@@ -21,11 +19,15 @@ jobs:
                     cd build
                     cmake -DCMAKE_BUILD_TYPE=Release ..
                     make -j$(nproc)
-            -   name: Upload Artifact
-                uses: actions/upload-artifact@v2
+                    make create_zip
+            -   name: Upload Release Binary
+                uses: svenstaro/upload-release-action@v1-release
                 with:
-                    name: Climber_macos_${{github.sha}}.zip
-                    path: build/Climber.app
+                    repo_token: ${{ secrets.GITHUB_TOKEN }}
+                    file: build/Climber_*.zip
+                    tag: ${{ github.ref }}
+                    file_glob: true
+                    overwrite: true
 
     build-windows-x86:
         runs-on: windows-latest
@@ -42,11 +44,15 @@ jobs:
                     cd build
                     cmake -DCMAKE_BUILD_TYPE=Release -G "NMake Makefiles" ..
                     nmake
-            -   name: Upload Artifact
-                uses: actions/upload-artifact@v2
+                    nmake create_zip
+            -   name: Upload Release Binary
+                uses: svenstaro/upload-release-action@v1-release
                 with:
-                    name: Climber_windows_x86_${{github.sha}}.zip
-                    path: build/Climber
+                    repo_token: ${{ secrets.GITHUB_TOKEN }}
+                    file: build/Climber_*.zip
+                    tag: ${{ github.ref }}
+                    file_glob: true
+                    overwrite: true
 
     build-windows-x64:
         runs-on: windows-latest
@@ -63,8 +69,12 @@ jobs:
                     cd build
                     cmake -DCMAKE_BUILD_TYPE=Release -G "NMake Makefiles" ..
                     nmake
-            -   name: Upload Artifact
-                uses: actions/upload-artifact@v2
+                    nmake create_zip
+            -   name: Upload Release Binary
+                uses: svenstaro/upload-release-action@v1-release
                 with:
-                    name: Climber_windows_x64_${{github.sha}}.zip
-                    path: build/Climber
+                    repo_token: ${{ secrets.GITHUB_TOKEN }}
+                    file: build/Climber_*.zip
+                    tag: ${{ github.ref }}
+                    file_glob: true
+                    overwrite: true
