@@ -1,35 +1,41 @@
 name: Build
 
 on:
-  push:
-    branches: [ master ]
-  pull_request:
-    branches: [ master ]
+    push:
+        branches: [ master ]
+    pull_request:
+        branches: [ master ]
 
 jobs:
-  build-darwin:
+    build-darwin:
+        runs-on: macOS-latest
+        steps:
+            -   name: Checkout
+                uses: actions/checkout@v2
+                with:
+                    submodules: recursive
+            -   name: Build
+                run: |
+                    sudo xcode-select -s /Library/Developer/CommandLineTools
+                    mkdir build
+                    cd build
+                    cmake -DCMAKE_BUILD_TYPE=Release ..
+                    make -j8
+                    make create_zip
 
-    runs-on: macOS-10.14
 
-    steps:
-    - name: Checkout
-      uses: actions/checkout@v2
-      with:
-        submodules: recursive
-    - name: Build
-      run: |
-        sudo xcode-select -s /Library/Developer/CommandLineTools
-        mkdir build
-        cd build
-        cmake -DCMAKE_BUILD_TYPE=Release ..
-        make -j8
-        make create_zip
-      
+        build-windows:
+            runs-on: windows-latest
+            steps:
+                -   name: Checkout
+                    uses: actions/checkout@v2
+                    with:
+                        submodules: recursive
+                -   name: Build
+                    run: |
+                        md build
+                        cd build
+                        cmake -DCMAKE_BUILD_TYPE=Release -G "NMake Makefiles" ..
+                        nmake
+                        nmake create_zip
 
-      
-#   build-windows:
-#     runs-on: windows-2019
-
-#     steps:
-#       - uses: actions/checkout@v2
-      
