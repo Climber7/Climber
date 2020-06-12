@@ -6,6 +6,7 @@ set(CMAKE_CXX_STANDARD 14)
 set(CLIMBER_VERSION 0.0.1)
 set(CLIMBER_COPYRIGHT "Copyright (C) 2020 Climber.")
 set(CLIMBER_DESCRIPTION "Yet another cross platform ss/trojan GUI client.")
+set(CLIMBER_REPO_URL "https://github.com/Climber7/Climber")
 
 if (WIN32)
     add_compile_options($<$<CXX_COMPILER_ID:MSVC>:/MP>)
@@ -172,5 +173,8 @@ endif ()
 target_link_libraries(Climber wxmono zlibstatic ssl crypto)
 target_compile_definitions(Climber PUBLIC
         CLIMBER_VERSION="${CLIMBER_VERSION}"
+        CLIMBER_COPYRIGHT="${CLIMBER_COPYRIGHT}"
+        CLIMBER_DESCRIPTION="${CLIMBER_DESCRIPTION}"
+        CLIMBER_REPO_URL="${CLIMBER_REPO_URL}"
         CPPHTTPLIB_ZLIB_SUPPORT
         CPPHTTPLIB_OPENSSL_SUPPORT)
