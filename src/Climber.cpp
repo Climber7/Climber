@@ -11,11 +11,11 @@
 
 #ifdef CLIMBER_WINDOWS
 
-#define CLIMBER_PRIVOXY ("climber_privoxy.exe")
+#define CLIMBER_PRIVOXY_BIN ("climber_privoxy.exe")
 
 #elif defined CLIMBER_DARWIN
 
-#define CLIMBER_PRIVOXY ("climber_privoxy")
+#define CLIMBER_PRIVOXY_BIN ("climber_privoxy")
 
 #endif
 
@@ -113,13 +113,13 @@ void Climber::RestartPrivoxy() {
     config.Replace("__SOCKS_PORT__", wxString::Format("%d", CONFIGURATION.GetSocksPort()));
     writeTextFile(privoxyTmpConfigFile, config);
 
-    auto privoxy = Paths::GetBinDirFile(CLIMBER_PRIVOXY);
+    auto privoxy = Paths::GetBinDirFile(CLIMBER_PRIVOXY_BIN);
     wxExecute(wxString::Format("\"%s\" \"%s\"", privoxy, privoxyTmpConfigFile),
               wxEXEC_ASYNC | wxEXEC_HIDE_CONSOLE);
 }
 
 void Climber::KillPrivoxy() {
-    killProcessByName(CLIMBER_PRIVOXY);
+    killProcessByName(CLIMBER_PRIVOXY_BIN);
 }
 
 void Climber::RestartPacServer() {

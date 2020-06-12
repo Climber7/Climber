@@ -19,7 +19,7 @@ json ShadowsocksClient::OverrideListening(const wxString &localAddr, int localPo
 wxString ShadowsocksClient::GetSystemTrayTitle() const {
     std::string host = m_data["data"]["server"];
     int port = m_data["data"]["server_port"];
-    return wxString::Format("%s (%s@%s:%d)", m_name, m_typeName, wxString(host), port);
+    return wxString::Format("%s (%s@%s:%d)", m_name, m_type, wxString(host), port);
 }
 
 void ShadowsocksClient::Start() const {

@@ -20,7 +20,7 @@ json TrojanClient::OverrideListening(const wxString &localAddr, int localPort) c
 wxString TrojanClient::GetSystemTrayTitle() const {
     std::string host = m_data["data"]["remote_addr"];
     int port = m_data["data"]["remote_port"];
-    return wxString::Format("%s (%s@%s:%d)", m_name, m_typeName, wxString(host), port);
+    return wxString::Format("%s (%s@%s:%d)", m_name, m_type, wxString(host), port);
 }
 
 void TrojanClient::Start() const {

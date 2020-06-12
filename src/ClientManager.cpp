@@ -42,13 +42,13 @@ void ClientManager::Load() {
 
     auto list = json::parse(jsonStr);
     for (auto &obj : list) {
-        std::string typeName = obj["type"];
-        int type = BaseClient::GetTypeByName(typeName);
-        if (type == SERVER_TYPE_UNKNOWN) {
-            wxMessageDialog(nullptr, wxString::Format(_("Unsupported type %s!"), typeName), _("Warning")).ShowModal();
+        std::string type = obj["type"];
+        auto *client = BaseClient::NewClient(type, obj);
+        if (client == nullptr) {
+            wxMessageDialog(nullptr, wxString::Format(_("Unsupported type %s!"), type), _("Warning")).ShowModal();
             continue;
         }
-        m_list.push_back(BaseClient::NewClient(type, obj));
+        m_list.push_back(client);
     }
 }
 

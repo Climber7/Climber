@@ -13,13 +13,13 @@
 // TODO other type
 #ifdef CLIMBER_WINDOWS
 
-#define CLIMBER_SHADOWSOCKS ("climber_shadowsocks_libev.exe")
-#define CLIMBER_TROJAN ("climber_trojan.exe")
+#define CLIMBER_SHADOWSOCKS_BIN ("climber_shadowsocks_libev.exe")
+#define CLIMBER_TROJAN_BIN ("climber_trojan.exe")
 
 #elif defined CLIMBER_DARWIN
 
-#define CLIMBER_SHADOWSOCKS ("climber_shadowsocks_libev")
-#define CLIMBER_TROJAN ("climber_trojan")
+#define CLIMBER_SHADOWSOCKS_BIN ("climber_shadowsocks_libev")
+#define CLIMBER_TROJAN_BIN ("climber_trojan")
 
 #endif
 
@@ -27,19 +27,15 @@ BaseClient::BaseClient(const wxString &bin, json obj) : m_bin(bin), m_data(std::
     std::string name = m_data["name"];
     m_name = wxString(name);
     std::string typeName = m_data["type"];
-    m_typeName = wxString(typeName);
+    m_type = wxString(typeName);
 }
 
 const wxString &BaseClient::GetName() const {
     return m_name;
 }
 
-int BaseClient::GetType() const {
-    return GetTypeByName(m_typeName);
-}
-
-wxString BaseClient::GetTypeName() const {
-    return m_typeName;
+wxString BaseClient::GetType() const {
+    return m_type;
 }
 
 void BaseClient::WriteTo(const wxString &file, const wxString &localAddr, int localPort) const {
@@ -48,26 +44,18 @@ void BaseClient::WriteTo(const wxString &file, const wxString &localAddr, int lo
 }
 
 // TODO other type
-int BaseClient::GetTypeByName(const wxString &type) {
-    if (type == "shadowsocks") return SERVER_TYPE_SS;
-    if (type == "trojan") return SERVER_TYPE_TROJAN;
-    return SERVER_TYPE_UNKNOWN;
-}
-
-// TODO other type
-BaseClient *BaseClient::NewClient(int type, const json &obj) {
-    switch (type) {
-        case SERVER_TYPE_SS:
-            return new ShadowsocksClient(Paths::GetBinDirFile(CLIMBER_SHADOWSOCKS), obj);
-        case SERVER_TYPE_TROJAN:
-            return new TrojanClient(Paths::GetBinDirFile(CLIMBER_TROJAN), obj);
-        default:
-            return nullptr;
+BaseClient *BaseClient::NewClient(const wxString &type, const json &obj) {
+    if (type == "shadowsocks") {
+        return new ShadowsocksClient(Paths::GetBinDirFile(CLIMBER_SHADOWSOCKS_BIN), obj);
+    } else if (type == "trojan") {
+        return new TrojanClient(Paths::GetBinDirFile(CLIMBER_TROJAN_BIN), obj);
+    } else {
+        return nullptr;
     }
 }
 
 // TODO other type
 void BaseClient::StopAll() {
-    killProcessByName(CLIMBER_SHADOWSOCKS);
-    killProcessByName(CLIMBER_TROJAN);
+    killProcessByName(CLIMBER_SHADOWSOCKS_BIN);
+    killProcessByName(CLIMBER_TROJAN_BIN);
 }

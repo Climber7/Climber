@@ -57,12 +57,6 @@ enum {
 #define PROXY_MODE_PAC ("pac")
 #define PROXY_MODE_GLOBAL ("global")
 
-enum {
-    SERVER_TYPE_UNKNOWN = 0,
-    SERVER_TYPE_SS,
-    SERVER_TYPE_TROJAN,
-};
-
 #define DEFAULT_PROXY_MODE (PROXY_MODE_DIRECT)
 #define DEFAULT_LANGUAGE ("en_US")
 #define DEFAULT_SHARE_ON_LAN (false)

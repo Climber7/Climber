@@ -19,15 +19,11 @@ public:
 
     const wxString &GetName() const;
 
-    int GetType() const;
-
-    wxString GetTypeName() const;
+    wxString GetType() const;
 
     void WriteTo(const wxString &file, const wxString &localAddr, int localPort) const;
 
-    static int GetTypeByName(const wxString &type);
-
-    static BaseClient *NewClient(int type, const json &obj);
+    static BaseClient *NewClient(const wxString &type, const json &obj);
 
 public:
     virtual wxString GetSystemTrayTitle() const = 0;
@@ -42,7 +38,7 @@ protected:
 protected:
     wxString m_bin = wxEmptyString;
     wxString m_name = wxEmptyString;
-    wxString m_typeName = wxEmptyString;
+    wxString m_type = wxEmptyString;
     json m_data;
 };
 
