@@ -18,7 +18,7 @@ jobs:
         submodules: recursive
     - name: Build
       run: |
-        xcode-select -s /Library/Developer/CommandLineTools
+        sudo xcode-select -s /Library/Developer/CommandLineTools
         mkdir build
         cd build
         cmake -DCMAKE_BUILD_TYPE=Release ..
