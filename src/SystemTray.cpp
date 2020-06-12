@@ -127,7 +127,7 @@ void SystemTray::OnToggleClimber(wxCommandEvent &event) {
         CLIMBER.Stop();
         CONFIGURATION.SetEnable(false);
     } else {
-        CLIMBER.Start();
+        CLIMBER.Restart();
         CONFIGURATION.SetEnable(true);
     }
 }

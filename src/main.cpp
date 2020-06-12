@@ -89,7 +89,7 @@ public:
         new SystemTray();
 
         if (CONFIGURATION.GetEnable()) {
-            CLIMBER.Start();
+            CLIMBER.Restart();
         }
 
 #ifdef CLIMBER_WINDOWS

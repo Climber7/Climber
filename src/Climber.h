@@ -27,11 +27,9 @@ private:
 public:
     bool IsRunning() const;
 
-    void Start();
+    void Restart();
 
     void Stop();
-
-    void Restart();
 
     static bool RestartClient();
 

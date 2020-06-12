@@ -48,20 +48,6 @@ bool Climber::IsRunning() const {
     return m_running;
 }
 
-void Climber::Start() {
-    if (m_running) return;
-
-    // TODO check port in use
-
-    if (!RestartClient()) return;
-
-    RestartPrivoxy();
-    RestartPacServer();
-    ResetSystemProxy();
-
-    m_running = true;
-}
-
 void Climber::Stop() {
     ClearSystemProxy();
     KillClient();
@@ -71,8 +57,35 @@ void Climber::Stop() {
 }
 
 void Climber::Restart() {
-    Stop();
-    Start();
+    if (isPortInUse(CONFIGURATION.GetSocksPort())) {
+        wxMessageDialog(nullptr,
+                        wxString::Format(_("Socks port %d is in use by another program!"),
+                                         CONFIGURATION.GetSocksPort()),
+                        _("Warning")).ShowModal();
+        return;
+    }
+    if (isPortInUse(CONFIGURATION.GetHttpPort())) {
+        wxMessageDialog(nullptr,
+                        wxString::Format(_("Http port %d is in use by another program!"),
+                                         CONFIGURATION.GetHttpPort()),
+                        _("Warning")).ShowModal();
+        return;
+    }
+    if (isPortInUse(CONFIGURATION.GetPacPort())) {
+        wxMessageDialog(nullptr,
+                        wxString::Format(_("PAC port %d is in use by another program!"),
+                                         CONFIGURATION.GetPacPort()),
+                        _("Warning")).ShowModal();
+        return;
+    }
+
+    if (!RestartClient()) return;
+
+    RestartPrivoxy();
+    RestartPacServer();
+    ResetSystemProxy();
+
+    m_running = true;
 }
 
 bool Climber::RestartClient() {

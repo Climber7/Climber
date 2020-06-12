@@ -236,3 +236,12 @@ msgstr "忽略代理"
 
 msgid "Unsupported type %s!"
 msgstr "不支持的類型 %s！"
+
+msgid "Socks port %d is in use by another program!"
+msgstr "Socks 端口 %d 當前已經被其它進程佔用！"
+
+msgid "Http port %d is in use by another program!"
+msgstr "Http 端口 %d 當前已經被其它進程佔用！"
+
+msgid "PAC port %d is in use by another program!"
+msgstr "PAC 端口 %d 當前已經被其它進程佔用！"

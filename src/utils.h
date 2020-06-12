@@ -11,6 +11,8 @@
 #include <wx/wx.h>
 #include <wx/clipbrd.h>
 #include <wx/tokenzr.h>
+#include <wx/sckaddr.h>
+#include <wx/socket.h>
 #include "Paths.h"
 
 #ifdef CLIMBER_WINDOWS
@@ -341,6 +343,18 @@ static int compareVersion(wxString v1, wxString v2) {
         return l1[1] - l2[1];
     } else {
         return l1[2] - l2[2];
+    }
+}
+
+static bool isPortInUse(int port) {
+    wxIPV4address addr;
+    addr.Service(port);
+    wxSocketServer socket(addr);
+    if (socket.Ok()) {
+        socket.Close();
+        return false;
+    } else {
+        return true;
     }
 }
 
