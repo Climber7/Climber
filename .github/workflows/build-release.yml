@@ -35,7 +35,7 @@ jobs:
                 with:
                     submodules: recursive
             -   name: Build
-                shell: cmd /k "C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Auxiliary\Build\vcvars32.bat"
+                shell: cmd /k "C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Auxiliary\Build\vcvars32.bat" {0}
                 run: |
                     md build
                     cd build
@@ -55,7 +55,7 @@ jobs:
                 with:
                     submodules: recursive
             -   name: Build
-                shell: cmd /k "C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\VC\Auxiliary\Build\vcvars64.bat"
+                shell: cmd /k "C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\VC\Auxiliary\Build\vcvars64.bat" {0}
                 run: |
                     md build
                     cd build
