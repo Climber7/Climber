@@ -13,24 +13,19 @@ ProxySettingsPage::ProxySettingsPage(wxWindow *parent, wxWindowID winid)
     flexGridSizer->SetFlexibleDirection(wxBOTH);
     flexGridSizer->SetNonFlexibleGrowMode(wxFLEX_GROWMODE_SPECIFIED);
 
-    m_shareOnLan = CONFIGURATION.GetShareOnLan();
-    m_socksPort = CONFIGURATION.GetSocksPort();
-    m_httpPort = CONFIGURATION.GetHttpPort();
-    m_pacPort = CONFIGURATION.GetPacPort();
-    m_proxyBypass = CONFIGURATION.GetProxyBypass();
-
     m_shareOnLanCheckBox = new wxCheckBox(this, ID_CHECK_BOX_SHARE_ON_LAN, wxEmptyString);
-    m_shareOnLanCheckBox->SetValue(m_shareOnLan);
+    m_shareOnLanCheckBox->SetValue(CONFIGURATION.GetShareOnLan());
 
     m_socksPortSpin = new wxSpinCtrl(this, ID_SPIN_SOCKS_PORT, wxEmptyString, wxDefaultPosition, wxDefaultSize,
-                                     wxSP_ARROW_KEYS, 1, 65535, m_socksPort);
+                                     wxSP_ARROW_KEYS, 1, 65535, CONFIGURATION.GetSocksPort());
 
     m_httpPortSpin = new wxSpinCtrl(this, ID_SPIN_HTTP_PORT, wxEmptyString, wxDefaultPosition, wxDefaultSize,
-                                    wxSP_ARROW_KEYS, 1, 65535, m_httpPort);
+                                    wxSP_ARROW_KEYS, 1, 65535, CONFIGURATION.GetHttpPort());
 
     m_pacPortSpin = new wxSpinCtrl(this, ID_SPIN_PAC_PORT, wxEmptyString, wxDefaultPosition, wxDefaultSize,
-                                   wxSP_ARROW_KEYS, 1, 65535, m_pacPort);
-    m_proxyBypassTextCtrl = new wxTextCtrl(this, ID_TEXT_CTRL_PROXY_BYPASS, m_proxyBypass, wxDefaultPosition,
+                                   wxSP_ARROW_KEYS, 1, 65535, CONFIGURATION.GetPacPort());
+    m_proxyBypassTextCtrl = new wxTextCtrl(this, ID_TEXT_CTRL_PROXY_BYPASS, CONFIGURATION.GetProxyBypass(),
+                                           wxDefaultPosition,
                                            wxSize(240, -1), wxTE_MULTILINE);
 
     flexGridSizer->Add(new wxStaticText(this, wxID_ANY, _("Share on Lan")), 0, wxALL, 5);
@@ -57,12 +52,7 @@ ProxySettingsPage::ProxySettingsPage(wxWindow *parent, wxWindowID winid)
 }
 
 void ProxySettingsPage::CheckUnsavedChanges() {
-    if (m_proxyBypassTextCtrl->GetValue() != CONFIGURATION.GetProxyBypass()) {
-        m_hasUnsavedChanges = true;
-        m_proxyBypass = m_proxyBypassTextCtrl->GetValue();
-    }
-
-    if (!m_hasUnsavedChanges) return;
+    if (!HasUnsavedChanged()) return;
     wxMessageDialog dlg(this, _("Your have unsaved changes, apply now?"),
                         _("Warning"), wxYES_NO | wxCENTRE);
     dlg.SetYesNoLabels(_("Apply"), _("Cancel"));
@@ -75,101 +65,77 @@ void ProxySettingsPage::CheckUnsavedChanges() {
 }
 
 void ProxySettingsPage::ApplyProxySettings() {
-    if (m_proxyBypassTextCtrl->GetValue() != CONFIGURATION.GetProxyBypass()) {
-        m_hasUnsavedChanges = true;
-        m_proxyBypass = m_proxyBypassTextCtrl->GetValue();
-    }
-
-    if (!m_hasUnsavedChanges) {
-        wxMessageDialog(this, wxString::Format(_("No changes!"), m_socksPort), _("Information")).ShowModal();
+    if (!HasUnsavedChanged()) {
+        wxMessageDialog(this, _("No changes!"), _("Information")).ShowModal();
         return;
     }
 
     bool needRestart = false;
-    bool needResetSystemProxy = false;
 
-    if (m_shareOnLan != CONFIGURATION.GetShareOnLan()) {
-        CONFIGURATION.SetShareOnLan(m_shareOnLan);
+    auto shareOnLan = m_shareOnLanCheckBox->GetValue();
+    auto socksPort = m_socksPortSpin->GetValue();
+    auto httpPort = m_httpPortSpin->GetValue();
+    auto pacPort = m_pacPortSpin->GetValue();
+    auto proxyBypass = m_proxyBypassTextCtrl->GetValue();
+
+    if (shareOnLan != CONFIGURATION.GetShareOnLan()) {
+        CONFIGURATION.SetShareOnLan(shareOnLan);
         needRestart = true;
     }
-    if (m_socksPort != CONFIGURATION.GetSocksPort()) {
-        if (CONFIGURATION.PortAlreadyInUse(m_socksPort)) {
-            wxMessageDialog(this, wxString::Format(_("Port %d already in use!"), m_socksPort),
-                            _("Warning")).ShowModal();
-        } else {
-            CONFIGURATION.SetSocksPort(m_socksPort);
-            needRestart = true;
-        }
-    }
-    if (m_httpPort != CONFIGURATION.GetHttpPort()) {
-        if (CONFIGURATION.PortAlreadyInUse(m_httpPort)) {
-            wxMessageDialog(this, wxString::Format(_("Port %d already in use!"), m_httpPort), _("Warning")).ShowModal();
-        } else {
-            CONFIGURATION.SetHttpPort(m_httpPort);
-            needRestart = true;
-        }
-    }
-    if (m_pacPort != CONFIGURATION.GetPacPort()) {
-        if (CONFIGURATION.PortAlreadyInUse(m_pacPort)) {
-            wxMessageDialog(this, wxString::Format(_("Port %d already in use!"), m_pacPort), _("Warning")).ShowModal();
-        } else {
-            CONFIGURATION.SetPacPort(m_pacPort);
-            needRestart = true;
-        }
-    }
-    if (m_proxyBypass != CONFIGURATION.GetProxyBypass()) {
-        CONFIGURATION.SetProxyBypass(m_proxyBypass);
-        needResetSystemProxy = true;
-    }
 
-    if (needRestart) {
-        if (CLIMBER.IsRunning()) {
-            CLIMBER.Restart();
-        }
-    } else if (needResetSystemProxy) {
-        if (CLIMBER.IsRunning()) {
-            CLIMBER.ClearSystemProxy();
-            CLIMBER.SetSystemProxy();
+    if (socksPort != CONFIGURATION.GetSocksPort()) {
+        if (CONFIGURATION.PortAlreadyInUse(socksPort)) {
+            wxMessageDialog(this, wxString::Format(_("Port %d already in use!"), socksPort), _("Warning")).ShowModal();
+        } else {
+            CONFIGURATION.SetSocksPort(socksPort);
+            needRestart = true;
         }
     }
 
-    m_hasUnsavedChanges = false;
+    if (httpPort != CONFIGURATION.GetHttpPort()) {
+        if (CONFIGURATION.PortAlreadyInUse(httpPort)) {
+            wxMessageDialog(this, wxString::Format(_("Port %d already in use!"), httpPort), _("Warning")).ShowModal();
+        } else {
+            CONFIGURATION.SetHttpPort(httpPort);
+            needRestart = true;
+        }
+    }
+
+    if (pacPort != CONFIGURATION.GetPacPort()) {
+        if (CONFIGURATION.PortAlreadyInUse(pacPort)) {
+            wxMessageDialog(this, wxString::Format(_("Port %d already in use!"), pacPort), _("Warning")).ShowModal();
+        } else {
+            CONFIGURATION.SetPacPort(pacPort);
+            needRestart = true;
+        }
+    }
+
+    if (proxyBypass != CONFIGURATION.GetProxyBypass()) {
+        CONFIGURATION.SetProxyBypass(proxyBypass);
+        needRestart = true;
+    }
+
+    if (CLIMBER.IsRunning() && needRestart) {
+        CLIMBER.Restart();
+    }
+
+
 }
 
 void ProxySettingsPage::CancelProxySettings() {
-    m_shareOnLan = CONFIGURATION.GetShareOnLan();
-    m_socksPort = CONFIGURATION.GetSocksPort();
-    m_httpPort = CONFIGURATION.GetHttpPort();
-    m_pacPort = CONFIGURATION.GetPacPort();
-    m_shareOnLanCheckBox->SetValue(m_shareOnLan);
-    m_socksPortSpin->SetValue(m_socksPort);
-    m_httpPortSpin->SetValue(m_httpPort);
-    m_pacPortSpin->SetValue(m_pacPort);
-    m_hasUnsavedChanges = false;
+    m_shareOnLanCheckBox->SetValue(CONFIGURATION.GetShareOnLan());
+    m_socksPortSpin->SetValue(CONFIGURATION.GetSocksPort());
+    m_httpPortSpin->SetValue(CONFIGURATION.GetHttpPort());
+    m_pacPortSpin->SetValue(CONFIGURATION.GetPacPort());
+    m_proxyBypassTextCtrl->SetValue(CONFIGURATION.GetProxyBypass());
 }
 
-void ProxySettingsPage::OnToggleShareOnLan(wxCommandEvent &event) {
-    if (m_shareOnLan == event.IsChecked()) return;
-    m_shareOnLan = event.IsChecked();
-    m_hasUnsavedChanges = true;
-}
-
-void ProxySettingsPage::OnChangeSocksPort(wxSpinEvent &event) {
-    if (m_socksPort == event.GetValue()) return;
-    m_socksPort = event.GetValue();
-    m_hasUnsavedChanges = true;
-}
-
-void ProxySettingsPage::OnChangeHttpPort(wxSpinEvent &event) {
-    if (m_httpPort == event.GetValue()) return;
-    m_httpPort = event.GetValue();
-    m_hasUnsavedChanges = true;
-}
-
-void ProxySettingsPage::OnChangePacPort(wxSpinEvent &event) {
-    if (m_pacPort == event.GetValue()) return;
-    m_pacPort = event.GetValue();
-    m_hasUnsavedChanges = true;
+bool ProxySettingsPage::HasUnsavedChanged() {
+    return m_shareOnLanCheckBox->GetValue() != CONFIGURATION.GetShareOnLan()
+           || m_socksPortSpin->GetValue() != CONFIGURATION.GetSocksPort()
+           || m_httpPortSpin->GetValue() != CONFIGURATION.GetHttpPort()
+           || m_pacPortSpin->GetValue() != CONFIGURATION.GetPacPort()
+           || m_proxyBypassTextCtrl->GetValue() != CONFIGURATION.GetProxyBypass();
 }
 
 void ProxySettingsPage::OnApplyProxySettings(wxCommandEvent &event) {
@@ -181,10 +147,6 @@ void ProxySettingsPage::OnCancelProxySettings(wxCommandEvent &event) {
 }
 
 BEGIN_EVENT_TABLE(ProxySettingsPage, wxPanel)
-                EVT_CHECKBOX(ID_CHECK_BOX_SHARE_ON_LAN, ProxySettingsPage::OnToggleShareOnLan)
-                EVT_SPINCTRL(ID_SPIN_SOCKS_PORT, ProxySettingsPage::OnChangeSocksPort)
-                EVT_SPINCTRL(ID_SPIN_HTTP_PORT, ProxySettingsPage::OnChangeHttpPort)
-                EVT_SPINCTRL(ID_SPIN_PAC_PORT, ProxySettingsPage::OnChangePacPort)
                 EVT_BUTTON(ID_BUTTON_APPLY_PROXY_SETTINGS, ProxySettingsPage::OnApplyProxySettings)
                 EVT_BUTTON(ID_BUTTON_CANCEL_PROXY_SETTINGS, ProxySettingsPage::OnCancelProxySettings)
 END_EVENT_TABLE()

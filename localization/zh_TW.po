@@ -233,3 +233,6 @@ msgstr "發現新版本，立即下載？"
 
 msgid "Proxy Bypass"
 msgstr "忽略代理"
+
+msgid "Unsupported type %s!"
+msgstr "不支持的類型 %s！"

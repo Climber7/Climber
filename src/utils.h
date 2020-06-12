@@ -20,17 +20,6 @@
 
 #endif
 
-static inline void openDirectory(const wxString &dir) {
-#ifdef CLIMBER_WINDOWS
-    wxExecute(wxString::Format("explorer \"%s\"", dir), wxEXEC_ASYNC | wxEXEC_HIDE_CONSOLE);
-#endif
-#ifdef CLIMBER_DARWIN
-    wxExecute(wxString::Format("open \"%s\"", dir), wxEXEC_ASYNC | wxEXEC_HIDE_CONSOLE);
-#endif
-#ifdef CLIMBER_LINUX
-    wxExecute(wxString::Format("nautilus \"%s\"", dir), wxEXEC_ASYNC | wxEXEC_HIDE_CONSOLE);
-#endif
-}
 
 static inline void killProcess(long pid) {
 #ifdef CLIMBER_WINDOWS

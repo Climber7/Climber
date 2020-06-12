@@ -6,7 +6,7 @@
 #include "SystemTray.h"
 #include "Configuration.h"
 #include "Climber.h"
-#include "ServerConfManager.h"
+#include "ClientManager.h"
 #include "Paths.h"
 #include "utils.h"
 
@@ -85,31 +85,27 @@ wxMenu *SystemTray::CreateServersListMenu() {
     auto *serverListMenu = new wxMenu();
     serverListMenu->Append(ID_MENU_SERVERS_REFRESH, _("Refresh"));
 
-    const auto &serverList = SERVER_CONF_MANAGER.GetServersList();
-    if (serverList.size() > 0) {
+    const int serverCount = CLIENT_MANAGER.Count();
+    if (serverCount > 0) {
         serverListMenu->AppendSeparator();
     }
 
     const int maxCount = ID_MENU_SERVER_ITEM_END - ID_MENU_SERVER_ITEM_START;
-    if (serverList.size() > maxCount) {
-        wxLogWarning("Max servers count %d, %lu provided", maxCount, serverList.size());
+    if (serverCount > maxCount) {
+        wxLogWarning("Max servers count %d, %lu provided", maxCount, serverCount);
     }
-    const int count = wxMin(serverList.size(), maxCount);
+    const int count = wxMin(serverCount, maxCount);
     const int selected = CONFIGURATION.GetSelectedServerIndex();
     m_serverMenuItemList.clear();
     for (int i = 0; i < count; ++i) {
-        const auto *serverItem = serverList[i];
         auto menuItem = serverListMenu->AppendCheckItem(
                 ID_MENU_SERVER_ITEM_START + i,
-                serverItem->GetSystemTrayTitle());
+                CLIENT_MANAGER.Get(i)->GetSystemTrayTitle());
         menuItem->Check(i == selected);
-        m_taskBarMenu->Bind(wxEVT_MENU, [count, i, this](wxCommandEvent &event) {
+        m_taskBarMenu->Bind(wxEVT_MENU, [i](wxCommandEvent &event) {
             CONFIGURATION.SetSelectedServerIndex(i);
             if (CLIMBER.IsRunning()) {
-                CLIMBER.Restart();
-            }
-            for (int n = 0; n < count; ++n) {
-                m_taskBarMenu->FindItem(ID_MENU_SERVER_ITEM_START + n)->Check(n == i);
+                CLIMBER.RestartClient();
             }
         }, ID_MENU_SERVER_ITEM_START + i);
         m_serverMenuItemList.push_back(menuItem);
@@ -134,36 +130,31 @@ void SystemTray::OnToggleClimber(wxCommandEvent &event) {
         CLIMBER.Start();
         CONFIGURATION.SetEnable(true);
     }
-    m_taskBarMenu->FindItem(ID_MENU_STATUS)->SetItemLabel(CLIMBER.IsRunning() ? _("Climber: On") : _("Climber: Off"));
-    m_taskBarMenu->FindItem(ID_MENU_TOGGLE)->SetItemLabel(CLIMBER.IsRunning() ? _("Stop Climber") : _("Start Climber"));
 }
 
 void SystemTray::OnSelectDirectProxyMode(wxCommandEvent &event) {
     if (event.IsChecked()) {
-        ((wxMenuItem *) event.GetEventObject())->Check(true);
         CONFIGURATION.SetProxyMode(PROXY_MODE_DIRECT);
         if (CLIMBER.IsRunning()) {
-            CLIMBER.SetSystemProxy();
+            CLIMBER.ResetSystemProxy();
         }
     }
 }
 
 void SystemTray::OnSelectPacProxyMode(wxCommandEvent &event) {
     if (event.IsChecked()) {
-        ((wxMenuItem *) event.GetEventObject())->Check(true);
         CONFIGURATION.SetProxyMode(PROXY_MODE_PAC);
         if (CLIMBER.IsRunning()) {
-            CLIMBER.SetSystemProxy();
+            CLIMBER.ResetSystemProxy();
         }
     }
 }
 
 void SystemTray::OnSelectGlobalProxyMode(wxCommandEvent &event) {
     if (event.IsChecked()) {
-        ((wxMenuItem *) event.GetEventObject())->Check(true);
         CONFIGURATION.SetProxyMode(PROXY_MODE_GLOBAL);
         if (CLIMBER.IsRunning()) {
-            CLIMBER.SetSystemProxy();
+            CLIMBER.ResetSystemProxy();
         }
     }
 }
@@ -211,12 +202,11 @@ void SystemTray::OnEditUserRules(wxCommandEvent &event) {
     if (!wxFileExists(Paths::GetRuleDirFile("user-rule.txt"))) {
         wxCopyFile(Paths::GetAssetsDirFile("user-rule.txt"), Paths::GetRuleDirFile("user-rule.txt"));
     }
-//    openDirectory(Paths::GetRuleDir());
     wxLaunchDefaultApplication(Paths::GetRuleDirFile("user-rule.txt"));
 }
 
 void SystemTray::OnRefreshServers(wxCommandEvent &event) {
-    SERVER_CONF_MANAGER.Reload();
+    CLIENT_MANAGER.Reload();
     if (CLIMBER.IsRunning()) {
         CLIMBER.Restart();
     }
@@ -260,12 +250,10 @@ void SystemTray::OnCopyProxyCommandCmd(wxCommandEvent &event) {
 
 void SystemTray::OnOpenConfigDirectory(wxCommandEvent &event) {
     wxLaunchDefaultApplication(Paths::GetConfigDir());
-//    openDirectory(Paths::GetConfigDir());
 }
 
 void SystemTray::OnOpenLogDirectory(wxCommandEvent &event) {
     wxLaunchDefaultApplication(Paths::GetLogDir());
-//    openDirectory(Paths::GetLogDir());
 }
 
 void SystemTray::OnCheckForUpdates(wxCommandEvent &event) {
@@ -313,8 +301,8 @@ void SystemTray::OnCheckForUpdatesFinished(wxCommandEvent &event) {
             wxMessageDialog(nullptr, _("Already up-to-date!"), _("Information")).ShowModal();
         } else {
             int ret = wxMessageDialog(nullptr, _("New version, download now?"), _("Information"),
-                            wxYES_NO | wxCENTRE).ShowModal();
-            if(ret == wxID_YES) {
+                                      wxYES_NO | wxCENTRE).ShowModal();
+            if (ret == wxID_YES) {
                 wxLaunchDefaultBrowser("https://github.com/Climber7/Climber/releases/latest");
             }
         }
@@ -353,7 +341,6 @@ BEGIN_EVENT_TABLE(SystemTray, wxTaskBarIcon)
                 EVT_MENU(ID_MENU_PROXY_GLOBAL_MODE, SystemTray::OnSelectGlobalProxyMode)
                 EVT_MENU(ID_MENU_UPDATE_GFWLIST, SystemTray::OnUpdateGfwlist)
                 EVT_COMMAND(wxID_ANY, wxEVT_UPDATE_GFWLIST_FINISHED, SystemTray::OnUpdateGfwlistFinished)
-                EVT_COMMAND(wxID_ANY, wxEVT_CHECK_FOR_UPDATES_FINISHED, SystemTray::OnCheckForUpdatesFinished)
                 EVT_MENU(ID_MENU_EDIT_USER_RULE, SystemTray::OnEditUserRules)
                 EVT_MENU(ID_MENU_SERVERS_REFRESH, SystemTray::OnRefreshServers)
                 EVT_MENU(ID_MENU_PREFERENCES, SystemTray::OnShowPreferencesFrame)
@@ -362,6 +349,7 @@ BEGIN_EVENT_TABLE(SystemTray, wxTaskBarIcon)
                 EVT_MENU(ID_MENU_OPEN_CONFIG_DIRECTORY, SystemTray::OnOpenConfigDirectory)
                 EVT_MENU(ID_MENU_OPEN_LOG_DIRECTORY, SystemTray::OnOpenLogDirectory)
                 EVT_MENU(ID_MENU_CHECK_FOR_UPDATES, SystemTray::OnCheckForUpdates)
+                EVT_COMMAND(wxID_ANY, wxEVT_CHECK_FOR_UPDATES_FINISHED, SystemTray::OnCheckForUpdatesFinished)
                 EVT_MENU(ID_MENU_ABOUT, SystemTray::OnShowAboutFrame)
                 EVT_MENU(ID_MENU_EXIT, SystemTray::OnQuit)
 END_EVENT_TABLE()

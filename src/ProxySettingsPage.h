@@ -14,6 +14,7 @@ public:
     explicit ProxySettingsPage(wxWindow *parent, wxWindowID winid = wxID_ANY);
 
     void CheckUnsavedChanges();
+    bool HasUnsavedChanged();
 
 private:
     void ApplyProxySettings();
@@ -21,14 +22,6 @@ private:
     void CancelProxySettings();
 
 private:
-    void OnToggleShareOnLan(wxCommandEvent &event);
-
-    void OnChangeSocksPort(wxSpinEvent &event);
-
-    void OnChangeHttpPort(wxSpinEvent &event);
-
-    void OnChangePacPort(wxSpinEvent &event);
-
     void OnApplyProxySettings(wxCommandEvent &event);
 
     void OnCancelProxySettings(wxCommandEvent &event);
@@ -39,16 +32,6 @@ private:
     wxSpinCtrl *m_httpPortSpin = nullptr;
     wxSpinCtrl *m_pacPortSpin = nullptr;
     wxTextCtrl *m_proxyBypassTextCtrl = nullptr;
-
-private:
-    bool m_shareOnLan = DEFAULT_SHARE_ON_LAN;
-    int m_socksPort = DEFAULT_SOCKS_PORT;
-    int m_httpPort = DEFAULT_HTTP_PORT;
-    int m_pacPort = DEFAULT_PAC_PORT;
-    wxString m_proxyBypass = DEFAULT_PROXY_BYPASS;
-
-private:
-    bool m_hasUnsavedChanges = false;
 
 DECLARE_EVENT_TABLE()
 

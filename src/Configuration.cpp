@@ -4,7 +4,7 @@
 
 #include <nlohmann/json.hpp>
 #include "Configuration.h"
-#include "ServerConfManager.h"
+#include "ClientManager.h"
 #include "Paths.h"
 #include "utils.h"
 
@@ -84,7 +84,7 @@ int Configuration::GetSelectedServerIndex() const {
 }
 
 void Configuration::SetSelectedServerIndex(int index) {
-    if (index < 0 || index >= SERVER_CONF_MANAGER.Count()) {
+    if (index < 0 || index >= CLIENT_MANAGER.Count()) {
         m_selectedServer = -1;
     } else {
         m_selectedServer = index;
@@ -219,7 +219,7 @@ void Configuration::Load() {
 
     if (obj.find("selected_server") != obj.end()) {
         int index = obj["selected_server"];
-        if (index < 0 || index >= SERVER_CONF_MANAGER.Count()) {
+        if (index < 0 || index >= CLIENT_MANAGER.Count()) {
             m_selectedServer = -1;
         } else {
             m_selectedServer = index;

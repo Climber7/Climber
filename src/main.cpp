@@ -8,7 +8,7 @@
 #include "Climber.h"
 #include "SystemTray.h"
 #include "Configuration.h"
-#include "ServerConfManager.h"
+#include "ClientManager.h"
 #include "Paths.h"
 #include "utils.h"
 
@@ -82,7 +82,7 @@ public:
         KeepEventLoopRunning();
         wxInitAllImageHandlers();
 
-        ServerConfManager::Init();
+        ClientManager::Init();
         Configuration::Init();
         Climber::Init();
 
@@ -106,7 +106,7 @@ public:
     int OnExit() override {
         Climber::Destroy();
         Configuration::Destroy();
-        ServerConfManager::Destroy();
+        ClientManager::Destroy();
         DestroyLogger();
         delete m_checker;
         return 0;

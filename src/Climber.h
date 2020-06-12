@@ -8,7 +8,6 @@
 #include <thread>
 #include <httplib.h>
 #include <wx/process.h>
-#include "ServerConfItem.h"
 
 #define CLIMBER (Climber::GetInstance())
 
@@ -34,24 +33,21 @@ public:
 
     void Restart();
 
-    void SetSystemProxy();
-
-    void ClearSystemProxy();
-
-private:
-    static void RunShadowsocks(const ServerConfItem *conf);
-
-    static void RunTrojan(const ServerConfItem *conf);
+    static bool RestartClient();
 
     static void KillClient();
 
-    static void RunPrivoxy();
+    static void RestartPrivoxy();
 
     static void KillPrivoxy();
 
-    void StartPacServer();
+    void RestartPacServer();
 
-    void StopPacServer(bool joinThread = true);
+    void KillPacServer(bool joinThread = true);
+
+    static void ResetSystemProxy();
+
+    static void ClearSystemProxy();
 
 private:
     bool m_running = false;
