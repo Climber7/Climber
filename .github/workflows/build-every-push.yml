@@ -1,4 +1,4 @@
-name: Build Every Commit
+name: Build Every Push
 
 on:
     push:

@@ -98,6 +98,8 @@ if (APPLE)
             COMMAND ${CMAKE_COMMAND} -E tar cfv "${CLIMBER_ZIP}" --format=zip "${CMAKE_CURRENT_BINARY_DIR}/Climber.app"
     )
 
+    add_dependencies(create_zip Climber)
+
 elseif (WIN32)
     add_definitions(-DCLIMBER_WINDOWS)
 
@@ -164,6 +166,8 @@ elseif (WIN32)
             COMMAND ${CMAKE_COMMAND} -E rm -f "${CLIMBER_ZIP}"
             COMMAND ${CMAKE_COMMAND} -E tar cfv "${CLIMBER_ZIP}" --format=zip "${BINARY_RESOURCES_DIR}"
     )
+
+    add_dependencies(create_zip Climber)
 
 elseif (UNIX AND NOT APPLE)
     add_definitions(-DCLIMBER_LINUX)

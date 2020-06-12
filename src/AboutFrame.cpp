@@ -14,7 +14,7 @@ AboutFrame::AboutFrame(wxWindow *parent, wxWindowID winid)
 
     wxImage logoImage(Paths::GetAssetsDirFile("icon.png"), wxBITMAP_TYPE_ANY);
     logoImage = logoImage.Scale(100, 100, wxIMAGE_QUALITY_HIGH);
-    auto *logo = new wxStaticBitmap(this, wxID_ANY, logoImage);
+    auto *logo = new wxStaticBitmap(this, wxID_ANY, wxBitmap(logoImage));
     logo->SetScaleMode(wxStaticBitmap::Scale_AspectFit);
 
     auto *richText = new wxRichTextCtrl(this, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize,
