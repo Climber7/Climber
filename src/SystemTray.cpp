@@ -19,7 +19,7 @@
 using nlohmann::json;
 
 SystemTray::SystemTray() {
-    wxTaskBarIcon::SetIcon(wxIcon(Paths::GetAssetsDirFile("icon.png"), wxBITMAP_TYPE_ANY));
+    wxTaskBarIcon::SetIcon(wxIcon(Paths::GetAssetsDirFile("tray_icon.png"), wxBITMAP_TYPE_ANY));
 }
 
 wxMenu *SystemTray::CreatePopupMenu() {

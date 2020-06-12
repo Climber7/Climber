@@ -26,7 +26,7 @@ ProxySettingsPage::ProxySettingsPage(wxWindow *parent, wxWindowID winid)
                                    wxSP_ARROW_KEYS, 1, 65535, CONFIGURATION.GetPacPort());
     m_proxyBypassTextCtrl = new wxTextCtrl(this, ID_TEXT_CTRL_PROXY_BYPASS, CONFIGURATION.GetProxyBypass(),
                                            wxDefaultPosition,
-                                           wxSize(240, -1), wxTE_MULTILINE);
+                                           wxSize(240, 100), wxTE_MULTILINE);
 
     flexGridSizer->Add(new wxStaticText(this, wxID_ANY, _("Share on Lan")), 0, wxALL, 5);
     flexGridSizer->Add(m_shareOnLanCheckBox, 0, wxALL, 5);
