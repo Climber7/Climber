@@ -57,6 +57,8 @@ void Climber::Stop() {
 }
 
 void Climber::Restart() {
+    Stop();
+
     if (isPortInUse(CONFIGURATION.GetSocksPort())) {
         wxMessageDialog(nullptr,
                         wxString::Format(_("Socks port %d is in use by another program!"),
