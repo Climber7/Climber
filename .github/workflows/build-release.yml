@@ -35,8 +35,9 @@ jobs:
                 with:
                     submodules: recursive
             -   name: Build
-                shell: cmd /k "C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Auxiliary\Build\vcvars32.bat" {0}
+                shell: cmd
                 run: |
+                    call "C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Auxiliary\Build\vcvars32.bat"
                     md build
                     cd build
                     cmake -DCMAKE_BUILD_TYPE=Release -G "NMake Makefiles" ..
@@ -55,8 +56,9 @@ jobs:
                 with:
                     submodules: recursive
             -   name: Build
-                shell: cmd /k "C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\VC\Auxiliary\Build\vcvars64.bat" {0}
+                shell: cmd
                 run: |
+                    call "C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\VC\Auxiliary\Build\vcvars64.bat"
                     md build
                     cd build
                     cmake -DCMAKE_BUILD_TYPE=Release -G "NMake Makefiles" ..
