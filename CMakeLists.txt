@@ -91,7 +91,7 @@ if (APPLE)
             COMMAND "${MSGFMT_EXECUTABLE}" "${CMAKE_CURRENT_SOURCE_DIR}/localization/zh_TW.po" -o "${BINARY_RESOURCES_DIR}/zh_TW.lproj/Climber.mo"
     )
 
-    set(CLIMBER_ZIP "${CMAKE_CURRENT_BINARY_DIR}/Climber_macos_${CLIMBER_VERSION}.zip")
+    set(CLIMBER_ZIP "${CMAKE_CURRENT_BINARY_DIR}/Climber_macos_v${CLIMBER_VERSION}.zip")
 
     add_custom_target(create_zip
             COMMAND ${CMAKE_COMMAND} -E rm -f "${CLIMBER_ZIP}"
@@ -154,10 +154,10 @@ elseif (WIN32)
 
     if(CMAKE_SIZEOF_VOID_P EQUAL 8)
         # 64 bits
-        set(CLIMBER_ZIP "${CMAKE_CURRENT_BINARY_DIR}/Climber_windows_x64_${CLIMBER_VERSION}.zip")
+        set(CLIMBER_ZIP "${CMAKE_CURRENT_BINARY_DIR}/Climber_windows_x64_v${CLIMBER_VERSION}.zip")
     elseif(CMAKE_SIZEOF_VOID_P EQUAL 4)
         # 32 bits
-        set(CLIMBER_ZIP "${CMAKE_CURRENT_BINARY_DIR}/Climber_windows_x86_${CLIMBER_VERSION}.zip")
+        set(CLIMBER_ZIP "${CMAKE_CURRENT_BINARY_DIR}/Climber_windows_x86_v${CLIMBER_VERSION}.zip")
     endif()
 
     add_custom_target(create_zip

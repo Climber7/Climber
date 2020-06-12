@@ -1,4 +1,4 @@
-name: Build
+name: Build Every Commit
 
 on:
     push:
@@ -46,6 +46,7 @@ jobs:
             -   name: Upload Artifact
                 uses: actions/upload-artifact@v2
                 with:
+                    name: "Climber_${GITHUB_SHA}.zip"
                     path: build/Climber_*.zip
 
     build-windows-x64:
@@ -67,4 +68,5 @@ jobs:
             -   name: Upload Artifact
                 uses: actions/upload-artifact@v2
                 with:
+                    name: "Climber_${GITHUB_SHA}.zip"
                     path: build/Climber_*.zip
