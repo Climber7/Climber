@@ -22,7 +22,10 @@ jobs:
                     cmake -DCMAKE_BUILD_TYPE=Release ..
                     make -j8
                     make create_zip
-
+            -   name: Upload Artifact
+                uses: actions/upload-artifact@v2
+                with:
+                    path: build/Climber_*.zip
 
     build-windows:
         runs-on: windows-latest
@@ -39,4 +42,7 @@ jobs:
                     cmake -DCMAKE_BUILD_TYPE=Release -G "NMake Makefiles" ..
                     nmake
                     nmake create_zip
-
+            -   name: Upload Artifact
+                uses: actions/upload-artifact@v2
+                with:
+                    path: build/Climber_*.zip
