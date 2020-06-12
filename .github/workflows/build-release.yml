@@ -12,8 +12,11 @@ jobs:
     runs-on: macOS-10.14
 
     steps:
-    - uses: actions/checkout@v2
-    - name: build
+    - name: Checkout
+      uses: actions/checkout@v2
+      with:
+        submodules: true
+    - name: Build
       run: |
         mkdir build
         cd build
