@@ -15,9 +15,10 @@ jobs:
     - name: Checkout
       uses: actions/checkout@v2
       with:
-        submodules: true
+        submodules: recursive
     - name: Build
       run: |
+        xcode-select -s /Library/Developer/CommandLineTools
         mkdir build
         cd build
         cmake -DCMAKE_BUILD_TYPE=Release ..
