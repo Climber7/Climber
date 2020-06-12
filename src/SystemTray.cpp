@@ -182,9 +182,9 @@ void SystemTray::OnUpdateGfwlist(wxCommandEvent &event) {
 }
 
 wxThread::ExitCode UpdateGfwlistThread::Entry() {
-    httplib::SSLClient client("github.com", 443);
+    httplib::SSLClient client("raw.githubusercontent.com", 443);
     client.set_proxy("127.0.0.1", CONFIGURATION.GetHttpPort());
-    auto res = client.Get("/gfwlist/gfwlist/blob/master/gfwlist.txt");
+    auto res = client.Get("/gfwlist/gfwlist/master/gfwlist.txt");
     if (res && res->status == 200) {
         writeTextFile(Paths::GetRuleDirFile("gfwlist.txt"), wxString(res->body));
         wxCommandEvent event(wxEVT_UPDATE_GFWLIST_FINISHED, wxID_ANY);
