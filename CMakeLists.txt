@@ -56,6 +56,7 @@ if (APPLE)
     file(MAKE_DIRECTORY "${BINARY_RESOURCES_DIR}/zh_TW.lproj")
 
     configure_file("${SOURCE_ASSETS_DIR}/icon.png" "${BINARY_ASSETS_DIR}/icon.png" COPYONLY)
+    configure_file("${SOURCE_ASSETS_DIR}/tray_icon_darwin.png" "${BINARY_ASSETS_DIR}/tray_icon.png" COPYONLY)
     configure_file("${SOURCE_ASSETS_DIR}/privoxy.conf" "${BINARY_ASSETS_DIR}/privoxy.conf" COPYONLY)
     configure_file("${SOURCE_ASSETS_DIR}/gfwlist.txt" "${BINARY_ASSETS_DIR}/gfwlist.txt" COPYONLY)
     configure_file("${SOURCE_ASSETS_DIR}/user-rule.txt" "${BINARY_ASSETS_DIR}/user-rule.txt" COPYONLY)
