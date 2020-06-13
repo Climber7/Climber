@@ -123,7 +123,7 @@ Click `Open Config Directory` and create a file named `servers.json`
 * [sysproxy](https://github.com/Noisyfox/sysproxy) For system proxy setting on Windows.
 * [cpp-httplib](https://github.com/yhirose/cpp-httplib) For http client/server.
 
-And thanks to many other good open source project!
+And thanks to many other greate open source project!
 
 # QA
 
