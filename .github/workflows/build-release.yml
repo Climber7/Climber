@@ -1,8 +1,8 @@
 name: Build Release
 
 on:
-    release:
-        types: [released]
+    # release:
+    #     types: [released]
 
 jobs:
     build-darwin:
