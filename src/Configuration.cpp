@@ -173,12 +173,6 @@ void Configuration::SetProxyBypass(const wxString &bypass) {
     Save();
 }
 
-bool Configuration::PortAlreadyInUse(int port) const {
-    return m_socksPort == port
-           || m_httpPort == port
-           || m_pacPort == port;
-}
-
 Configuration::Configuration() {
     m_configurationFile = Paths::GetConfigDirFile("config.json");
     wxLogMessage("Configuration File: %s\n", m_configurationFile);

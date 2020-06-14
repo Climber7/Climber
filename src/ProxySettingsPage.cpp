@@ -70,7 +70,6 @@ void ProxySettingsPage::ApplyProxySettings() {
         return;
     }
 
-    bool needRestart = false;
 
     auto shareOnLan = m_shareOnLanCheckBox->GetValue();
     auto socksPort = m_socksPortSpin->GetValue();
@@ -78,37 +77,32 @@ void ProxySettingsPage::ApplyProxySettings() {
     auto pacPort = m_pacPortSpin->GetValue();
     auto proxyBypass = m_proxyBypassTextCtrl->GetValue();
 
+    int dupPort;
+    if (FindDupPort({socksPort, httpPort, pacPort}, dupPort)) {
+        wxMessageDialog(this, wxString::Format(_("Cannot set the same port %d!"), dupPort), _("Warning")).ShowModal();
+        return;
+    }
+
+    bool needRestart = false;
+
     if (shareOnLan != CONFIGURATION.GetShareOnLan()) {
         CONFIGURATION.SetShareOnLan(shareOnLan);
         needRestart = true;
     }
 
-    // TODO message
     if (socksPort != CONFIGURATION.GetSocksPort()) {
-        if (CONFIGURATION.PortAlreadyInUse(socksPort)) {
-            wxMessageDialog(this, wxString::Format(_("Port %d already in use!"), socksPort), _("Warning")).ShowModal();
-        } else {
-            CONFIGURATION.SetSocksPort(socksPort);
-            needRestart = true;
-        }
+        CONFIGURATION.SetSocksPort(socksPort);
+        needRestart = true;
     }
 
     if (httpPort != CONFIGURATION.GetHttpPort()) {
-        if (CONFIGURATION.PortAlreadyInUse(httpPort)) {
-            wxMessageDialog(this, wxString::Format(_("Port %d already in use!"), httpPort), _("Warning")).ShowModal();
-        } else {
-            CONFIGURATION.SetHttpPort(httpPort);
-            needRestart = true;
-        }
+        CONFIGURATION.SetHttpPort(httpPort);
+        needRestart = true;
     }
 
     if (pacPort != CONFIGURATION.GetPacPort()) {
-        if (CONFIGURATION.PortAlreadyInUse(pacPort)) {
-            wxMessageDialog(this, wxString::Format(_("Port %d already in use!"), pacPort), _("Warning")).ShowModal();
-        } else {
-            CONFIGURATION.SetPacPort(pacPort);
-            needRestart = true;
-        }
+        CONFIGURATION.SetPacPort(pacPort);
+        needRestart = true;
     }
 
     if (proxyBypass != CONFIGURATION.GetProxyBypass()) {
@@ -129,6 +123,18 @@ void ProxySettingsPage::CancelProxySettings() {
     m_httpPortSpin->SetValue(CONFIGURATION.GetHttpPort());
     m_pacPortSpin->SetValue(CONFIGURATION.GetPacPort());
     m_proxyBypassTextCtrl->SetValue(CONFIGURATION.GetProxyBypass());
+}
+
+bool ProxySettingsPage::FindDupPort(std::vector<int> ports, int &dup) {
+    if (ports.size() < 2) return false;
+    std::sort(ports.begin(), ports.end());
+    for (int i = 0; i < ports.size() - 1; ++i) {
+        if (ports[i] == ports[i + 1]) {
+            dup = ports[i];
+            return true;
+        }
+    }
+    return false;
 }
 
 bool ProxySettingsPage::HasUnsavedChanged() {

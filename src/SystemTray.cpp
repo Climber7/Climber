@@ -18,6 +18,9 @@
 
 using nlohmann::json;
 
+DEFINE_EVENT_TYPE(wxEVT_UPDATE_GFWLIST_FINISHED)
+DEFINE_EVENT_TYPE(wxEVT_CHECK_FOR_UPDATES_FINISHED)
+
 SystemTray::SystemTray() {
     wxTaskBarIcon::SetIcon(wxIcon(Paths::GetAssetsDirFile("tray_icon.png"), wxBITMAP_TYPE_ANY));
 }
@@ -168,28 +171,32 @@ void SystemTray::OnUpdateGfwlist(wxCommandEvent &event) {
         return;
     }
 
-    m_updateGfwlistThread = new UpdateGfwlistThread(this);
-    m_updateGfwlistThread->Run();
-}
+    m_updateGfwlistThread = new std::thread([this]() {
+        httplib::SSLClient client("raw.githubusercontent.com", 443);
+        client.set_proxy("127.0.0.1", CONFIGURATION.GetHttpPort());
+        client.set_connection_timeout(5);
+        client.set_read_timeout(5);
+        client.set_write_timeout(5);
+        auto res = client.Get("/gfwlist/gfwlist/master/gfwlist.txt");
+        if (res && res->status == 200) {
+            writeTextFile(Paths::GetRuleDirFile("gfwlist.txt"), wxString(res->body));
+            wxCommandEvent event(wxEVT_UPDATE_GFWLIST_FINISHED, wxID_ANY);
+            event.SetInt(1);
+            this->AddPendingEvent(event);
+        } else {
+            wxCommandEvent event(wxEVT_UPDATE_GFWLIST_FINISHED, wxID_ANY);
+            event.SetInt(0);
+            this->AddPendingEvent(event);
+        }
+    });
 
-wxThread::ExitCode UpdateGfwlistThread::Entry() {
-    httplib::SSLClient client("raw.githubusercontent.com", 443);
-    client.set_proxy("127.0.0.1", CONFIGURATION.GetHttpPort());
-    auto res = client.Get("/gfwlist/gfwlist/master/gfwlist.txt");
-    if (res && res->status == 200) {
-        writeTextFile(Paths::GetRuleDirFile("gfwlist.txt"), wxString(res->body));
-        wxCommandEvent event(wxEVT_UPDATE_GFWLIST_FINISHED, wxID_ANY);
-        event.SetInt(1);
-        m_parent->AddPendingEvent(event);
-    } else {
-        wxCommandEvent event(wxEVT_UPDATE_GFWLIST_FINISHED, wxID_ANY);
-        event.SetInt(0);
-        m_parent->AddPendingEvent(event);
-    }
-    return 0;
 }
 
 void SystemTray::OnUpdateGfwlistFinished(wxCommandEvent &event) {
+    if (m_updateGfwlistThread->joinable()) {
+        m_updateGfwlistThread->join();
+    }
+    delete m_updateGfwlistThread;
     m_updateGfwlistThread = nullptr;
     if (event.GetInt()) {
         wxMessageDialog(nullptr, _("Update gfwlist suc!"), _("Information")).ShowModal();
@@ -265,28 +272,31 @@ void SystemTray::OnCheckForUpdates(wxCommandEvent &event) {
         return;
     }
 
-    m_checkForUpdatesThread = new CheckForUpdatesThread(this);
-    m_checkForUpdatesThread->Run();
-}
-
-wxThread::ExitCode CheckForUpdatesThread::Entry() {
-    httplib::SSLClient client("api.github.com", 443);
-    client.set_proxy("127.0.0.1", CONFIGURATION.GetHttpPort());
-    auto res = client.Get("/repos/Climber7/Climber/releases/latest");
-    if (res && res->status == 200) {
-        wxCommandEvent event(wxEVT_CHECK_FOR_UPDATES_FINISHED, wxID_ANY);
-        event.SetInt(1);
-        event.SetString(res->body);
-        m_parent->AddPendingEvent(event);
-    } else {
-        wxCommandEvent event(wxEVT_CHECK_FOR_UPDATES_FINISHED, wxID_ANY);
-        event.SetInt(0);
-        m_parent->AddPendingEvent(event);
-    }
-    return 0;
+    m_checkForUpdatesThread = new std::thread([this]() {
+        httplib::SSLClient client("api.github.com", 443);
+        client.set_proxy("127.0.0.1", CONFIGURATION.GetHttpPort());
+        client.set_connection_timeout(5);
+        client.set_read_timeout(5);
+        client.set_write_timeout(5);
+        auto res = client.Get("/repos/Climber7/Climber/releases/latest");
+        if (res && res->status == 200) {
+            wxCommandEvent event(wxEVT_CHECK_FOR_UPDATES_FINISHED, wxID_ANY);
+            event.SetInt(1);
+            event.SetString(res->body);
+            this->AddPendingEvent(event);
+        } else {
+            wxCommandEvent event(wxEVT_CHECK_FOR_UPDATES_FINISHED, wxID_ANY);
+            event.SetInt(0);
+            this->AddPendingEvent(event);
+        }
+    });
 }
 
 void SystemTray::OnCheckForUpdatesFinished(wxCommandEvent &event) {
+    if (m_checkForUpdatesThread->joinable()) {
+        m_checkForUpdatesThread->join();
+    }
+    delete m_checkForUpdatesThread;
     m_checkForUpdatesThread = nullptr;
     if (event.GetInt()) {
         auto release = json::parse(event.GetString().ToStdString());

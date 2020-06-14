@@ -66,8 +66,6 @@ public:
 
     void SetProxyBypass(const wxString &bypass);
 
-    bool PortAlreadyInUse(int port) const;
-
 private:
     Configuration();
 

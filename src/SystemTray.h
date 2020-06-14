@@ -5,36 +5,12 @@
 #ifndef CLIMBER_SYSTEMTRAY_H
 #define CLIMBER_SYSTEMTRAY_H
 
+#include <thread>
 #include <wx/wx.h>
 #include <wx/taskbar.h>
-#include <wx/windowptr.h>
-#include <wx/thread.h>
 #include "defs.h"
 #include "AboutFrame.h"
 #include "PreferencesFrame.h"
-
-DEFINE_EVENT_TYPE(wxEVT_UPDATE_GFWLIST_FINISHED)
-DEFINE_EVENT_TYPE(wxEVT_CHECK_FOR_UPDATES_FINISHED)
-
-class UpdateGfwlistThread : public wxThread {
-public:
-    UpdateGfwlistThread(wxEvtHandler *parent) : wxThread(), m_parent(parent) {}
-
-protected:
-    ExitCode Entry() override;
-
-    wxEvtHandler *m_parent;
-};
-
-class CheckForUpdatesThread : public wxThread {
-public:
-    CheckForUpdatesThread(wxEvtHandler *parent) : wxThread(), m_parent(parent) {}
-
-protected:
-    ExitCode Entry() override;
-
-    wxEvtHandler *m_parent;
-};
 
 class SystemTray : public wxTaskBarIcon {
 
@@ -94,8 +70,8 @@ private:
 private:
     AboutFrame *m_aboutFrame = nullptr;
     PreferencesFrame *m_preferencesFrame = nullptr;
-    UpdateGfwlistThread *m_updateGfwlistThread = nullptr;
-    CheckForUpdatesThread *m_checkForUpdatesThread = nullptr;
+    std::thread *m_updateGfwlistThread = nullptr;
+    std::thread *m_checkForUpdatesThread = nullptr;
 
 
 DECLARE_EVENT_TABLE()

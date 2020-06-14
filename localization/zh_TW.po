@@ -156,8 +156,8 @@ msgstr "Http 端口"
 msgid "PAC Port"
 msgstr "PAC 端口"
 
-msgid "Port %d already in use!"
-msgstr "端口 %d 已被使用！"
+msgid "Cannot set the same port %d!"
+msgstr "不能設置相同的端口 %d ！"
 
 msgid "Apply"
 msgstr "應用"

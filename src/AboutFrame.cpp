@@ -7,9 +7,11 @@
 #include "Paths.h"
 
 AboutFrame::AboutFrame(wxWindow *parent, wxWindowID winid)
-        : wxFrame(parent, winid, _("About"), wxDefaultPosition, wxSize(400, 300),
+        : wxFrame(parent, winid, _("About"), wxDefaultPosition, wxSize(600, 400),
                   wxSYSTEM_MENU | wxCLOSE_BOX | wxCAPTION) {
+#ifdef CLIMBER_WINDOWS
     this->SetBackgroundColour(*wxWHITE);
+#endif
     auto *sizer = new wxBoxSizer(wxVERTICAL);
 
     wxImage logoImage(Paths::GetAssetsDirFile("icon.png"), wxBITMAP_TYPE_ANY);
@@ -21,6 +23,9 @@ AboutFrame::AboutFrame(wxWindow *parent, wxWindowID winid)
                                         wxVSCROLL | wxHSCROLL | wxNO_BORDER | wxRE_READONLY);
     richText->GetCaret()->Hide();
     richText->SetCanFocus(false);
+    richText->Bind(wxEVT_TEXT_URL, [](wxTextUrlEvent &event) {
+        wxLaunchDefaultBrowser(event.GetString());
+    });
     this->SetContent(richText);
 
     sizer->Add(logo, 0, wxALIGN_CENTER | wxALL, 8);
@@ -32,10 +37,19 @@ AboutFrame::AboutFrame(wxWindow *parent, wxWindowID winid)
 }
 
 void AboutFrame::SetContent(wxRichTextCtrl *r) {
+    unsigned long titleColor = 0x202020;
+    unsigned long contentColor = 0x404040;
+#ifdef CLIMBER_DARWIN
+    if (wxSystemSettings::GetAppearance().IsDark()) {
+        titleColor = 0xe0e0e0;
+        contentColor = 0xc0c0c0;
+    }
+#endif
+
     r->BeginAlignment(wxTEXT_ALIGNMENT_CENTRE);
 
     r->BeginFontSize(20);
-    r->BeginTextColour(wxColour(0x202020));
+    r->BeginTextColour(wxColour(titleColor));
     r->BeginBold();
     r->WriteText("Climber");
     r->EndBold();
@@ -46,7 +60,7 @@ void AboutFrame::SetContent(wxRichTextCtrl *r) {
     r->Newline();
 
     r->BeginFontSize(12);
-    r->BeginTextColour(wxColour(0x404040));
+    r->BeginTextColour(wxColour(contentColor));
     r->WriteText(wxString::Format("v%s", CLIMBER_VERSION));
     r->Newline();
     r->WriteText(CLIMBER_DESCRIPTION);
@@ -67,7 +81,7 @@ void AboutFrame::SetContent(wxRichTextCtrl *r) {
     r->Newline();
 
     r->BeginFontSize(16);
-    r->BeginTextColour(wxColour(0x202020));
+    r->BeginTextColour(wxColour(titleColor));
     r->BeginBold();
     r->WriteText("Special Thanks");
     r->EndBold();
@@ -78,7 +92,7 @@ void AboutFrame::SetContent(wxRichTextCtrl *r) {
     r->Newline();
 
     r->BeginFontSize(12);
-    r->BeginTextColour(wxColour(0x404040));
+    r->BeginTextColour(wxColour(contentColor));
     r->BeginUnderline();
 
     r->BeginURL("https://www.wxwidgets.org/");
@@ -137,7 +151,7 @@ void AboutFrame::SetContent(wxRichTextCtrl *r) {
     r->Newline();
 
     r->BeginFontSize(16);
-    r->BeginTextColour(wxColour(0x202020));
+    r->BeginTextColour(wxColour(titleColor));
     r->BeginBold();
     r->WriteText("Announcement");
     r->EndBold();
@@ -148,7 +162,7 @@ void AboutFrame::SetContent(wxRichTextCtrl *r) {
     r->Newline();
 
     r->BeginFontSize(12);
-    r->BeginTextColour(wxColour(0x404040));
+    r->BeginTextColour(wxColour(contentColor));
 
     r->WriteText("This project is just for research and education purpose,");
     r->Newline();

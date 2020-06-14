@@ -14,9 +14,11 @@
 #endif
 
 PreferencesFrame::PreferencesFrame(wxWindow *parent, wxWindowID winid)
-        : wxFrame(parent, winid, PREFERENCES_FRAME_TITLE, wxDefaultPosition, wxSize(600, 400),
+        : wxFrame(parent, winid, PREFERENCES_FRAME_TITLE, wxDefaultPosition, wxSize(500, 400),
                   wxSYSTEM_MENU | wxCLOSE_BOX | wxCAPTION) {
+#ifdef CLIMBER_WINDOWS
     this->SetBackgroundColour(*wxWHITE);
+#endif
     auto *sizer = new wxBoxSizer(wxVERTICAL);
     m_mainTab = new wxNotebook(this, ID_PREFERENCES_MAIN_TAB);
     sizer->Add(m_mainTab, 1, wxEXPAND | wxALL, 5);

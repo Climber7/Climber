@@ -21,6 +21,8 @@ private:
 
     void CancelProxySettings();
 
+    static bool FindDupPort(std::vector<int> ports, int &dup);
+
 private:
     void OnApplyProxySettings(wxCommandEvent &event);
 

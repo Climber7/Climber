@@ -347,17 +347,28 @@ static int compareVersion(wxString v1, wxString v2) {
 }
 
 static bool isPortInUse(int port) {
-    // TODO
-    // wxIPV4address addr;
-    // addr.Service(port);
-    // wxSocketServer socket(addr);
-    // if (socket.Ok()) {
-    //     socket.Close();
-    //     return false;
-    // } else {
-    //     return true;
-    // }
-    return false;
+    std::function<bool(int)> isPortInUseOnce = [](int port) {
+        wxIPV4address addr;
+        addr.Service(port);
+        wxSocketServer socket(addr);
+        if (socket.Ok()) {
+            socket.Close();
+            return false;
+        } else {
+            return true;
+        }
+    };
+
+    int retry = 3;
+    while (retry > 0) {
+        retry--;
+        if (isPortInUseOnce(port)) {
+            wxMilliSleep(100);
+        } else {
+            return false;
+        }
+    }
+    return true;
 }
 
 #endif //CLIMBER_UTILS_H
