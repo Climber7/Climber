@@ -5,7 +5,7 @@
 
 Yet another cross platform ss/trojan GUI client.
 
-Currently support MacOS and Windows, Linux support is on plan.
+Currently support MacOS(10.10 or up) and Windows(vista or up), Linux support is on plan.
 
 # 
 

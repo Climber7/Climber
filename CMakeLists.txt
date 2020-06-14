@@ -20,6 +20,10 @@ if (WIN32)
     )
 endif ()
 
+if (APPLE)
+    set(CMAKE_OSX_DEPLOYMENT_TARGET 10.10)
+endif ()
+
 #set(wxBUILD_MONOLITHIC ON)
 set(wxBUILD_PRECOMP OFF)
 set(wxBUILD_INSTALL OFF)
@@ -96,8 +100,7 @@ if (APPLE)
 
     add_custom_target(create_zip
             COMMAND ${CMAKE_COMMAND} -E rm -f "${CLIMBER_ZIP}"
-            COMMAND ${CMAKE_COMMAND} -E tar cfv "${CLIMBER_ZIP}" --format=zip "${CMAKE_CURRENT_BINARY_DIR}/Climber.app"
-    )
+            COMMAND ${CMAKE_COMMAND} -E tar cfv "${CLIMBER_ZIP}" --format=zip "${CMAKE_CURRENT_BINARY_DIR}/Climber.app")
 
     add_dependencies(create_zip Climber)
 
@@ -160,8 +163,7 @@ elseif (WIN32)
 
     add_custom_target(create_zip
             COMMAND ${CMAKE_COMMAND} -E rm -f "${CLIMBER_ZIP}"
-            COMMAND ${CMAKE_COMMAND} -E tar cfv "${CLIMBER_ZIP}" --format=zip "${BINARY_RESOURCES_DIR}"
-    )
+            COMMAND ${CMAKE_COMMAND} -E tar cfv "${CLIMBER_ZIP}" --format=zip "${BINARY_RESOURCES_DIR}")
 
     add_dependencies(create_zip Climber)
 

@@ -5,7 +5,7 @@
 
 一个新的跨平台 ss/trojan 图形客户端。
 
-目前支持 MacOS 和 Windows, Linux 支持正在计划中。
+目前支持 MacOS(10.10或以上) 和 Windows(vista或以上), Linux 支持正在计划中。
 
 # 构建
 
