@@ -9,7 +9,7 @@ set(CLIMBER_DESCRIPTION "Yet another cross platform ss/trojan GUI client.")
 set(CLIMBER_REPO_URL "https://github.com/Climber7/Climber")
 
 if (WIN32)
-    # add_compile_options($<$<CXX_COMPILER_ID:MSVC>:/MP>)
+    add_compile_options($<$<CXX_COMPILER_ID:MSVC>:/MP>)
     add_compile_options($<$<CXX_COMPILER_ID:MSVC>:/w44996>)
     add_link_options($<$<CXX_COMPILER_ID:MSVC>:/INCREMENTAL:NO>)
     set(wxBUILD_USE_STATIC_RUNTIME ON)
@@ -20,7 +20,7 @@ if (WIN32)
     )
 endif ()
 
-set(wxBUILD_MONOLITHIC ON)
+#set(wxBUILD_MONOLITHIC ON)
 set(wxBUILD_PRECOMP OFF)
 set(wxBUILD_INSTALL OFF)
 set(wxBUILD_SHARED OFF)
@@ -176,7 +176,7 @@ else ()
 
 endif ()
 
-target_link_libraries(Climber wxmono zlibstatic ssl crypto)
+target_link_libraries(Climber wx::base wx::net wx::core wx::richtext zlibstatic ssl crypto)
 target_compile_definitions(Climber PUBLIC
         CLIMBER_VERSION="${CLIMBER_VERSION}"
         CLIMBER_COPYRIGHT="${CLIMBER_COPYRIGHT}"

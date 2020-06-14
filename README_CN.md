@@ -46,8 +46,8 @@ cd Climber
 md build
 cd build
 cmake -DCMAKE_BUILD_TYPE=Release -G "NMake Makefiles" .. 
-nmake # or ..\tools\win32\jom -j8
-nmake create_zip # or ..\tools\win32\jom create_zip
+nmake
+nmake create_zip
 ```
 
 # 服务器配置

@@ -1,0 +1,30 @@
+name: Build Release Windows
+
+on:
+    release:
+        types: [released]
+
+jobs:
+    build:
+        runs-on: macOS-latest
+        steps:
+            -   name: Checkout
+                uses: actions/checkout@v2
+                with:
+                    submodules: recursive
+            -   name: Build
+                run: |
+                    sudo xcode-select -s /Library/Developer/CommandLineTools
+                    mkdir build
+                    cd build
+                    cmake -DCMAKE_BUILD_TYPE=Release ..
+                    make -j$(nproc)
+                    make create_zip
+            -   name: Upload Release Binary
+                uses: svenstaro/upload-release-action@v1-release
+                with:
+                    repo_token: ${{ secrets.GITHUB_TOKEN }}
+                    file: build/Climber_*.zip
+                    tag: ${{ github.ref }}
+                    file_glob: true
+                    overwrite: true
