@@ -18,8 +18,7 @@ jobs:
                     mkdir build
                     cd build
                     cmake -DCMAKE_BUILD_TYPE=Release ..
-                    make -j$(nproc)
-                    make create_zip
+                    make -j2 create_zip
             -   name: Upload Release Binary
                 uses: svenstaro/upload-release-action@v1-release
                 with:

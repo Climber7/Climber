@@ -19,8 +19,7 @@ jobs:
                     md build
                     cd build
                     cmake -DCMAKE_BUILD_TYPE=Release -G "NMake Makefiles" ..
-                    nmake
-                    nmake create_zip
+                    ..\tools\win32\jom -j2 create_zip
             -   name: Upload Release Binary
                 uses: svenstaro/upload-release-action@v1-release
                 with:
