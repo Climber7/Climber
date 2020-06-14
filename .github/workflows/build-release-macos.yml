@@ -1,4 +1,4 @@
-name: Build Release Windows
+name: Build Release MacOS
 
 on:
     release:
