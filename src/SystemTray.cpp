@@ -214,6 +214,9 @@ void SystemTray::OnEditUserRules(wxCommandEvent &event) {
 
 void SystemTray::OnRefreshServers(wxCommandEvent &event) {
     CLIENT_MANAGER.Reload();
+    if (CONFIGURATION.GetSelectedServerIndex() >= CLIENT_MANAGER.Count()) {
+        CONFIGURATION.SetSelectedServerIndex(-1);
+    }
     if (CLIMBER.IsRunning()) {
         CLIMBER.Restart();
     }

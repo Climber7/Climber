@@ -69,5 +69,6 @@ int ClientManager::Count() const {
 }
 
 const BaseClient *ClientManager::Get(int index) const {
+    if (index < 0 || index >= m_list.size()) return nullptr;
     return m_list[index];
 }
