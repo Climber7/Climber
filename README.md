@@ -7,7 +7,7 @@ Yet another cross platform ss/trojan GUI client.
 
 Currently support MacOS(10.10 or up) and Windows(vista or up), Linux support is on plan.
 
-# 
+# Build
 
 This project was developed under CLion, easy to build using cmake.
 
