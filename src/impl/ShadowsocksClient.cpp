@@ -6,6 +6,7 @@
 #include "ShadowsocksClient.h"
 #include "../Paths.h"
 #include "../Configuration.h"
+#include "../utils.h"
 
 ShadowsocksClient::ShadowsocksClient(const wxString &bin, json obj) : BaseClient(bin, std::move(obj)) {}
 
@@ -24,12 +25,10 @@ wxString ShadowsocksClient::GetSystemTrayTitle() const {
 
 void ShadowsocksClient::Start() const {
     auto clientTmpConfigFile = Paths::GetTmpDirFile("shadowsocks.json");
-//    auto clientLogFile = Paths::GetLogDirFile("shadowsocks.log");
+    auto clientLogFile = Paths::GetLogDirFile("shadowsocks.log");
     auto localAddr = CONFIGURATION.GetShareOnLan() ? "0.0.0.0" : "127.0.0.1";
     auto localPort = CONFIGURATION.GetSocksPort();
     this->WriteTo(clientTmpConfigFile, localAddr, localPort);
 
-    wxExecute(wxString::Format("\"%s\" -c \"%s\"", m_bin, clientTmpConfigFile),
-              wxEXEC_ASYNC | wxEXEC_HIDE_CONSOLE);
-    // TODO shadowsocks log
+    execRedirect(wxString::Format("\"%s\" -c \"%s\"", m_bin, clientTmpConfigFile), clientLogFile);
 }

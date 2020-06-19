@@ -146,7 +146,7 @@ public:
 private:
     wxString m_climberLogFile = wxEmptyString;
     std::ofstream m_logStream;
-    SingleInstanceChecker *m_checker;
+    SingleInstanceChecker *m_checker = nullptr;
 };
 
 wxIMPLEMENT_APP(ClimberApp);

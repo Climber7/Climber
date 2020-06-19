@@ -8,7 +8,11 @@
 #include <array>
 #include <fstream>
 #include <sstream>
+#include <thread>
 #include <wx/wx.h>
+#include <wx/process.h>
+#include <wx/wfstream.h>
+#include <wx/txtstrm.h>
 #include <wx/clipbrd.h>
 #include <wx/tokenzr.h>
 #include <wx/sckaddr.h>
@@ -359,7 +363,7 @@ static bool isPortInUse(int port) {
         }
     };
 
-    int retry = 3;
+    int retry = 5;
     while (retry > 0) {
         retry--;
         if (isPortInUseOnce(port)) {
@@ -369,6 +373,49 @@ static bool isPortInUse(int port) {
         }
     }
     return true;
+}
+
+class ExecRedirectThread : public wxThread {
+public:
+    ExecRedirectThread(wxInputStream *stdoutStream, wxInputStream *stderrStream, wxFileOutputStream *out)
+            : m_stdoutStream(stdoutStream),
+              m_stderrStream(stderrStream),
+              m_out(out) {}
+
+protected:
+    ExitCode Entry() override {
+
+        while (!(m_stdoutStream->Eof() && m_stderrStream->Eof())) {
+            m_stdoutStream->Read(*m_out);
+            m_stderrStream->Read(*m_out);
+        }
+
+        delete m_out;
+
+        return 0;
+    }
+
+private:
+    wxInputStream *m_stdoutStream;
+    wxInputStream *m_stderrStream;
+    wxFileOutputStream *m_out;
+};
+
+static long execRedirect(const wxString &command, const wxString &file) {
+    auto *process = new wxProcess();
+    process->Redirect();
+    long pid = wxExecute(command, wxEXEC_ASYNC | wxEXEC_HIDE_CONSOLE, process);
+    auto *stdoutStream = process->GetInputStream();
+    auto *stderrStream = process->GetErrorStream();
+    auto *out = new wxFileOutputStream(file);
+    if (!out->IsOk()) {
+        wxMessageDialog(nullptr, wxString::Format("Open file \"%s\" failed! %s", file, strerror(errno)), _("Error"))
+                .ShowModal();
+    }
+
+    auto *thread = new ExecRedirectThread(stdoutStream, stderrStream, out);
+    thread->Run();
+    return pid;
 }
 
 #endif //CLIMBER_UTILS_H
