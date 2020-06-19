@@ -32,4 +32,5 @@ void TrojanClient::Start() const {
     this->WriteTo(clientTmpConfigFile, localAddr, localPort);
 
     execRedirect(wxString::Format("\"%s\" -config \"%s\"", m_bin, clientTmpConfigFile), clientLogFile);
+    wxLogMessage("Trojan client started at %s:%d", localAddr, localPort);
 }

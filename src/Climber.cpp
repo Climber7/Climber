@@ -121,20 +121,27 @@ void Climber::RestartPrivoxy() {
     auto privoxyLogFile = Paths::GetLogDirFile("privoxy.log");
     auto privoxyConfigTplFile = Paths::GetAssetsDirFile("privoxy.conf");
     auto config = readTextFile(privoxyConfigTplFile, "", true);
-    config.Replace("__PRIVOXY_BIND_IP__", CONFIGURATION.GetShareOnLan() ? "0.0.0.0" : "127.0.0.1");
-    config.Replace("__PRIVOXY_BIND_PORT__", wxString::Format("%d", CONFIGURATION.GetHttpPort()));
+    auto listenAddr = CONFIGURATION.GetShareOnLan() ? "0.0.0.0" : "127.0.0.1";
+    auto listenPort = CONFIGURATION.GetHttpPort();
+    config.Replace("__PRIVOXY_BIND_IP__", listenAddr);
+    config.Replace("__PRIVOXY_BIND_PORT__", wxString::Format("%d", listenPort));
     config.Replace("__PRIVOXY_LOG_FILE__", privoxyLogFile);
     config.Replace("__SOCKS_HOST__", "127.0.0.1");
     config.Replace("__SOCKS_PORT__", wxString::Format("%d", CONFIGURATION.GetSocksPort()));
     writeTextFile(privoxyTmpConfigFile, config);
 
     auto privoxy = Paths::GetBinDirFile(CLIMBER_PRIVOXY_BIN);
+    if (wxFileExists(privoxyLogFile)) {
+        wxRemoveFile(privoxyLogFile);
+    }
     wxExecute(wxString::Format("\"%s\" \"%s\"", privoxy, privoxyTmpConfigFile),
               wxEXEC_ASYNC | wxEXEC_HIDE_CONSOLE);
+    wxLogMessage("Privoxy started at %s:%d", listenAddr, listenPort);
 }
 
 void Climber::KillPrivoxy() {
     killProcessByName(CLIMBER_PRIVOXY_BIN);
+    wxLogMessage("Privoxy stopped");
 }
 
 void Climber::RestartPacServer() {
@@ -165,7 +172,7 @@ void Climber::RestartPacServer() {
         bool ok = m_pacServer->listen(CONFIGURATION.GetShareOnLan() ? "0.0.0.0" : "127.0.0.1",
                                       CONFIGURATION.GetPacPort());
         if (!ok) {
-            wxLogMessage("PAC server error listening!");
+            wxLogMessage("PAC server error listening");
         }
     });
 }
@@ -184,7 +191,7 @@ void Climber::KillPacServer(bool joinThread) {
     m_pacServer = nullptr;
     m_pacServerThread = nullptr;
 
-    wxLogMessage("PAC server stopped!");
+    wxLogMessage("PAC server stopped");
 }
 
 void Climber::ResetSystemProxy() {

@@ -114,7 +114,7 @@ public:
     bool InitLogger() {
 #ifdef NDEBUG
         m_climberLogFile = Paths::GetLogDirFile("climber.log");
-        m_logStream.open(m_climberLogFile.ToStdString(), std::ios::out | std::ios::app);
+        m_logStream.open(m_climberLogFile.ToStdString(), std::ios::out);
         if (!m_logStream.is_open()) {
             wxMessageDialog(nullptr, wxString::Format("Open file \"%s\" failed! %s", m_climberLogFile, strerror(errno)),
                             _("Error"))

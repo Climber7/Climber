@@ -58,4 +58,5 @@ BaseClient *BaseClient::NewClient(const wxString &type, const json &obj) {
 void BaseClient::StopAll() {
     killProcessByName(CLIMBER_SHADOWSOCKS_BIN);
     killProcessByName(CLIMBER_TROJAN_BIN);
+    wxLogMessage("All client stopped");
 }

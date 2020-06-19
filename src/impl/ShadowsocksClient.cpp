@@ -31,4 +31,5 @@ void ShadowsocksClient::Start() const {
     this->WriteTo(clientTmpConfigFile, localAddr, localPort);
 
     execRedirect(wxString::Format("\"%s\" -c \"%s\"", m_bin, clientTmpConfigFile), clientLogFile);
+    wxLogMessage("Shadowsocks client started at %s:%d", localAddr, localPort);
 }

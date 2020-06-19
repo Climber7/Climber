@@ -28,26 +28,30 @@
 
 
 static inline void killProcess(long pid) {
+    wxProcess process;
+    process.Redirect();
 #ifdef CLIMBER_WINDOWS
-    wxExecute(wxString::Format("taskkill /f /pid %ld", pid), wxEXEC_BLOCK | wxEXEC_HIDE_CONSOLE);
+    wxExecute(wxString::Format("taskkill /f /pid %ld", pid), wxEXEC_BLOCK | wxEXEC_HIDE_CONSOLE, &process);
 #endif
 #ifdef CLIMBER_DARWIN
-    wxExecute(wxString::Format("kill %ld", pid), wxEXEC_BLOCK | wxEXEC_HIDE_CONSOLE);
+    wxExecute(wxString::Format("kill %ld", pid), wxEXEC_BLOCK | wxEXEC_HIDE_CONSOLE, &process);
 #endif
 #ifdef CLIMBER_LINUX
-    wxExecute(wxString::Format("kill %ld", pid), wxEXEC_BLOCK | wxEXEC_HIDE_CONSOLE);
+    wxExecute(wxString::Format("kill %ld", pid), wxEXEC_BLOCK | wxEXEC_HIDE_CONSOLE, &process);
 #endif
 }
 
 static inline void killProcessByName(const wxString &name) {
+    wxProcess process;
+    process.Redirect();
 #ifdef CLIMBER_WINDOWS
-    wxExecute(wxString::Format("taskkill /f /im %s", name), wxEXEC_BLOCK | wxEXEC_HIDE_CONSOLE);
+    wxExecute(wxString::Format("taskkill /f /im %s", name), wxEXEC_BLOCK | wxEXEC_HIDE_CONSOLE, &process);
 #endif
 #ifdef CLIMBER_DARWIN
-    wxExecute(wxString::Format("killall %s", name), wxEXEC_BLOCK | wxEXEC_HIDE_CONSOLE);
+    wxExecute(wxString::Format("killall %s", name), wxEXEC_BLOCK | wxEXEC_HIDE_CONSOLE, &process);
 #endif
 #ifdef CLIMBER_LINUX
-    wxExecute(wxString::Format("killall %s", name), wxEXEC_BLOCK | wxEXEC_HIDE_CONSOLE);
+    wxExecute(wxString::Format("killall %s", name), wxEXEC_BLOCK | wxEXEC_HIDE_CONSOLE, &process);
 #endif
 }
 
