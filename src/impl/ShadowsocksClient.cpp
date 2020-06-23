@@ -17,6 +17,17 @@ json ShadowsocksClient::OverrideListening(const wxString &localAddr, int localPo
     return data;
 }
 
+wxVector<wxVariant> ShadowsocksClient::GetDataViewRowData() const {
+    wxVector<wxVariant> row;
+    std::string host = m_data["data"]["server"];
+    int port = m_data["data"]["server_port"];
+    row.push_back(m_name);
+    row.push_back(m_type);
+    row.push_back(host);
+    row.push_back(wxString::Format("%d", port));
+    return row;
+}
+
 wxString ShadowsocksClient::GetSystemTrayTitle() const {
     std::string host = m_data["data"]["server"];
     int port = m_data["data"]["server_port"];

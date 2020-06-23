@@ -86,6 +86,8 @@ wxMenu *SystemTray::CreatePacMenu() {
 
 wxMenu *SystemTray::CreateServersListMenu() {
     auto *serverListMenu = new wxMenu();
+    // TODO Will finish this when I'm not busy
+//    serverListMenu->Append(ID_MENU_SERVERS_SETTINGS, _("Servers Settings"));
     serverListMenu->Append(ID_MENU_SERVERS_REFRESH, _("Refresh"));
 
     const int serverCount = CLIENT_MANAGER.Count();
@@ -210,6 +212,24 @@ void SystemTray::OnEditUserRules(wxCommandEvent &event) {
         wxCopyFile(Paths::GetAssetsDirFile("user-rule.txt"), Paths::GetRuleDirFile("user-rule.txt"));
     }
     wxLaunchDefaultApplication(Paths::GetRuleDirFile("user-rule.txt"));
+}
+
+void SystemTray::OnServersSettings(wxCommandEvent &event) {
+    if (m_serversSettingsFrame == nullptr) {
+        m_serversSettingsFrame = new ServersSettingsFrame(nullptr, ID_FRAME_SERVERS_SETTINGS);
+        m_serversSettingsFrame->Bind(wxEVT_CLOSE_WINDOW, [&](wxCloseEvent &event) {
+            m_serversSettingsFrame = nullptr;
+            event.Skip();
+        });
+    }
+
+//    Raise do not work, why?
+//    m_serversSettingsFrame->Raise();
+
+    long style = m_serversSettingsFrame->GetWindowStyle();
+    m_serversSettingsFrame->SetWindowStyle(style | wxSTAY_ON_TOP);
+    m_serversSettingsFrame->Show();
+    m_serversSettingsFrame->SetWindowStyle(style);
 }
 
 void SystemTray::OnRefreshServers(wxCommandEvent &event) {
@@ -355,6 +375,7 @@ BEGIN_EVENT_TABLE(SystemTray, wxTaskBarIcon)
                 EVT_MENU(ID_MENU_UPDATE_GFWLIST, SystemTray::OnUpdateGfwlist)
                 EVT_COMMAND(wxID_ANY, wxEVT_UPDATE_GFWLIST_FINISHED, SystemTray::OnUpdateGfwlistFinished)
                 EVT_MENU(ID_MENU_EDIT_USER_RULE, SystemTray::OnEditUserRules)
+                EVT_MENU(ID_MENU_SERVERS_SETTINGS, SystemTray::OnServersSettings)
                 EVT_MENU(ID_MENU_SERVERS_REFRESH, SystemTray::OnRefreshServers)
                 EVT_MENU(ID_MENU_PREFERENCES, SystemTray::OnShowPreferencesFrame)
                 EVT_MENU(ID_MENU_COPY_TERMINAL_PROXY_COMMAND_BASH, SystemTray::OnCopyProxyCommandBash)

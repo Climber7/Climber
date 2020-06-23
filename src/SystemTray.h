@@ -11,6 +11,7 @@
 #include "defs.h"
 #include "AboutFrame.h"
 #include "PreferencesFrame.h"
+#include "ServersSettingsFrame.h"
 
 class SystemTray : public wxTaskBarIcon {
 
@@ -43,6 +44,8 @@ private:
 
     void OnEditUserRules(wxCommandEvent &event);
 
+    void OnServersSettings(wxCommandEvent &event);
+
     void OnRefreshServers(wxCommandEvent &event);
 
     void OnShowPreferencesFrame(wxCommandEvent &event);
@@ -70,6 +73,7 @@ private:
 private:
     AboutFrame *m_aboutFrame = nullptr;
     PreferencesFrame *m_preferencesFrame = nullptr;
+    ServersSettingsFrame * m_serversSettingsFrame = nullptr;
     std::thread *m_updateGfwlistThread = nullptr;
     std::thread *m_checkForUpdatesThread = nullptr;
 

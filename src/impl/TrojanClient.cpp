@@ -18,6 +18,17 @@ json TrojanClient::OverrideListening(const wxString &localAddr, int localPort) c
     return data;
 }
 
+wxVector<wxVariant> TrojanClient::GetDataViewRowData() const {
+    wxVector<wxVariant> row;
+    std::string host = m_data["data"]["remote_addr"];
+    int port = m_data["data"]["remote_port"];
+    row.push_back(m_name);
+    row.push_back(m_type);
+    row.push_back(host);
+    row.push_back(wxString::Format("%d", port));
+    return row;
+}
+
 wxString TrojanClient::GetSystemTrayTitle() const {
     std::string host = m_data["data"]["remote_addr"];
     int port = m_data["data"]["remote_port"];

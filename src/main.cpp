@@ -13,6 +13,7 @@
 #include "utils.h"
 
 // TODO windows log
+// TODO windows signal
 
 static void signalHandler(int sig) {
     if (sig == SIGINT) {

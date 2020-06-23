@@ -40,17 +40,32 @@ msgstr "取消"
 msgid "&New"
 msgstr "新建(&N)"
 
+msgid "New"
+msgstr "新建"
+
 msgid "&Edit"
 msgstr "编辑(&E)"
+
+msgid "Edit"
+msgstr "编辑"
 
 msgid "&Delete"
 msgstr "删除(&D)"
 
+msgid "Delete"
+msgstr "删除"
+
 msgid "&Up"
 msgstr "向上(&U)"
 
+msgid "Up"
+msgstr "向上"
+
 msgid "&Down"
 msgstr "向下(&D)"
+
+msgid "Down"
+msgstr "向下"
 
 # climber
 
@@ -183,8 +198,11 @@ msgstr "主机"
 msgid "Port"
 msgstr "端口"
 
-msgid "Dupli&cate"
-msgstr "副本(&C)"
+msgid "Share"
+msgstr "分享"
+
+msgid "Duplicate"
+msgstr "副本"
 
 msgid "New Server"
 msgstr "新增服务器配置"
@@ -245,3 +263,18 @@ msgstr "Http 端口 %d 当前已被其它进程占用！"
 
 msgid "PAC port %d is in use by another program!"
 msgstr "PAC 端口 %d 当前已被其它进程占用！"
+
+msgid "Manually"
+msgstr "手动"
+
+msgid "URI"
+msgstr "URI"
+
+msgid "URI from Clipboard"
+msgstr "从剪切板导入URI"
+
+msgid "Scan QR Code on Screen"
+msgstr "扫描屏幕上的二维码"
+
+msgid "Scan QR Code Image File"
+msgstr "扫描二维码图片文件"

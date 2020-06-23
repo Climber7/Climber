@@ -11,6 +11,8 @@ class ShadowsocksClient : public BaseClient {
 public:
     explicit ShadowsocksClient(const wxString &bin, json obj);
 
+    wxVector<wxVariant> GetDataViewRowData() const override;
+
     wxString GetSystemTrayTitle() const override;
 
     void Start() const override;

@@ -11,6 +11,8 @@ class TrojanClient : public BaseClient {
 public:
     explicit TrojanClient(const wxString &bin, json obj);
 
+    wxVector<wxVariant> GetDataViewRowData() const override;
+
     wxString GetSystemTrayTitle() const override;
 
     void Start() const override;

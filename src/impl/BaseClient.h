@@ -28,6 +28,8 @@ public:
 public:
     virtual wxString GetSystemTrayTitle() const = 0;
 
+    virtual wxVector<wxVariant> GetDataViewRowData() const = 0;
+
     virtual void Start() const = 0;
 
     static void StopAll();
