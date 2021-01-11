@@ -5,6 +5,7 @@
 #include <fstream>
 #include <csignal>
 #include <wx/wx.h>
+#include <wx/snglinst.h>
 #include "Climber.h"
 #include "SystemTray.h"
 #include "Configuration.h"
@@ -25,40 +26,6 @@ static void signalHandler(int sig) {
     }
 }
 
-class SingleInstanceChecker {
-public:
-    SingleInstanceChecker() {
-        m_pidFile = Paths::GetTmpDirFile("Climber.pid");
-        if (wxFileExists(m_pidFile)) {
-            auto pidStr = readTextFile(m_pidFile);
-            if (!pidStr.empty()) {
-                long pid = std::strtol(pidStr.c_str().AsChar(), nullptr, 10);
-                if (wxProcess::Exists(pid)) {
-                    m_isAnotherRunning = true;
-                }
-            }
-        }
-
-        if (!m_isAnotherRunning) {
-            writeTextFile(m_pidFile, wxString::Format("%lu", wxGetProcessId()));
-        }
-    }
-
-    ~SingleInstanceChecker() {
-        if (wxFileExists(m_pidFile)) {
-            wxRemoveFile(m_pidFile);
-        }
-    }
-
-    inline bool IsAnotherRunning() const {
-        return m_isAnotherRunning;
-    }
-
-private:
-    wxString m_pidFile = wxEmptyString;
-    bool m_isAnotherRunning = false;
-};
-
 class ClimberApp : public wxApp {
 
 public:
@@ -72,10 +39,12 @@ public:
             return false;
         }
 
-        m_checker = new SingleInstanceChecker();
+        m_checker = new wxSingleInstanceChecker();
         if (m_checker->IsAnotherRunning()) {
             wxMessageDialog(nullptr, _("Another program instance is already running, aborting."), _("Warning"))
                     .ShowModal();
+            delete m_checker;
+            m_checker = nullptr;
             return false;
         }
 
@@ -147,7 +116,7 @@ public:
 private:
     wxString m_climberLogFile = wxEmptyString;
     std::ofstream m_logStream;
-    SingleInstanceChecker *m_checker = nullptr;
+    wxSingleInstanceChecker *m_checker = nullptr;
 };
 
 wxIMPLEMENT_APP(ClimberApp);
