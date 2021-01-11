@@ -7,9 +7,6 @@
 [submodule "vendor/openssl-cmake"]
 	path = vendor/openssl-cmake
 	url = https://github.com/Climber7/openssl-cmake
-[submodule "vendor/zlib"]
-	path = vendor/zlib
-	url = https://github.com/Climber7/zlib
 [submodule "vendor/cpp-httplib"]
 	path = vendor/cpp-httplib
 	url = https://github.com/yhirose/cpp-httplib

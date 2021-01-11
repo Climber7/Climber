@@ -34,10 +34,8 @@ set(wxUSE_LIBTIFF OFF)
 
 add_subdirectory(vendor/wxWidgets)
 include_directories(vendor/json/single_include)
-add_subdirectory(vendor/zlib)
 add_subdirectory(vendor/openssl-cmake)
 include_directories(vendor/cpp-httplib)
-include_directories(vendor/zlib)
 
 file(GLOB_RECURSE SOURCES src/*.cpp src/*.h)
 
@@ -178,11 +176,10 @@ else ()
 
 endif ()
 
-target_link_libraries(Climber wx::base wx::net wx::core wx::richtext zlibstatic ssl crypto)
+target_link_libraries(Climber wx::base wx::net wx::core wx::richtext ssl crypto)
 target_compile_definitions(Climber PUBLIC
         CLIMBER_VERSION="${CLIMBER_VERSION}"
         CLIMBER_COPYRIGHT="${CLIMBER_COPYRIGHT}"
         CLIMBER_DESCRIPTION="${CLIMBER_DESCRIPTION}"
         CLIMBER_REPO_URL="${CLIMBER_REPO_URL}"
-        CPPHTTPLIB_ZLIB_SUPPORT
         CPPHTTPLIB_OPENSSL_SUPPORT)
