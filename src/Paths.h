@@ -8,6 +8,7 @@
 #include <wx/wx.h>
 #include <wx/stdpaths.h>
 #include <wx/filename.h>
+#include <wx/file.h>
 
 class Paths {
 public:
@@ -21,7 +22,8 @@ public:
 
     static wxString GetDataDir() {
 #ifdef CLIMBER_WINDOWS
-        return wxStandardPaths::Get().GetResourcesDir();
+        wxString portable = GetResourcesDirFile("disable_portable");
+        return wxFileExists(portable) ? wxStandardPaths::Get().GetUserLocalDataDir() : GetResourcesDir();
 #else
         return wxStandardPaths::Get().GetUserLocalDataDir();
 #endif

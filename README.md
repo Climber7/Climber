@@ -7,6 +7,10 @@ Yet another cross platform ss/trojan GUI client.
 
 Currently support MacOS(10.10 or up) and Windows(vista or up), Linux support is on plan.
 
+For windows, Climber run as portable mode by default. (Will write files in executable directory)
+Sometimes you don’t want the portable mode, for example when you install Climber to `C:\Program Files (x86)\`
+You can create a file named `disable_portable` in executable directory to disable portable mode. (Will write files in local user data directory)
+
 # Build
 
 This project was developed under CLion, easy to build using cmake.
