@@ -39,7 +39,7 @@ public:
             return false;
         }
 
-        m_checker = new wxSingleInstanceChecker();
+        m_checker = new wxSingleInstanceChecker("climber.lock", Paths::GetTmpDir());
         if (m_checker->IsAnotherRunning()) {
             wxMessageDialog(nullptr, _("Another program instance is already running, aborting."), _("Warning"))
                     .ShowModal();
