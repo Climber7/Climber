@@ -3,7 +3,7 @@ project(Climber)
 
 set(CMAKE_CXX_STANDARD 14)
 
-set(CLIMBER_VERSION 0.0.6)
+set(CLIMBER_VERSION 0.0.7)
 set(CLIMBER_COPYRIGHT "Copyright (C) 2020 Climber.")
 set(CLIMBER_DESCRIPTION "Yet another cross platform ss/trojan GUI client.")
 set(CLIMBER_REPO_URL "https://github.com/Climber7/Climber")
