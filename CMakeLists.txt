@@ -10,14 +10,10 @@ set(CLIMBER_REPO_URL "https://github.com/Climber7/Climber")
 
 if (WIN32)
     add_compile_options($<$<CXX_COMPILER_ID:MSVC>:/MP>)
+    set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>")
     add_compile_options($<$<CXX_COMPILER_ID:MSVC>:/w44996>)
     add_link_options($<$<CXX_COMPILER_ID:MSVC>:/INCREMENTAL:NO>)
     set(wxBUILD_USE_STATIC_RUNTIME ON)
-    add_compile_options(
-            $<$<CONFIG:>:/MT>
-            $<$<CONFIG:Debug>:/MTd>
-            $<$<CONFIG:Release>:/MT>
-    )
 endif ()
 
 if (APPLE)
